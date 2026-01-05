@@ -1,6 +1,7 @@
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
 import { router, usePage } from '@inertiajs/react';
 import { useTranslations } from '../../utils/translations';
+import { useToast } from '../../contexts/ToastContext';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import styles from './login.module.css';
@@ -18,6 +19,7 @@ interface LoginPageProps {
 
 export default function Login({ canResetPassword = false, canRegister = false, status }: LoginPageProps) {
     const { t } = useTranslations();
+    const { showToast } = useToast();
     const page = usePage<{ errors?: LoginPageProps['errors'] }>();
     const errors = page.props.errors || {};
     
@@ -25,6 +27,17 @@ export default function Login({ canResetPassword = false, canRegister = false, s
     const [password, setPassword] = useState('');
     const [remember, setRemember] = useState(false);
     const [processing, setProcessing] = useState(false);
+
+    // Show toast for authentication errors
+    useEffect(() => {
+        if (errors.email) {
+            showToast(errors.email, 'error');
+        } else if (errors.password) {
+            showToast(errors.password, 'error');
+        } else if (errors.message) {
+            showToast(errors.message, 'error');
+        }
+    }, [errors, showToast]);
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();

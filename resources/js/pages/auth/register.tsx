@@ -197,6 +197,18 @@ export default function Register({ }: RegisterPageProps) {
         return true;
     };
 
+    // Helper function to get CSRF token and refresh it if needed
+    const getCsrfToken = (): string => {
+        const metaTag = document.querySelector('meta[name="csrf-token"]');
+        if (!metaTag) {
+            // If meta tag doesn't exist, try to reload the page to get a fresh token
+            console.warn('CSRF token meta tag not found, reloading page...');
+            window.location.reload();
+            return '';
+        }
+        return metaTag.getAttribute('content') || '';
+    };
+
     // Real-time email uniqueness check
     useEffect(() => {
         if (emailCheckTimeoutRef.current) {
@@ -218,8 +230,13 @@ export default function Register({ }: RegisterPageProps) {
         emailCheckTimeoutRef.current = setTimeout(async () => {
             setEmailChecking(true);
             try {
-                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-                const response = await fetch('/auth/check-email', {
+                let csrfToken = getCsrfToken();
+                if (!csrfToken) {
+                    setEmailChecking(false);
+                    return;
+                }
+
+                let response = await fetch('/auth/check-email', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -229,6 +246,28 @@ export default function Register({ }: RegisterPageProps) {
                     credentials: 'same-origin',
                     body: JSON.stringify({ email }),
                 });
+
+                // If CSRF token expired, refresh it and retry once
+                if (response.status === 419) {
+                    // Refresh CSRF token from meta tag
+                    csrfToken = getCsrfToken();
+                    if (!csrfToken) {
+                        setEmailChecking(false);
+                        return;
+                    }
+
+                    // Retry the request with fresh token
+                    response = await fetch('/auth/check-email', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json',
+                        },
+                        credentials: 'same-origin',
+                        body: JSON.stringify({ email }),
+                    });
+                }
 
                 const data = await response.json();
                 setEmailAvailable(data.available);
@@ -264,7 +303,11 @@ export default function Register({ }: RegisterPageProps) {
 
         setCuiValidating(true);
         try {
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            let csrfToken = getCsrfToken();
+            if (!csrfToken) {
+                setCuiValidating(false);
+                return;
+            }
 
             // Determine country code from selected country
             const selectedCountry = countries.find(c => String(c.id) === country_id);
@@ -272,7 +315,7 @@ export default function Register({ }: RegisterPageProps) {
             const isRomania = countryCode === 'RO';
 
             // Validate CUI via VIES first (for all countries)
-            const validateResponse = await fetch('/auth/validate-cui', {
+            let validateResponse = await fetch('/auth/validate-cui', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -286,6 +329,32 @@ export default function Register({ }: RegisterPageProps) {
                 }),
             });
 
+            // If CSRF token expired, refresh it and retry once
+            if (validateResponse.status === 419) {
+                // Refresh CSRF token from meta tag
+                csrfToken = getCsrfToken();
+                if (!csrfToken) {
+                    setCuiValidating(false);
+                    showToast(t('Session expired. Please refresh the page.'), 'error');
+                    return;
+                }
+
+                // Retry the request with fresh token
+                validateResponse = await fetch('/auth/validate-cui', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json',
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({
+                        cui: cleanCui,
+                        country_code: countryCode,
+                    }),
+                });
+            }
+
             const validateData = await validateResponse.json();
 
             if (!validateData.valid) {
@@ -295,7 +364,7 @@ export default function Register({ }: RegisterPageProps) {
 
             // If Romania, get company data from ANAF for autofill
             if (isRomania) {
-                const companyResponse = await fetch('/auth/get-company-data', {
+                let companyResponse = await fetch('/auth/get-company-data', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -305,6 +374,29 @@ export default function Register({ }: RegisterPageProps) {
                     credentials: 'same-origin',
                     body: JSON.stringify({ cui: cleanCui }),
                 });
+
+                // If CSRF token expired, refresh it and retry once
+                if (companyResponse.status === 419) {
+                    // Refresh CSRF token from meta tag
+                    csrfToken = getCsrfToken();
+                    if (!csrfToken) {
+                        setCuiValidating(false);
+                        showToast(t('Session expired. Please refresh the page.'), 'error');
+                        return;
+                    }
+
+                    // Retry the request with fresh token
+                    companyResponse = await fetch('/auth/get-company-data', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json',
+                        },
+                        credentials: 'same-origin',
+                        body: JSON.stringify({ cui: cleanCui }),
+                    });
+                }
 
                 const companyData = await companyResponse.json();
 

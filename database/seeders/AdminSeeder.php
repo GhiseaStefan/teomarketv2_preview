@@ -29,8 +29,10 @@ class AdminSeeder extends Seeder
 
         $email = 'admin@teomarket.ro';
 
-        // Generate a secure random password
-        $password = Str::random(16);
+        // TEMPORAR: Parola setata la "password" pentru dezvoltare
+        // TODO: In productie, inlocuieste cu o parola securizata
+        $password = 'password';
+        // $password = Str::random(16); // Generare parola random (pentru productie)
 
         // Check if admin user already exists
         $existingUser = User::where('email', $email)->first();

@@ -22,11 +22,20 @@ class ViesService
     {
         if ($this->client === null) {
             try {
+                // Use WSDL_CACHE_NONE for Render/free tier hosting where we might not have write permissions
+                // Increase timeouts for slower connections on free tier
                 $this->client = new SoapClient(self::VIES_WSDL, [
                     'soap_version' => SOAP_1_1,
                     'exceptions' => true,
-                    'cache_wsdl' => WSDL_CACHE_BOTH,
-                    'connection_timeout' => 10,
+                    'cache_wsdl' => WSDL_CACHE_NONE, // Changed from WSDL_CACHE_BOTH for Render compatibility
+                    'connection_timeout' => 30, // Increased from 10 to 30 seconds
+                    'default_socket_timeout' => 30, // Added socket timeout
+                    'stream_context' => stream_context_create([
+                        'http' => [
+                            'timeout' => 30,
+                            'user_agent' => 'Laravel VIES Client',
+                        ],
+                    ]),
                 ]);
             } catch (SoapFault $e) {
                 throw new Exception('Failed to connect to VIES service: ' . $e->getMessage());
@@ -74,6 +83,16 @@ class ViesService
                 'message' => 'VAT number is not valid in VIES system',
             ];
         } catch (SoapFault $e) {
+            // Log VIES service errors for debugging
+            if (request()) {
+                \App\Services\LoggingService::logBusinessEvent(request(), 'vies.soap_error', [
+                    'error_code' => $e->getCode(),
+                    'error_message' => $e->getMessage(),
+                    'vat_number' => $vatNumber,
+                    'country_code' => $countryCode,
+                ], 'error');
+            }
+            
             // VIES service errors (e.g., MS_UNAVAILABLE, SERVICE_UNAVAILABLE, TIMEOUT)
             return [
                 'valid' => false,
@@ -81,6 +100,15 @@ class ViesService
                 'error_code' => $e->getCode(),
             ];
         } catch (Exception $e) {
+            // Log general exceptions for debugging
+            if (request()) {
+                \App\Services\LoggingService::logError(request(), $e, [
+                    'service' => 'vies',
+                    'vat_number' => $vatNumber,
+                    'country_code' => $countryCode,
+                ]);
+            }
+            
             return [
                 'valid' => false,
                 'message' => 'Error validating VAT number: ' . $e->getMessage(),
