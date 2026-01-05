@@ -1,0 +1,229 @@
+.securityContainer {
+    grid-column: 1 / -1;
+}
+
+.securityCard {
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: var(--spacing-xl);
+    box-shadow: 0 1px 2px var(--color-shadow-sm);
+}
+
+.securityTitle {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-xl) 0;
+}
+
+.securitySection {
+    padding: var(--spacing-xl) 0;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.securitySection:last-child {
+    border-bottom: none;
+}
+
+.sectionHeader {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.sectionIcon {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    background: var(--color-green-600);
+    color: var(--color-text-inverse);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.sectionTitleWrapper {
+    flex: 1;
+}
+
+.sectionTitle {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-xs) 0;
+}
+
+.sectionDescription {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0;
+}
+
+.passwordForm {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    max-width: 50%;
+}
+
+.formLabel {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+}
+
+.passwordInputWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.formInput {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    padding-right: 45px;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    font-size: var(--font-size-base);
+    font-family: var(--font-primary);
+    color: var(--color-text-primary);
+    background: var(--color-background);
+}
+
+.formInput:focus {
+    outline: none;
+    border-color: var(--color-green-600);
+}
+
+.passwordToggle {
+    position: absolute;
+    right: var(--spacing-sm);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xs);
+}
+
+.passwordToggle:hover {
+    color: var(--color-text-primary);
+}
+
+.formActions {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: var(--spacing-md);
+}
+
+.formActions button {
+    transition: all 0.2s ease;
+}
+
+.formActions button:hover:not(:disabled) {
+    background-color: var(--color-green-700);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.formActions button:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.twoFactorToggle {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.toggleLabel {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+}
+
+.toggleInput {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggleSlider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--color-background-tertiary);
+    transition: 0.3s;
+    border-radius: 26px;
+}
+
+.toggleSlider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: var(--color-text-inverse);
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+.toggleInput:checked + .toggleSlider {
+    background-color: var(--color-green-600);
+}
+
+.toggleInput:checked + .toggleSlider:before {
+    transform: translateX(24px);
+}
+
+.toggleText {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+}
+
+.recoveryActions {
+    display: flex;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.twoFactorActions {
+    display: flex;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .securityCard {
+        padding: var(--spacing-lg);
+    }
+
+    .sectionHeader {
+        flex-direction: column;
+    }
+
+    .recoveryActions {
+        flex-direction: column;
+    }
+
+    .recoveryActions button {
+        width: 100%;
+    }
+}

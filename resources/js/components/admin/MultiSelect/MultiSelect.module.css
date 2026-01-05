@@ -1,0 +1,294 @@
+.multiSelect {
+    position: relative;
+    width: 100%;
+}
+
+.trigger {
+    width: 100%;
+    height: 36px;
+    padding: var(--spacing-xs) var(--spacing-md);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    font-family: var(--font-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-sm);
+    text-align: left;
+    box-sizing: border-box;
+}
+
+.trigger:hover {
+    border-color: var(--color-admin-300);
+}
+
+.triggerOpen {
+    border-color: var(--color-admin-500);
+    box-shadow: 0 0 0 3px var(--color-admin-100);
+}
+
+.triggerContent {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.selectedTags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    align-items: center;
+}
+
+.tag {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: 4px 8px;
+    background-color: var(--color-admin-100);
+    color: var(--color-admin-700);
+    border: 1px solid var(--color-admin-200);
+    border-radius: 4px;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    white-space: nowrap;
+    max-width: 150px;
+}
+
+.tag span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tagRemove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--color-admin-600);
+    cursor: pointer;
+    transition: color 0.2s ease;
+    flex-shrink: 0;
+    outline: none;
+}
+
+.tagRemove:hover {
+    color: var(--color-admin-800);
+}
+
+.tagRemove:focus-visible {
+    outline: 2px solid var(--color-admin-500);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+.tagMore {
+    padding: 4px 8px;
+    background-color: var(--color-admin-50);
+    color: var(--color-admin-600);
+    border: 1px solid var(--color-admin-200);
+    border-radius: 4px;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    white-space: nowrap;
+}
+
+.placeholder {
+    color: var(--color-text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left;
+    flex: 1;
+    min-width: 0;
+}
+
+.placeholder[data-placeholder="false"] {
+    color: var(--color-text-primary);
+}
+
+.triggerActions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    flex-shrink: 0;
+}
+
+.clearButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border: none;
+    background: none;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+.clearButton:hover {
+    background-color: var(--color-admin-50);
+    color: var(--color-text-primary);
+}
+
+.clearButton:focus-visible {
+    outline: 2px solid var(--color-admin-500);
+    outline-offset: 2px;
+}
+
+.chevron {
+    color: var(--color-text-secondary);
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+}
+
+.chevronOpen {
+    transform: rotate(180deg);
+}
+
+.dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    max-height: 320px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.searchContainer {
+    position: relative;
+    padding: var(--spacing-sm);
+    border-bottom: 1px solid var(--color-border);
+    background-color: var(--color-background);
+}
+
+.searchIcon {
+    position: absolute;
+    left: var(--spacing-md);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-text-secondary);
+    pointer-events: none;
+}
+
+.searchInput {
+    width: 100%;
+    padding: var(--spacing-xs) var(--spacing-sm) var(--spacing-xs) 32px;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    font-size: var(--font-size-sm);
+    font-family: var(--font-primary);
+    color: var(--color-text-primary);
+    background-color: var(--color-background);
+    transition: border-color 0.2s ease;
+}
+
+.searchInput:focus {
+    outline: none;
+    border-color: var(--color-admin-500);
+    box-shadow: 0 0 0 2px var(--color-admin-100);
+}
+
+.optionsList {
+    overflow-y: auto;
+    max-height: 240px;
+    padding: var(--spacing-xs);
+}
+
+.optionsList::-webkit-scrollbar {
+    width: 8px;
+}
+
+.optionsList::-webkit-scrollbar-track {
+    background: var(--color-background-secondary);
+    border-radius: 4px;
+}
+
+.optionsList::-webkit-scrollbar-thumb {
+    background: var(--color-border-dark);
+    border-radius: 4px;
+}
+
+.optionsList::-webkit-scrollbar-thumb:hover {
+    background: var(--color-text-secondary);
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    user-select: none;
+    position: relative;
+}
+
+.option:hover {
+    background-color: var(--color-admin-50);
+}
+
+.optionSelected {
+    background-color: var(--color-admin-50);
+}
+
+.checkbox {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+
+.checkboxCustom {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--color-border-dark);
+    border-radius: 4px;
+    background-color: var(--color-background);
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    color: var(--color-background);
+}
+
+.optionSelected .checkboxCustom {
+    background-color: var(--color-admin-600);
+    border-color: var(--color-admin-600);
+    color: var(--color-text-inverse);
+}
+
+.optionLabel {
+    flex: 1;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-normal);
+}
+
+.noResults {
+    padding: var(--spacing-md);
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+}

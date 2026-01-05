@@ -1,0 +1,223 @@
+/* ============================================
+   Footer - Main Container
+   ============================================ */
+.footer {
+    margin-top: auto;
+    background-color: var(--color-footer-background);
+    color: var(--color-text-inverse);
+    border-top: 1px solid var(--color-border-dark);
+}
+
+.footerContainer {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--spacing-2xl) var(--spacing-lg);
+}
+
+/* ============================================
+   Footer - Content Section
+   ============================================ */
+.footerContent {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-xl);
+    margin-bottom: var(--spacing-2xl);
+}
+
+.footerSection {
+    display: flex;
+    flex-direction: column;
+}
+
+.footerTitle {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-inverse);
+    margin-bottom: var(--spacing-md);
+    font-family: var(--font-primary);
+}
+
+.footerInfo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.companyName {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-inverse);
+    margin-bottom: var(--spacing-sm);
+    font-family: var(--font-primary);
+}
+
+.infoItem {
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-300);
+    line-height: var(--line-height-normal);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    font-family: var(--font-primary);
+}
+
+.infoLabel {
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gray-200);
+}
+
+.infoValue {
+    color: var(--color-gray-300);
+}
+
+.infoLink {
+    color: var(--color-primary-400);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.infoLink:hover {
+    color: var(--color-primary-300);
+    text-decoration: underline;
+}
+
+/* ============================================
+   Footer - Navigation Links
+   ============================================ */
+.footerNav {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.footerLink {
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-300);
+    text-decoration: none;
+    transition: color 0.2s ease;
+    font-family: var(--font-primary);
+}
+
+.footerLink:hover {
+    color: var(--color-primary-400);
+}
+
+/* ============================================
+   Footer - Bottom Section
+   ============================================ */
+.footerBottom {
+    border-top: 1px solid var(--color-gray-700);
+    padding-top: var(--spacing-lg);
+}
+
+.footerBottomContent {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.copyright {
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-400);
+    font-family: var(--font-primary);
+}
+
+.footerBottomLinks {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.footerBottomLink {
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-400);
+    text-decoration: none;
+    transition: color 0.2s ease;
+    font-family: var(--font-primary);
+}
+
+.footerBottomLink:hover {
+    color: var(--color-primary-400);
+}
+
+.separator {
+    color: var(--color-gray-600);
+    font-size: var(--font-size-sm);
+}
+
+/* ============================================
+   Footer - Disclaimer Section
+   ============================================ */
+.footerDisclaimer {
+    border-top: 1px solid var(--color-gray-700);
+    padding-top: var(--spacing-lg);
+}
+
+.disclaimerText {
+    font-size: var(--font-size-xs);
+    color: var(--color-gray-500);
+    line-height: var(--line-height-relaxed);
+    margin-bottom: var(--spacing-sm);
+    font-family: var(--font-primary);
+}
+
+.disclaimerText:last-child {
+    margin-bottom: 0;
+}
+
+.externalLink {
+    color: var(--color-primary-400);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.externalLink:hover {
+    color: var(--color-primary-300);
+    text-decoration: underline;
+}
+
+/* ============================================
+   Footer - Responsive Design
+   ============================================ */
+@media (max-width: 768px) {
+    .footerContainer {
+        padding: var(--spacing-xl) var(--spacing-md);
+    }
+
+    .footerContent {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+
+    .footerBottomContent {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .footerBottomLinks {
+        width: 100%;
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 480px) {
+    .footerContainer {
+        padding: var(--spacing-lg) var(--spacing-sm);
+    }
+
+    .footerTitle {
+        font-size: var(--font-size-base);
+    }
+
+    .infoItem {
+        font-size: var(--font-size-xs);
+    }
+
+    .footerLink {
+        font-size: var(--font-size-xs);
+    }
+}
+

@@ -1,0 +1,85 @@
+.verifyEmailContainer {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-background-secondary);
+    padding: var(--spacing-md);
+}
+
+.verifyEmailCard {
+    width: 100%;
+    max-width: 500px;
+    background-color: var(--color-background);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px var(--color-shadow-sm), 0 1px 2px var(--color-shadow-md);
+    padding: var(--spacing-2xl);
+}
+
+.verifyEmailHeader {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.logo {
+    height: 60px;
+    width: auto;
+    margin-bottom: var(--spacing-lg);
+    object-fit: contain;
+}
+
+.title {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-sm) 0;
+}
+
+.subtitle {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--spacing-md) 0;
+    line-height: 1.5;
+}
+
+.emailInfo {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: var(--spacing-md) 0 0 0;
+}
+
+.statusMessage {
+    background-color: var(--color-success-light);
+    color: var(--color-success-dark);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: 4px;
+    margin-bottom: var(--spacing-lg);
+    font-size: var(--font-size-sm);
+    font-family: var(--font-primary);
+    text-align: center;
+}
+
+.actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.resendButton,
+.logoutButton {
+    width: 100%;
+}
+
+@media (max-width: 640px) {
+    .verifyEmailCard {
+        padding: var(--spacing-xl);
+    }
+
+    .title {
+        font-size: var(--font-size-xl);
+    }
+}
+

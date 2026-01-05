@@ -1,0 +1,431 @@
+/* ============================================
+   Orders Page - Main Container
+   ============================================ */
+.ordersPage {
+    padding: var(--spacing-md);
+    background-color: var(--color-background);
+    min-height: calc(100vh - 60px);
+}
+
+/* ============================================
+   Header Section
+   ============================================ */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid var(--color-admin-200);
+    margin-bottom: var(--spacing-sm);
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+}
+
+.filterTabs {
+    display: flex;
+    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+}
+
+.filterTab {
+    padding: 6px var(--spacing-sm);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filterTab:hover {
+    background-color: var(--color-admin-50);
+    border-color: var(--color-admin-300);
+}
+
+.filterTabActive {
+    background-color: var(--color-admin-600);
+    color: var(--color-text-inverse);
+    border-color: var(--color-admin-600);
+}
+
+.filterTabActive:hover {
+    background-color: var(--color-admin-700);
+}
+
+.headerActions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.searchForm {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.searchIcon {
+    position: absolute;
+    left: var(--spacing-sm);
+    color: var(--color-text-secondary);
+    pointer-events: none;
+}
+
+.searchInput {
+    padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) 32px;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    font-size: var(--font-size-sm);
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    min-width: 200px;
+    transition: border-color 0.2s ease;
+}
+
+.searchInput:focus {
+    outline: none;
+    border-color: var(--color-admin-500);
+    box-shadow: 0 0 0 3px var(--color-admin-100);
+}
+
+.filterButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-sm);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filterButton:hover {
+    background-color: var(--color-admin-50);
+    border-color: var(--color-admin-300);
+}
+
+/* ============================================
+   Table Container
+   ============================================ */
+.tableContainer {
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+.ordersTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--font-size-xs);
+}
+
+.ordersTable thead {
+    background-color: var(--color-admin-50);
+    border-bottom: 1px solid var(--color-admin-200);
+}
+
+.ordersTable th {
+    padding: 8px 16px;
+    text-align: left;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-xs);
+    white-space: nowrap;
+}
+
+.ordersTable tbody tr {
+    border-bottom: 1px solid var(--color-border);
+    transition: background-color 0.2s ease;
+}
+
+.ordersTable tbody tr:hover {
+    background-color: var(--color-admin-50);
+}
+
+.ordersTable td {
+    padding: 8px 16px;
+    vertical-align: middle;
+}
+
+.emptyState {
+    text-align: center;
+    padding: var(--spacing-xl) !important;
+    color: var(--color-text-secondary);
+}
+
+/* ============================================
+   Table Cell Styles
+   ============================================ */
+.orderNumber {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-admin-700);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-xs);
+}
+
+.orderLink {
+    color: var(--color-admin-700);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.orderLink:hover {
+    color: var(--color-admin-800);
+    text-decoration: underline;
+}
+
+.dateTime {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+    white-space: nowrap;
+}
+
+.clientInfo {
+    min-width: 120px;
+}
+
+.clientName {
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-xs);
+}
+
+.clientCity {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+}
+
+.statusBadge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: var(--font-weight-medium);
+    border: 1px solid;
+    line-height: 1.4;
+    min-width: 95px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.paymentInfo {
+    min-width: 120px;
+}
+
+.paymentMethod {
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-xs);
+    line-height: 1.3;
+}
+
+.paymentTotal {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    font-family: var(--font-mono);
+    line-height: 1.3;
+}
+
+.paymentStatusBadge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: var(--font-weight-medium);
+    border: 1px solid;
+    line-height: 1.4;
+    margin-top: 3px;
+    white-space: nowrap;
+    min-width: 60px;
+    text-align: center;
+}
+
+.logisticsInfo {
+    min-width: 180px;
+}
+
+.shippingMethod {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    margin-bottom: 3px;
+    font-size: var(--font-size-xs);
+    line-height: 1.3;
+}
+
+.shippingTypeIcon {
+    flex-shrink: 0;
+    color: var(--color-admin-600);
+    width: 14px;
+    height: 14px;
+}
+
+.trackingContainer {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.courierIcon {
+    font-size: 14px;
+    line-height: 1;
+}
+
+.lockerIcon {
+    color: var(--color-admin-600);
+    flex-shrink: 0;
+    width: 12px;
+    height: 12px;
+}
+
+.trackingLink {
+    color: var(--color-admin-600);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: var(--font-size-xs);
+    transition: color 0.2s ease;
+}
+
+.trackingLink:hover {
+    color: var(--color-admin-700);
+    text-decoration: underline;
+}
+
+.generateAWBButton {
+    padding: 3px 6px;
+    border: 1px solid var(--color-admin-300);
+    border-radius: 3px;
+    background-color: var(--color-admin-50);
+    color: var(--color-admin-700);
+    font-size: 11px;
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.generateAWBButton:hover {
+    background-color: var(--color-admin-100);
+    border-color: var(--color-admin-400);
+}
+
+.soonBadge {
+    padding: 2px 6px;
+    background-color: var(--color-warning-light);
+    color: var(--color-warning-dark);
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: var(--font-weight-semibold);
+}
+
+.productsInfo {
+    min-width: 150px;
+}
+
+.productsCount {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-xs);
+    line-height: 1.3;
+}
+
+.productsCount svg {
+    width: 12px;
+    height: 12px;
+}
+
+.productsSummary {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    line-height: 1.4;
+}
+
+/* ============================================
+   Pagination
+   ============================================ */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+    padding: var(--spacing-md) 0;
+}
+
+.paginationButton {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.paginationButton:hover:not(:disabled) {
+    background-color: var(--color-admin-50);
+    border-color: var(--color-admin-300);
+}
+
+.paginationButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.paginationInfo {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+@media (max-width: 1024px) {
+    .ordersPage {
+        padding: var(--spacing-md);
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filterTabs {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .headerActions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .searchInput {
+        flex: 1;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .tableContainer {
+        overflow-x: scroll;
+    }
+
+    .ordersTable {
+        min-width: 800px;
+    }
+}

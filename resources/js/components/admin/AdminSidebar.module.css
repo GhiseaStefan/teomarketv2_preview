@@ -1,0 +1,92 @@
+/* ============================================
+   Admin Sidebar - Main Container
+   ============================================ */
+.sidebar {
+    position: fixed;
+    top: 60px; /* Height of navbar */
+    left: 0;
+    width: 250px;
+    height: calc(100vh - 60px);
+    background-color: var(--color-background);
+    border-right: 2px solid var(--color-admin-200);
+    z-index: 999;
+    overflow-y: auto;
+}
+
+/* ============================================
+   Admin Sidebar - Navigation
+   ============================================ */
+.nav {
+    padding: var(--spacing-sm) 0;
+}
+
+.navList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.navItem {
+    margin: 0;
+}
+
+/* ============================================
+   Admin Sidebar - Navigation Link
+   ============================================ */
+.navLink {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-sm) var(--spacing-md);
+    color: var(--color-text-primary);
+    text-decoration: none;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    border-left: 3px solid transparent;
+    font-size: var(--font-size-sm);
+}
+
+.navLink:hover {
+    background-color: var(--color-admin-50);
+    color: var(--color-admin-700);
+}
+
+.navLinkActive {
+    background-color: var(--color-admin-100);
+    color: var(--color-admin-800);
+    border-left-color: var(--color-admin-600);
+    font-weight: var(--font-weight-medium);
+}
+
+.navIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: var(--spacing-sm);
+    flex-shrink: 0;
+    color: var(--color-text-primary);
+}
+
+.navLabel {
+    font-size: var(--font-size-sm);
+    line-height: 1.4;
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+@media (max-width: 1024px) {
+    .sidebar {
+        width: 200px;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        box-shadow: 2px 0 8px var(--color-shadow-md);
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+}

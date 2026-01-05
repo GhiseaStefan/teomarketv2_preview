@@ -1,0 +1,1001 @@
+.container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: var(--spacing-xl) var(--spacing-md);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-xl);
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    width: 100%;
+}
+
+.title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0;
+    flex: 0 0 auto;
+}
+
+.clearButton {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex: 0 0 auto;
+    margin-left: auto;
+}
+
+.emptyCart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-3xl) var(--spacing-xl);
+    text-align: center;
+}
+
+.emptyCartIcon {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-lg);
+    opacity: 0.5;
+}
+
+.emptyCartTitle {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-sm) 0;
+}
+
+.emptyCartText {
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--spacing-xl) 0;
+}
+
+.continueButton {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.cartContent {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: var(--spacing-xl);
+    align-items: start;
+}
+
+.itemsSection {
+    flex: 1;
+}
+
+.itemsHeader {
+    margin-bottom: var(--spacing-lg);
+}
+
+.itemsTitle {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-xs) 0;
+}
+
+.itemsSubtitle {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0;
+}
+
+.cartTable {
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    overflow: visible;
+    position: relative;
+}
+
+.tableHeader {
+    display: grid;
+    grid-template-columns: 90px 250px minmax(100px, max-content) minmax(140px, max-content) minmax(120px, max-content) 60px;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: var(--color-background-secondary);
+    border-bottom: 2px solid var(--color-border);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+}
+
+.tableHeaderCell {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: left;
+    padding: 0;
+}
+
+.tableBody {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.tableRow {
+    display: grid;
+    grid-template-columns: 90px 250px minmax(100px, max-content) minmax(140px, max-content) minmax(120px, max-content) 60px;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--color-border-light);
+    align-items: center;
+    transition: background-color 0.2s;
+    position: relative;
+    z-index: 1;
+}
+
+.tableRow:hover {
+    background: var(--color-background-secondary);
+    z-index: 2;
+}
+
+.tableRow:last-child {
+    border-bottom: none;
+}
+
+.tableCell {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+    padding: 0;
+}
+
+.removeButtonCell {
+    justify-content: center;
+}
+
+.itemImageLink {
+    display: block;
+    text-decoration: none;
+    cursor: pointer;
+    position: relative;
+}
+
+.itemImage {
+    width: 80px;
+    height: 80px;
+    border-radius: 6px;
+    overflow: visible;
+    background: var(--color-background-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+    opacity: 1;
+    transition: opacity 0.2s;
+}
+
+.itemImageLink:hover .itemImage {
+    opacity: 0.8;
+}
+
+.itemImage img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+.imagePreview {
+    position: absolute;
+    bottom: calc(100% + var(--spacing-sm));
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    z-index: 10000;
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px var(--color-shadow-lg);
+    padding: var(--spacing-sm);
+    min-width: 200px;
+    max-width: 300px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0.2s, transform 0.2s;
+    pointer-events: none;
+}
+
+.itemImageLink:hover .imagePreview {
+    opacity: 1 !important;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+}
+
+.imagePreviewTitle {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-sm);
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 1px solid var(--color-border-light);
+    line-height: var(--line-height-tight);
+    word-wrap: break-word;
+}
+
+.imagePreviewImage {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--color-background-tertiary);
+}
+
+.imagePreviewImage img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.imagePlaceholder {
+    padding: var(--spacing-sm);
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+}
+
+.itemDetails {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    min-width: 0;
+    width: 100%;
+}
+
+.itemNameRow {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    min-width: 0;
+    width: 100%;
+}
+
+.itemNameLink {
+    text-decoration: none;
+    cursor: pointer;
+    flex: 1;
+    min-width: 0;
+    transition: color 0.2s;
+    overflow: hidden;
+}
+
+.itemNameLink:hover .itemName {
+    color: var(--color-success);
+}
+
+.itemName {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    margin: 0;
+    line-height: var(--line-height-tight);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+}
+
+.priceTierContainer {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+}
+
+.priceTierRow {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.priceTierBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: 2px var(--spacing-sm);
+    background: linear-gradient(135deg, var(--color-primary-50) 0%, var(--color-primary-100) 100%);
+    color: var(--color-primary-700);
+    border: 1px solid var(--color-primary-300);
+    border-radius: 12px;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    white-space: nowrap;
+    flex-shrink: 0;
+    box-shadow: 0 1px 2px var(--color-shadow-sm);
+    cursor: help;
+}
+
+.tierTooltip .priceTierBadge {
+    cursor: help;
+}
+
+/* Tier 1 - Blue */
+.priceTierBadge1 {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: #1e40af;
+    border-color: #93c5fd;
+}
+
+/* Tier 2 - Green */
+.priceTierBadge2 {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    color: #065f46;
+    border-color: #6ee7b7;
+}
+
+/* Tier 3 - Yellow/Amber */
+.priceTierBadge3 {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    color: #92400e;
+    border-color: #fcd34d;
+}
+
+/* Tier 4 - Orange */
+.priceTierBadge4 {
+    background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
+    color: #9a3412;
+    border-color: #fb923c;
+}
+
+/* Tier 5 - Red */
+.priceTierBadge5 {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color: #991b1b;
+    border-color: #f87171;
+}
+
+/* Tier 6 - Purple */
+.priceTierBadge6 {
+    background: linear-gradient(135deg, #e9d5ff 0%, #ddd6fe 100%);
+    color: #6b21a8;
+    border-color: #c084fc;
+}
+
+/* Tier 7 - Pink */
+.priceTierBadge7 {
+    background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+    color: #9f1239;
+    border-color: #f472b6;
+}
+
+/* Tier 8+ - Teal */
+.priceTierBadge8,
+.priceTierBadge9,
+.priceTierBadge10 {
+    background: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 100%);
+    color: #134e4a;
+    border-color: #5eead4;
+}
+
+.tierRange {
+    color: inherit;
+    font-weight: var(--font-weight-normal);
+    margin-left: 2px;
+    font-size: 0.7rem;
+    opacity: 0.8;
+}
+
+.tierTooltip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.tierInfoIcon {
+    color: var(--color-primary-500);
+    cursor: help;
+    transition: color 0.2s;
+}
+
+.tierInfoIcon:hover {
+    color: var(--color-primary-700);
+}
+
+.tierTooltipContent {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: var(--spacing-xs);
+    min-width: 280px;
+    max-width: 320px;
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px var(--color-shadow-lg);
+    padding: var(--spacing-md);
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: opacity 0.2s, visibility 0.2s, transform 0.2s;
+    pointer-events: none;
+}
+
+.tierTooltip:hover .tierTooltipContent {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* Ensure tooltip appears above table when row is hovered */
+.tableRow:hover .tierTooltip {
+    position: relative;
+    z-index: 10001;
+}
+
+.tableRow:hover .tierTooltipContent {
+    z-index: 10002;
+}
+
+/* Ensure tooltip can overflow table boundaries */
+.itemsSection {
+    overflow: visible;
+}
+
+.tierTooltipHeader {
+    margin-bottom: var(--spacing-sm);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--color-border);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+}
+
+.tierTooltipList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.tierTooltipItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: 4px;
+    font-size: var(--font-size-xs);
+    transition: background-color 0.2s;
+}
+
+.tierTooltipItem:hover {
+    background: var(--color-background-secondary);
+}
+
+.tierTooltipItemCurrent {
+    background: var(--color-primary-50);
+    border: 1px solid var(--color-primary-200);
+}
+
+.tierTooltipRange {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-medium);
+}
+
+.tierCurrentBadge {
+    padding: 1px var(--spacing-xs);
+    background: var(--color-primary-600);
+    color: var(--color-text-inverse);
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: var(--font-weight-semibold);
+}
+
+.tierTooltipPrice {
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-xs);
+}
+
+.tierTooltipNext {
+    margin-top: var(--spacing-sm);
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid var(--color-border);
+    font-size: var(--font-size-xs);
+    color: var(--color-success);
+    font-weight: var(--font-weight-medium);
+}
+
+.nextTierBadge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    padding: 2px var(--spacing-sm);
+    background: linear-gradient(135deg, var(--color-primary-50) 0%, var(--color-primary-100) 100%);
+    color: var(--color-primary-700);
+    border: 1px solid var(--color-primary-300);
+    border-radius: 12px;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    box-shadow: 0 1px 2px var(--color-shadow-sm);
+    animation: pulse 2s ease-in-out infinite;
+    width: auto;
+    margin: 0 auto;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.nextTierBadge:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px var(--color-shadow-md);
+}
+
+.tierTooltip .nextTierBadge {
+    cursor: pointer;
+}
+
+/* Tier 1 - Blue */
+.nextTierBadge1 {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: #1e40af;
+    border-color: #93c5fd;
+}
+
+/* Tier 2 - Green */
+.nextTierBadge2 {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    color: #065f46;
+    border-color: #6ee7b7;
+}
+
+/* Tier 3 - Yellow/Amber */
+.nextTierBadge3 {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    color: #92400e;
+    border-color: #fcd34d;
+}
+
+/* Tier 4 - Orange */
+.nextTierBadge4 {
+    background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
+    color: #9a3412;
+    border-color: #fb923c;
+}
+
+/* Tier 5 - Red */
+.nextTierBadge5 {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color: #991b1b;
+    border-color: #f87171;
+}
+
+/* Tier 6 - Purple */
+.nextTierBadge6 {
+    background: linear-gradient(135deg, #e9d5ff 0%, #ddd6fe 100%);
+    color: #6b21a8;
+    border-color: #c084fc;
+}
+
+/* Tier 7 - Pink */
+.nextTierBadge7 {
+    background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+    color: #9f1239;
+    border-color: #f472b6;
+}
+
+/* Tier 8+ - Teal */
+.nextTierBadge8,
+.nextTierBadge9,
+.nextTierBadge10 {
+    background: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 100%);
+    color: #134e4a;
+    border-color: #5eead4;
+}
+
+
+.nextTierText {
+    white-space: nowrap;
+    text-align: center;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.85;
+    }
+}
+
+.itemMeta {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    margin: 0;
+}
+
+.itemCodeContainer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.itemCodeLine {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.itemCodeLabel {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.itemCode {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    font-family: var(--font-mono);
+}
+
+.splitPriceCell {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    width: 100%;
+    min-width: 0;
+    padding-left: var(--spacing-sm);
+    padding-right: var(--spacing-sm);
+}
+
+.splitPriceHalf {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.splitPriceLabel {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.splitPriceDivider {
+    height: 1px;
+    background: var(--color-border);
+    margin: var(--spacing-xs) 0;
+}
+
+.quantityCellContainer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.quantityControls {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--color-background);
+    width: 100%;
+    max-width: 120px;
+}
+
+.quantityButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-left: 1px solid var(--color-border);
+    border-right: 1px solid var(--color-border);
+    background: transparent;
+    color: var(--color-text-primary);
+    cursor: pointer;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+}
+
+.quantityButton:hover:not(:disabled) {
+    background: var(--color-background-secondary);
+}
+
+.quantityButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.quantityInput {
+    flex: 1;
+    border: none;
+    padding: var(--spacing-xs);
+    text-align: center;
+    font-size: var(--font-size-sm);
+    background: transparent;
+    color: var(--color-text-primary);
+    min-width: 0;
+    width: 100%;
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+.quantityInput:focus {
+    outline: none;
+}
+
+.quantityInput::-webkit-inner-spin-button,
+.quantityInput::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.removeButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    color: var(--color-error);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background-color 0.2s, opacity 0.2s;
+    opacity: 0.7;
+    flex-shrink: 0;
+}
+
+.tableRow:hover .removeButton {
+    opacity: 1;
+}
+
+.removeButton:hover:not(:disabled) {
+    background: var(--color-error-light);
+}
+
+.removeButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.summarySection {
+    position: sticky;
+    top: calc(60px + var(--spacing-xl));
+    height: fit-content;
+}
+
+@media (max-width: 768px) {
+    .summarySection {
+        top: calc(56px + var(--spacing-xl));
+    }
+}
+
+@media (max-width: 480px) {
+    .summarySection {
+        top: calc(52px + var(--spacing-xl));
+    }
+}
+
+.summaryCard {
+    background: var(--color-background-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: var(--spacing-lg);
+}
+
+.summaryTitle {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-lg) 0;
+}
+
+.summaryContent {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.summaryRow {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--spacing-sm) 0;
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+}
+
+.summaryRowTotal {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--spacing-md) 0;
+    color: var(--color-text-primary);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+}
+
+.summaryDivider {
+    height: 1px;
+    background: var(--color-border);
+    margin: var(--spacing-sm) 0;
+}
+
+.summaryInfo {
+    margin: var(--spacing-md) 0;
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--color-border);
+}
+
+.summaryInfo p {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0;
+}
+
+.summaryActions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-lg);
+}
+
+.continueShoppingButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+}
+
+.checkoutButton {
+    width: 100%;
+}
+
+@media (max-width: 1200px) {
+    .cartContent {
+        grid-template-columns: 1fr;
+    }
+
+    .summarySection {
+        position: static;
+        order: -1;
+    }
+
+    .tableHeader,
+    .tableRow {
+        grid-template-columns: 80px 200px minmax(80px, max-content) minmax(120px, max-content) minmax(100px, max-content) 50px;
+        gap: var(--spacing-md);
+        padding: var(--spacing-sm);
+    }
+}
+
+@media (max-width: 968px) {
+    .container {
+        padding: var(--spacing-md) var(--spacing-sm);
+    }
+
+    .tableHeader {
+        display: none;
+    }
+
+    .tableRow {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
+        padding: var(--spacing-md);
+        border-bottom: 2px solid var(--color-border);
+        background: var(--color-background);
+        border-radius: 8px;
+        margin-bottom: var(--spacing-md);
+    }
+
+    .tableCell {
+        width: 100%;
+        justify-content: space-between;
+        padding: var(--spacing-sm) 0;
+        border-bottom: 1px solid var(--color-border-light);
+        flex-wrap: wrap;
+    }
+
+    .tableCell:first-child {
+        padding-top: 0;
+    }
+
+    .tableCell:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .tableCell[data-label=""] {
+        border-bottom: 1px solid var(--color-border-light);
+        padding: var(--spacing-sm) 0;
+        margin-bottom: 0;
+    }
+
+    .tableCell[data-label]:not([data-label=""])::before {
+        content: attr(data-label);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-text-secondary);
+        margin-right: var(--spacing-md);
+        font-size: var(--font-size-xs);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .itemImage {
+        width: 100%;
+        height: 200px;
+        margin: 0 auto;
+    }
+
+    .itemDetails {
+        width: 100%;
+        flex: 1;
+    }
+
+    .quantityControls {
+        max-width: 100%;
+        margin-left: auto;
+    }
+
+    .removeButtonCell {
+        justify-content: flex-end;
+    }
+    
+    .removeButton {
+        margin-left: 0;
+    }
+
+    .splitPriceCell {
+        flex-direction: row;
+        gap: var(--spacing-md);
+        justify-content: space-between;
+    }
+
+    .splitPriceHalf {
+        flex: 1;
+    }
+
+    .splitPriceDivider {
+        width: 1px;
+        height: auto;
+        margin: 0;
+    }
+}
+
+@media (max-width: 640px) {
+    .title {
+        font-size: var(--font-size-2xl);
+    }
+
+    .itemsTitle {
+        font-size: var(--font-size-xl);
+    }
+
+    .summaryCard {
+        padding: var(--spacing-md);
+    }
+}

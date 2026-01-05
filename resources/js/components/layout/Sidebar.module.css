@@ -1,0 +1,541 @@
+/* ============================================
+   Layout - Sidebar
+   ============================================ */
+.sidebar {
+    width: 70px;
+    background-color: var(--color-background);
+    border-right: 1px solid var(--color-border);
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    z-index: 100;
+    transition: transform 0.3s ease, width 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+        width: 70px;
+    }
+
+    .sidebarOpen {
+        transform: translateX(0);
+    }
+}
+
+@media (max-width: 480px) {
+    .sidebar {
+        width: 60px;
+    }
+}
+
+.logo {
+    padding: var(--spacing-xs);
+    text-align: center;
+    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60px;
+    cursor: pointer;
+}
+
+.logoImage {
+    max-width: 100%;
+    height: auto;
+    max-height: 28px;
+    object-fit: contain;
+}
+
+.sidebarNav {
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-xs);
+    gap: 4px;
+}
+
+.sidebarItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 4px;
+    border-radius: 0;
+    text-decoration: none;
+    color: var(--color-text-primary);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    min-height: 60px;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.sidebarItem::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.5s ease;
+}
+
+.sidebarItem:hover::before {
+    left: 100%;
+}
+
+.sidebarItem::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: var(--color-green-600);
+    transform: scaleY(0);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebarItem:hover {
+    background: linear-gradient(135deg, var(--color-green-50) 0%, var(--color-background) 100%);
+    color: var(--color-text-primary);
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.15);
+    transform: translateY(-1px);
+}
+
+.sidebarItem:hover::after {
+    transform: scaleY(1);
+}
+
+.sidebarItem:hover .sidebarIcon {
+    color: var(--color-green-600);
+    transform: scale(1.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebarItem:hover .sidebarLabel {
+    color: var(--color-green-600);
+}
+
+.sidebarItem:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(22, 163, 74, 0.1);
+}
+
+.sidebarItemActive {
+    /* Removed background and border */
+}
+
+.sidebarItemActive .sidebarIcon {
+    color: var(--color-green-600);
+}
+
+.sidebarItemActive .sidebarLabel {
+    color: var(--color-green-600);
+}
+
+.sidebarIcon {
+    display: flex;
+    align-items: center;
+    color: inherit;
+    flex-shrink: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebarIcon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.sidebarLabel {
+    font-size: 10px;
+    font-weight: var(--font-weight-normal);
+    color: inherit;
+    text-align: center;
+    white-space: nowrap;
+    line-height: 1.2;
+}
+
+.sidebarFooter {
+    margin-top: auto;
+    padding: var(--spacing-sm);
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    background: linear-gradient(to top, var(--color-gray-50) 0%, transparent 100%);
+}
+
+.languageSelectorWrapper {
+    position: relative;
+    width: 100%;
+}
+
+.languageSelector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 6px;
+    background: linear-gradient(135deg, var(--color-background) 0%, var(--color-gray-50) 100%);
+    border: 1.5px solid var(--color-border);
+    border-radius: 8px;
+    color: var(--color-text-primary);
+    font-size: 11px;
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%;
+    min-height: 44px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.selectorIcon {
+    color: var(--color-green-600);
+    flex-shrink: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.languageSelector:hover .selectorIcon {
+    color: var(--color-green-700);
+    transform: scale(1.1);
+}
+
+.languageSelector::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.5s ease;
+}
+
+.languageSelector:hover::before {
+    left: 100%;
+}
+
+.languageSelector:hover {
+    background: linear-gradient(135deg, var(--color-green-50) 0%, var(--color-background) 100%);
+    border-color: var(--color-green-300);
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.15);
+    transform: translateY(-1px);
+}
+
+.languageSelector:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(22, 163, 74, 0.1);
+}
+
+.languageDropdownMenu {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-background);
+    border: 1.5px solid var(--color-border);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+    z-index: 1000;
+    overflow: hidden;
+    min-width: 140px;
+    width: max-content;
+    animation: dropdownFadeInSmooth 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+}
+
+.languageDropdownMenu[data-position="right"] {
+    animation: dropdownFadeInRight 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.languageDropdownMenu[data-position="centered"] {
+    animation: dropdownFadeInCentered 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes dropdownFadeInSmooth {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes dropdownFadeInRight {
+    from {
+        opacity: 0;
+        transform: translateX(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes dropdownFadeInCentered {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+.languageDropdownItem {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 12px 16px;
+    background: none;
+    border: none;
+    text-align: center;
+    color: var(--color-text-primary);
+    font-size: 13px;
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.languageDropdownItem::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--color-green-600);
+    transform: scaleY(0);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.languageDropdownItem:hover {
+    background: linear-gradient(90deg, var(--color-green-50) 0%, transparent 100%);
+    color: var(--color-green-700);
+    padding-left: 20px;
+}
+
+.languageDropdownItem:hover::after {
+    transform: scaleY(1);
+}
+
+.languageDropdownItemActive {
+    background: linear-gradient(90deg, var(--color-green-100) 0%, var(--color-green-50) 100%);
+    color: var(--color-green-700);
+    font-weight: var(--font-weight-semibold);
+}
+
+.languageDropdownItemActive::after {
+    transform: scaleY(1);
+}
+
+.currencySelectorWrapper {
+    position: relative;
+    width: 100%;
+}
+
+.currencySelector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 10px 6px;
+    background: linear-gradient(135deg, var(--color-background) 0%, var(--color-gray-50) 100%);
+    border: 1.5px solid var(--color-border);
+    border-radius: 8px;
+    color: var(--color-text-primary);
+    font-size: 10px;
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%;
+    min-height: 44px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.currencySelector::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.5s ease;
+}
+
+.currencySelector:hover::before {
+    left: 100%;
+}
+
+.currencySelector span:not(.currencySymbolIcon) {
+    font-size: 10px;
+    text-align: center;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+    font-weight: var(--font-weight-medium);
+}
+
+.currencySelector:hover {
+    background: linear-gradient(135deg, var(--color-green-50) 0%, var(--color-background) 100%);
+    border-color: var(--color-green-300);
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.15);
+    transform: translateY(-1px);
+}
+
+.currencySelector:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(22, 163, 74, 0.1);
+}
+
+.currencySymbolIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: var(--font-weight-bold);
+    font-size: 11px;
+    color: var(--color-green-600);
+    min-width: 28px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, var(--color-green-100) 0%, var(--color-green-50) 100%);
+    border: 1px solid var(--color-green-200);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
+}
+
+.currencySymbolIcon svg {
+    width: 14px;
+    height: 14px;
+    color: var(--color-green-600);
+}
+
+.currencySelector:hover .currencySymbolIcon {
+    background: linear-gradient(135deg, var(--color-green-200) 0%, var(--color-green-100) 100%);
+    border-color: var(--color-green-300);
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(22, 163, 74, 0.2);
+}
+
+.currencyDropdownMenu {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: calc(100% + 8px);
+    background: var(--color-background);
+    border: 1.5px solid var(--color-border);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+    z-index: 1000;
+    overflow: hidden;
+    max-height: 240px;
+    overflow-y: auto;
+    min-width: 160px;
+    width: max-content;
+    animation: dropdownFadeInRight 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+}
+
+@keyframes dropdownFadeInRight {
+    from {
+        opacity: 0;
+        transform: translateX(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.currencyDropdownMenu::-webkit-scrollbar {
+    width: 6px;
+}
+
+.currencyDropdownMenu::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.currencyDropdownMenu::-webkit-scrollbar-thumb {
+    background: var(--color-gray-300);
+    border-radius: 3px;
+}
+
+.currencyDropdownMenu::-webkit-scrollbar-thumb:hover {
+    background: var(--color-gray-400);
+}
+
+.currencyDropdownItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 12px 16px;
+    background: none;
+    border: none;
+    text-align: left;
+    color: var(--color-text-primary);
+    font-size: 13px;
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.currencyDropdownItem::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--color-green-600);
+    transform: scaleY(0);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.currencyDropdownItem:hover {
+    background: linear-gradient(90deg, var(--color-green-50) 0%, transparent 100%);
+    color: var(--color-green-700);
+    padding-left: 20px;
+}
+
+.currencyDropdownItem:hover::after {
+    transform: scaleY(1);
+}
+
+.currencyDropdownItemActive {
+    background: linear-gradient(90deg, var(--color-green-100) 0%, var(--color-green-50) 100%);
+    color: var(--color-green-700);
+    font-weight: var(--font-weight-semibold);
+}
+
+.currencyDropdownItemActive::after {
+    transform: scaleY(1);
+}
+
+.currencySymbol {
+    color: var(--color-text-secondary);
+    font-size: 11px;
+    margin-left: var(--spacing-sm);
+    font-weight: var(--font-weight-normal);
+    opacity: 0.7;
+}

@@ -1,0 +1,76 @@
+/* ============================================
+   Layout - Main Container
+   ============================================ */
+.layout {
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--color-background);
+}
+
+/* ============================================
+   Layout - Main Content
+   ============================================ */
+.mainContent {
+    margin-left: 70px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-gray-100);
+    transition: margin-left 0.3s ease;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    /* overflow-x: hidden; - Eliminat pentru a permite position: sticky să funcționeze */
+    padding-top: 60px;
+}
+
+@media (max-width: 1024px) {
+    .mainContent {
+        margin-left: 70px;
+        padding-top: 60px;
+    }
+}
+
+@media (max-width: 768px) {
+    .mainContent {
+        margin-left: 0;
+        width: 100%;
+        max-width: 100%;
+        /* overflow-x: hidden; - Eliminat pentru a permite position: sticky să funcționeze */
+        padding-top: 56px;
+    }
+}
+
+@media (max-width: 480px) {
+    .mainContent {
+        margin-left: 0;
+        padding-top: 52px;
+    }
+}
+
+.sidebarOverlay {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .sidebarOverlay {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 99;
+        animation: fadeIn 0.3s ease;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}

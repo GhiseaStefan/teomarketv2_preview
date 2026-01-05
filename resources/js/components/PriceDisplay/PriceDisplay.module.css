@@ -1,0 +1,10 @@
+/* PriceDisplay component styles */
+/* The component itself is just a span wrapper, so most styling should be applied via className prop */
+
+/* Ensure superscript elements inherit font size and color properly */
+sup {
+    font-size: 0.65em;
+    vertical-align: super;
+    line-height: 0;
+}
+

@@ -1,0 +1,135 @@
+/* ============================================
+   CSS Variables - Colors & Fonts
+   ============================================ */
+
+/* Font Families */
+:root {
+    --font-primary: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+        'Noto Color Emoji';
+    --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas,
+        'Liberation Mono', monospace;
+
+    /* Font Sizes */
+    --font-size-xs: 0.75rem; /* 12px */
+    --font-size-sm: 0.875rem; /* 14px */
+    --font-size-base: 1rem; /* 16px */
+    --font-size-lg: 1.125rem; /* 18px */
+    --font-size-xl: 1.25rem; /* 20px */
+    --font-size-2xl: 1.5rem; /* 24px */
+    --font-size-3xl: 1.875rem; /* 30px */
+    --font-size-4xl: 2.25rem; /* 36px */
+    --font-size-5xl: 3rem; /* 48px */
+
+    /* Font Weights */
+    --font-weight-light: 300;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+
+    /* Line Heights */
+    --line-height-tight: 1.25;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.75;
+
+    /* Colors - Primary Palette */
+    --color-primary-50: #f0f9ff;
+    --color-primary-100: #e0f2fe;
+    --color-primary-200: #bae6fd;
+    --color-primary-300: #7dd3fc;
+    --color-primary-400: #38bdf8;
+    --color-primary-500: #0ea5e9;
+    --color-primary-600: #0284c7;
+    --color-primary-700: #0369a1;
+    --color-primary-800: #075985;
+    --color-primary-900: #0c4a6e;
+    --color-primary-950: #082f49;
+
+    /* Colors - Neutral/Gray Palette */
+    --color-gray-50: #f9fafb;
+    --color-gray-100: #f3f4f6;
+    --color-gray-200: #e5e7eb;
+    --color-gray-300: #d1d5db;
+    --color-gray-400: #9ca3af;
+    --color-gray-500: #6b7280;
+    --color-gray-600: #4b5563;
+    --color-gray-700: #374151;
+    --color-gray-800: #1f2937;
+    --color-gray-900: #111827;
+    --color-gray-950: #030712;
+
+    /* Colors - Semantic Colors */
+    --color-success: #10b981;
+    --color-success-light: #d1fae5;
+    --color-success-dark: #059669;
+
+    --color-error: #ef4444;
+    --color-error-light: #fee2e2;
+    --color-error-dark: #dc2626;
+
+    --color-warning: #f59e0b;
+    --color-warning-light: #fef3c7;
+    --color-warning-dark: #d97706;
+
+    --color-info: #3b82f6;
+    --color-info-light: #dbeafe;
+    --color-info-dark: #2563eb;
+
+    /* Colors - Background */
+    --color-background: #ffffff;
+    --color-background-secondary: #f9fafb;
+    --color-background-tertiary: #f3f4f6;
+    --color-footer-background: #242424;
+
+    /* Colors - Text */
+    --color-text-primary: #111827;
+    --color-text-secondary: #6b7280;
+    --color-text-tertiary: #9ca3af;
+    --color-text-inverse: #ffffff;
+
+    /* Colors - Border */
+    --color-border: #e5e7eb;
+    --color-border-light: #f3f4f6;
+    --color-border-dark: #d1d5db;
+
+    /* Colors - Green/Accent Palette */
+    --color-green-50: #f0fdf4;
+    --color-green-100: #dcfce7;
+    --color-green-200: #bbf7d0;
+    --color-green-300: #86efac;
+    --color-green-400: #4ade80;
+    --color-green-500: #22c55e;
+    --color-green-600: #16a34a;
+    --color-green-700: #15803d;
+    --color-green-800: #166534;
+    --color-green-900: #14532d;
+
+    /* Colors - Admin Blue Palette */
+    --color-admin-50: #eff6ff;
+    --color-admin-100: #dbeafe;
+    --color-admin-200: #bfdbfe;
+    --color-admin-300: #93c5fd;
+    --color-admin-400: #60a5fa;
+    --color-admin-500: #3b82f6;
+    --color-admin-600: #2563eb;
+    --color-admin-700: #1d4ed8;
+    --color-admin-800: #1e40af;
+    --color-admin-900: #1e3a8a;
+    --color-admin-950: #172554;
+
+    /* Colors - Shadow */
+    --color-shadow-sm: rgba(0, 0, 0, 0.05);
+    --color-shadow-md: rgba(0, 0, 0, 0.1);
+    --color-shadow-lg: rgba(0, 0, 0, 0.15);
+    --color-shadow-xl: rgba(0, 0, 0, 0.2);
+
+    /* Spacing */
+    --spacing-xs: 0.25rem; /* 4px */
+    --spacing-sm: 0.5rem; /* 8px */
+    --spacing-md: 1rem; /* 16px */
+    --spacing-lg: 1.5rem; /* 24px */
+    --spacing-xl: 2rem; /* 32px */
+    --spacing-2xl: 3rem; /* 48px */
+    --spacing-3xl: 4rem; /* 64px */
+}

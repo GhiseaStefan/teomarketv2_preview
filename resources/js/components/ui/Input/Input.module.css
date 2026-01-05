@@ -1,0 +1,77 @@
+.input {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    padding: var(--spacing-sm) var(--spacing-md);
+    transition: all 0.2s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.input:focus {
+    outline: none;
+    border-color: var(--color-admin-500);
+    background-color: var(--color-background);
+}
+
+.input::placeholder {
+    color: var(--color-text-tertiary);
+}
+
+.input:disabled {
+    background-color: var(--color-background-secondary);
+    color: var(--color-text-tertiary);
+    cursor: not-allowed;
+}
+
+/* Default variant */
+.default {
+    border: 1px solid var(--color-border);
+}
+
+.default:focus {
+    border-color: var(--color-admin-500);
+}
+
+/* Search variant */
+.search {
+    border: 1px solid var(--color-green-600);
+    border-radius: 4px 0 0 4px;
+    min-width: 0;
+}
+
+.search:focus {
+    outline: none;
+    border-color: var(--color-green-600);
+    background-color: var(--color-background);
+}
+
+/* Remove spin buttons from number inputs */
+.input[type="number"]::-webkit-inner-spin-button,
+.input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .input {
+        font-size: var(--font-size-xs);
+        padding: var(--spacing-xs) var(--spacing-sm);
+    }
+}
+
+@media (max-width: 480px) {
+    .input {
+        font-size: 10px;
+        padding: 6px 8px;
+    }
+}
+

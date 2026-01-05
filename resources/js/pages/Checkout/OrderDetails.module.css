@@ -1,0 +1,1026 @@
+.progressWrapper {
+    width: 100%;
+    padding: var(--spacing-xl) var(--spacing-xl) 0;
+    box-sizing: border-box;
+}
+
+.container {
+    width: 85%;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: var(--spacing-md);
+    box-sizing: border-box;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.cardsGrid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.card {
+    width: 100%;
+    background: var(--color-background-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: var(--spacing-md);
+    box-sizing: border-box;
+}
+
+.cardTitleWrapper {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+}
+
+.cardNumberBadge {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--color-gray-700);
+    border: 1px solid var(--color-background);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-inverse);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    flex-shrink: 0;
+}
+
+.cardTitle {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0;
+}
+
+.cardContent {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.placeholderText {
+    color: var(--color-text-secondary);
+    font-style: italic;
+}
+
+.addressSection {
+    margin-bottom: var(--spacing-lg);
+}
+
+.addressSection:last-child {
+    margin-bottom: 0;
+}
+
+.addressSectionTitle {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-sm) 0;
+}
+
+.paymentMethodList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.paymentMethodItem {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    border: 2px solid var(--color-border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: var(--color-background);
+}
+
+.paymentMethodItem:hover {
+    border-color: var(--color-green-500);
+    background: var(--color-background-secondary);
+}
+
+.paymentMethodItemSelected {
+    border-color: var(--color-green-600);
+    background: var(--color-green-50);
+}
+
+.paymentMethodCheckbox {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    border: 2px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: var(--color-background);
+    transition: all 0.2s ease;
+}
+
+.paymentMethodCheckbox svg {
+    width: 12px;
+    height: 12px;
+}
+
+.paymentMethodItemSelected .paymentMethodCheckbox {
+    border-color: var(--color-green-600);
+    background: var(--color-green-600);
+    color: var(--color-text-inverse);
+}
+
+.paymentMethodLabel {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    flex: 1;
+}
+
+.billingAddressCard {
+    background: #ffffff;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: var(--spacing-md);
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.billingAddressContent {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+    width: 100%;
+}
+
+.locationIcon {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-green-600);
+}
+
+.locationIcon svg {
+    width: 18px;
+    height: 18px;
+}
+
+.billingAddressInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.billingAddressName {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+}
+
+.namePhoneSeparator {
+    margin: 0 var(--spacing-xs);
+}
+
+.billingAddressText {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+}
+
+.billingAddressActions {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-xs);
+}
+
+.modifyLink {
+    background: none;
+    border: none;
+    color: var(--color-green-600);
+    font-size: var(--font-size-xs);
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0;
+    font-family: inherit;
+}
+
+.modifyLink:hover {
+    color: var(--color-green-700);
+}
+
+.addAddressButton {
+    margin-top: var(--spacing-md);
+    width: auto;
+    align-self: flex-start;
+}
+
+.inlineAddressForm {
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+}
+
+.inlineFormActions {
+    display: flex;
+    justify-content: flex-start;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--color-border);
+}
+
+.signInLink {
+    margin-top: var(--spacing-sm);
+    font-size: var(--font-size-xs);
+}
+
+.signInLink a {
+    color: var(--color-green-600);
+    text-decoration: underline;
+    transition: color 0.2s ease;
+}
+
+.signInLink a:hover {
+    color: var(--color-green-700);
+}
+
+.useBillingCheckbox {
+    margin-bottom: var(--spacing-md);
+    width: auto;
+    align-self: flex-start;
+}
+
+.checkboxLabel {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    width: auto;
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-medium);
+    user-select: none;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    background: var(--color-background-secondary);
+    border: 1.5px solid var(--color-border);
+}
+
+.checkboxLabel:hover {
+    background: var(--color-gray-100);
+    border-color: var(--color-green-300);
+}
+
+.checkboxLabelChecked {
+    background: var(--color-green-50) !important;
+    border-color: var(--color-green-600) !important;
+    color: var(--color-green-700);
+}
+
+.checkboxInput {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: var(--color-green-600);
+    flex-shrink: 0;
+    margin: 0;
+    transition: all 0.2s ease;
+}
+
+.billingAddressNote {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    font-style: italic;
+    margin-top: var(--spacing-xs);
+}
+
+.shippingMethodSelection {
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.shippingMethodTabs {
+    display: flex;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.shippingMethodTab {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex: 1;
+    min-width: 160px;
+}
+
+.shippingMethodTab:hover {
+    border-color: var(--color-green-500);
+}
+
+.shippingMethodTabSelected {
+    border-color: var(--color-green-600);
+    background: var(--color-background);
+}
+
+.shippingMethodTabRadio {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--color-green-600);
+    background: var(--color-background);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--color-background);
+    transition: all 0.2s ease;
+}
+
+.shippingMethodTabRadio svg {
+    width: 12px;
+    height: 12px;
+}
+
+.shippingMethodTabSelected .shippingMethodTabRadio {
+    background: var(--color-green-600);
+    color: var(--color-background);
+}
+
+.shippingMethodTabLabel {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    flex: 1;
+}
+
+.shippingMethodSelection .select {
+    max-width: 350px;
+    width: 100%;
+    font-size: var(--font-size-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
+}
+
+.shippingMethodOptions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-sm);
+}
+
+.shippingMethodSingle {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-sm);
+}
+
+.shippingMethodRadio {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--color-background);
+    border: 1.5px solid var(--color-border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    height: 39px;
+    min-height: 39px;
+}
+
+.shippingMethodRadio:hover {
+    border-color: var(--color-green-500);
+    background: var(--color-gray-50);
+}
+
+.radioInput {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--color-green-600);
+    flex-shrink: 0;
+    margin: 0;
+}
+
+.radioInput:checked + .radioLabel {
+    color: var(--color-text-primary);
+}
+
+.shippingMethodRadio:has(.radioInput:checked) {
+    border-color: var(--color-green-600);
+    background: var(--color-green-50);
+}
+
+.radioLabel {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    cursor: pointer;
+    gap: var(--spacing-sm);
+    flex-wrap: nowrap;
+    min-width: 0;
+}
+
+.shippingMethodInfo {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    width: 100%;
+    flex-wrap: nowrap;
+    flex: 1;
+    min-width: 0;
+}
+
+.shippingMethodInfo .shippingCostIcon {
+    flex-shrink: 0;
+    color: var(--color-green-600);
+}
+
+.shippingMethodName {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    flex: 0 1 auto;
+    white-space: nowrap;
+}
+
+.shippingMethodPrice {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.shippingMethodEstimate {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    white-space: nowrap;
+}
+
+.shippingMethodSeparator {
+    color: var(--color-text-secondary);
+    flex-shrink: 0;
+}
+
+.shippingMethodEstimateLabel {
+    font-weight: var(--font-weight-medium);
+}
+
+.pickupPlaceholder {
+    padding: var(--spacing-lg);
+    text-align: center;
+    color: var(--color-text-secondary);
+}
+
+.pickupAddressActions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-md);
+    width: 100%;
+}
+
+.pickupAddressButton {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.pickupAddressButton:disabled {
+    opacity: 0.7;
+}
+
+.testPickupButton {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    background: var(--color-warning-light);
+    border-color: var(--color-warning);
+    color: var(--color-warning-dark);
+}
+
+.testPickupButton:hover {
+    background: var(--color-warning-light);
+    border-color: var(--color-warning-dark);
+    opacity: 0.9;
+}
+
+.pickupAddressDisplay {
+    margin-top: var(--spacing-md);
+    background: #ffffff;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: var(--spacing-md);
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.pickupAddressInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.pickupAddressTitle {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+}
+
+.pickupAddressText {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+    line-height: 1.5;
+}
+
+.pickupPointName {
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-xs);
+    color: var(--color-text-primary);
+}
+
+.comingSoonBadge {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    font-style: italic;
+    margin-left: var(--spacing-xs);
+}
+
+.pickupLocationIcon {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--color-warning-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-warning-dark);
+    position: relative;
+    border: 2px solid var(--color-warning);
+}
+
+.pickupLocationIcon svg {
+    width: 18px;
+    height: 18px;
+}
+
+.pickupBadge {
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 9px;
+    font-weight: var(--font-weight-bold);
+    background: var(--color-warning);
+    color: var(--color-text-inverse);
+    padding: 2px 6px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.shippingMethodDetails {
+    padding: var(--spacing-sm);
+    background: var(--color-background-secondary);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+}
+
+.shippingMethodDescription {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.shippingMethodCost {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+    width: 100%;
+    justify-content: flex-start;
+}
+
+.shippingMethodCost svg {
+    width: 14px;
+    height: 14px;
+}
+
+.shippingMethodEstimate {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    width: 100%;
+}
+
+.shippingCostIcon {
+    color: var(--color-green-600);
+    flex-shrink: 0;
+}
+
+.addressSelectionModal {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.addNewAddressButton {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+}
+
+.addressList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.addressItem {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    border: 2px solid var(--color-border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.addressItem:hover {
+    border-color: var(--color-green-500);
+}
+
+.addressItemSelected {
+    border-color: var(--color-green-600);
+    background: var(--color-green-50);
+}
+
+.addressItemRadio {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+    background: var(--color-background);
+}
+
+.addressItemRadio svg {
+    width: 12px;
+    height: 12px;
+}
+
+.addressItemSelected .addressItemRadio {
+    border-color: var(--color-green-600);
+    background: var(--color-green-600);
+    color: var(--color-text-inverse);
+}
+
+.addressItemContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.addressItemName {
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+}
+
+.addressItemAddress {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+}
+
+.addressItemModifyButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xs);
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    margin-left: var(--spacing-sm);
+}
+
+.addressItemModifyButton:hover {
+    background: var(--color-green-50);
+    border-color: var(--color-green-600);
+    color: var(--color-green-600);
+}
+
+.billingForm {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.addressForm {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.inputError {
+    border-color: var(--color-error);
+}
+
+.errorMessage {
+    color: var(--color-error);
+    font-size: var(--font-size-xs);
+    margin-top: var(--spacing-xs);
+}
+
+.modalFormActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-md);
+}
+
+.formRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-lg);
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+}
+
+.select {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    font-size: var(--font-size-sm);
+    font-family: var(--font-primary);
+    color: var(--color-text-primary);
+    background-color: var(--color-background);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.select:focus {
+    outline: none;
+    border-color: var(--color-green-600);
+}
+
+.select:disabled {
+    background-color: var(--color-background-secondary);
+    color: var(--color-text-tertiary);
+    cursor: not-allowed;
+}
+
+.summaryWrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-xl);
+    margin-bottom: var(--spacing-lg);
+}
+
+.summaryLeft {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.summaryDetails {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.summaryDetailRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--font-size-sm);
+}
+
+.summaryDetailLabel {
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-medium);
+}
+
+.summaryDetailValue {
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-semibold);
+}
+
+.freeText {
+    color: var(--color-green-600);
+    font-weight: var(--font-weight-semibold);
+}
+
+.summaryDivider {
+    height: 1px;
+    background: var(--color-border);
+    margin: var(--spacing-xs) 0;
+}
+
+.summaryDisclaimer {
+    margin-top: var(--spacing-lg);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--color-border);
+    text-align: left;
+    width: 100%;
+}
+
+.disclaimerText {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+}
+
+.disclaimerLink {
+    color: var(--color-primary-600);
+    text-decoration: underline;
+    transition: color 0.2s ease;
+}
+
+.disclaimerLink:hover {
+    color: var(--color-primary-700);
+}
+
+.summaryRight {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--spacing-lg);
+}
+
+.summaryTotal {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--spacing-xs);
+}
+
+.summaryTotalLabel {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+}
+
+.summaryTotalValue {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+}
+
+.submitOrderButton {
+    min-width: 180px;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+}
+
+.summaryContent {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.summaryRow {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+}
+
+.summaryRowTotal {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+}
+
+.summaryInfo {
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--color-border);
+}
+
+.summaryInfo p {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: var(--spacing-md);
+        max-width: 100%;
+    }
+
+    .formRow {
+        grid-template-columns: 1fr;
+    }
+
+    .summaryWrapper {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+
+    .summaryRight {
+        align-items: stretch;
+    }
+
+    .summaryTotal {
+        align-items: flex-start;
+    }
+
+    .submitOrderButton {
+        width: 100%;
+    }
+
+    .shippingMethodRadio {
+        height: auto;
+        min-height: 39px;
+    }
+
+    .shippingMethodInfo {
+        flex-wrap: wrap;
+        gap: var(--spacing-xs);
+    }
+
+    .shippingMethodName {
+        flex: 1 1 100%;
+        min-width: 100%;
+    }
+}
+

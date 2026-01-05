@@ -1,0 +1,199 @@
+.carousel {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    background: transparent;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+.swiperContainer {
+    width: 100%;
+    height: 100%;
+}
+
+.swiperSlide {
+    width: 100%;
+    height: 100%;
+}
+
+.carouselSlide {
+    min-width: 100%;
+    width: 100%;
+    height: 100%;
+    flex-shrink: 0;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    position: relative;
+    overflow: hidden;
+}
+
+.carouselImage {
+    width: 100%;
+    height: 100%;
+    min-width: 100%;
+    min-height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    border-radius: 8px;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    max-width: none;
+    max-height: none;
+    image-rendering: auto;
+    -webkit-image-rendering: auto;
+}
+
+.carouselButton {
+    position: absolute;
+    z-index: 10;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-transition: color 0.2s ease, transform 0.2s ease;
+    transition: color 0.2s ease, transform 0.2s ease;
+    flex-shrink: 0;
+    opacity: 1;
+    pointer-events: auto;
+    left: var(--spacing-sm);
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.9) !important;
+    cursor: pointer;
+    padding: 0 !important;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.carouselButton:hover {
+    color: var(--color-green-600) !important;
+    background: transparent !important;
+    -webkit-transform: translateY(-50%) scale(1.1);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.carouselButton:active {
+    -webkit-transform: translateY(-50%) scale(0.95);
+    transform: translateY(-50%) scale(0.95);
+    background: transparent !important;
+}
+
+.carouselButton svg {
+    width: 24px;
+    height: 24px;
+    stroke-width: 2.5;
+}
+
+.carouselButtonRight {
+    left: auto;
+    right: var(--spacing-sm);
+}
+
+@media (max-width: 768px) {
+    .carouselButton {
+        width: 32px;
+        height: 32px;
+        left: var(--spacing-xs);
+    }
+    
+    .carouselButton svg {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .carouselButtonRight {
+        left: auto !important;
+        right: var(--spacing-xs) !important;
+    }
+}
+
+/* iPhone specific optimizations */
+@supports (-webkit-touch-callout: none) {
+    .carouselImage {
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        will-change: transform;
+    }
+    
+    .carouselSlide {
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+/* Retina display optimizations */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .carouselImage {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+}
+
+/* Swiper pagination styles */
+:global(.swiper-pagination) {
+    position: absolute;
+    bottom: var(--spacing-sm) !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    display: flex;
+    gap: var(--spacing-xs);
+    z-index: 10;
+    padding: var(--spacing-xs);
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 20px;
+    width: auto !important;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: none;
+    background-color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    -webkit-transition: background-color 0.2s ease, transform 0.2s ease;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.dot:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+    -webkit-transform: scale(1.2);
+    transform: scale(1.2);
+}
+
+.dotActive {
+    background-color: var(--color-green-600);
+    -webkit-transform: scale(1.2);
+    transform: scale(1.2);
+}
+
+.dotActive:hover {
+    background-color: var(--color-green-600);
+}
+

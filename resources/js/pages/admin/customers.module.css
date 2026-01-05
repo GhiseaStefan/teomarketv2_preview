@@ -1,0 +1,346 @@
+/* ============================================
+   Customers Page - Main Container
+   ============================================ */
+.customersPage {
+    padding: var(--spacing-md);
+    background-color: var(--color-background);
+    min-height: calc(100vh - 60px);
+}
+
+/* ============================================
+   Search Section
+   ============================================ */
+.searchSection {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid var(--color-admin-200);
+    margin-bottom: var(--spacing-sm);
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    position: relative;
+}
+
+.actionsContainer {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    position: relative;
+}
+
+.selectedCount {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+.actionsButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xs);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.actionsButton:hover:not(:disabled) {
+    background-color: var(--color-admin-50);
+    border-color: var(--color-admin-300);
+}
+
+.actionsButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.dropdownMenu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    min-width: 200px;
+    overflow: hidden;
+}
+
+.dropdownItem {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: none;
+    background: transparent;
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    text-align: left;
+}
+
+.dropdownItem:hover {
+    background-color: var(--color-admin-50);
+}
+
+.searchForm {
+    position: relative;
+    display: flex;
+    align-items: center;
+    max-width: 400px;
+}
+
+.searchIcon {
+    position: absolute;
+    left: var(--spacing-sm);
+    color: var(--color-text-secondary);
+    pointer-events: none;
+}
+
+.searchInput {
+    padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) 32px;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    font-size: var(--font-size-sm);
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    width: 100%;
+    transition: border-color 0.2s ease;
+}
+
+.searchInput:focus {
+    outline: none;
+    border-color: var(--color-admin-500);
+    box-shadow: 0 0 0 3px var(--color-admin-100);
+}
+
+/* ============================================
+   Table Container
+   ============================================ */
+.tableContainer {
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+.customersTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--font-size-xs);
+}
+
+.customersTable thead {
+    background-color: var(--color-admin-50);
+    border-bottom: 1px solid var(--color-admin-200);
+}
+
+.customersTable th {
+    padding: 8px 16px;
+    text-align: left;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-xs);
+    white-space: nowrap;
+}
+
+.checkboxHeader {
+    width: 40px;
+    text-align: center;
+}
+
+.checkboxCell {
+    width: 40px;
+    text-align: center;
+    padding: 8px;
+}
+
+.checkbox {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: var(--color-admin-600);
+}
+
+.customersTable tbody tr {
+    border-bottom: 1px solid var(--color-border);
+    transition: background-color 0.2s ease;
+}
+
+.customersTable tbody tr:hover {
+    background-color: var(--color-admin-50);
+}
+
+.customersTable tbody tr.inactiveRow {
+    opacity: 0.5;
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.customersTable tbody tr.inactiveRow:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+    opacity: 0.7;
+}
+
+.customersTable tbody tr.inactiveRow td {
+    color: var(--color-text-secondary);
+    text-decoration: line-through;
+}
+
+.customersTable tbody tr.inactiveRow td.customerLink {
+    text-decoration: line-through;
+    color: var(--color-text-secondary);
+}
+
+.customersTable td {
+    padding: 8px 16px;
+    vertical-align: middle;
+}
+
+.emptyState {
+    text-align: center;
+    padding: var(--spacing-xl) !important;
+    color: var(--color-text-secondary);
+}
+
+/* ============================================
+   Table Cell Styles
+   ============================================ */
+.customerId {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+    font-family: var(--font-mono);
+    min-width: 60px;
+    text-align: left;
+}
+
+.customersTable th.idHeader {
+    text-align: left;
+}
+
+.customerName {
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-xs);
+    min-width: 150px;
+}
+
+.customerLink {
+    color: var(--color-admin-700);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.customerLink:hover {
+    color: var(--color-admin-800);
+    text-decoration: underline;
+}
+
+.email {
+    color: var(--color-text-primary);
+    font-size: var(--font-size-xs);
+    min-width: 200px;
+}
+
+.phone {
+    color: var(--color-text-primary);
+    font-size: var(--font-size-xs);
+    min-width: 120px;
+}
+
+.location {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+    min-width: 150px;
+}
+
+.ordersCount {
+    text-align: center;
+    color: var(--color-text-primary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    min-width: 120px;
+}
+
+.amountSpent {
+    text-align: left;
+    color: var(--color-text-primary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    font-family: var(--font-mono);
+    min-width: 150px;
+}
+
+.customersTable th.ordersCountHeader {
+    text-align: center !important;
+}
+
+.customersTable th.amountSpentHeader {
+    text-align: left !important;
+}
+
+/* ============================================
+   Pagination
+   ============================================ */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+    padding: var(--spacing-md) 0;
+}
+
+.paginationButton {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.paginationButton:hover:not(:disabled) {
+    background-color: var(--color-admin-50);
+    border-color: var(--color-admin-300);
+}
+
+.paginationButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.paginationInfo {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+@media (max-width: 1024px) {
+    .customersPage {
+        padding: var(--spacing-md);
+    }
+
+    .searchForm {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .tableContainer {
+        overflow-x: scroll;
+    }
+
+    .customersTable {
+        min-width: 800px;
+    }
+}

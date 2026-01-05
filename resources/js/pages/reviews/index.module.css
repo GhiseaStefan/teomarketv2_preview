@@ -1,0 +1,199 @@
+.reviewsPage {
+    grid-column: 1 / -1;
+}
+
+.reviewsCard {
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: var(--spacing-xl);
+    box-shadow: 0 1px 2px var(--color-shadow-sm);
+}
+
+.pageHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.pageTitle {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0;
+}
+
+.emptyState {
+    text-align: center;
+    padding: var(--spacing-xl);
+    color: var(--color-text-secondary);
+}
+
+.browseLink {
+    display: inline-block;
+    margin-top: var(--spacing-md);
+    color: var(--color-green-600);
+    text-decoration: none;
+    font-weight: var(--font-weight-medium);
+}
+
+.browseLink:hover {
+    text-decoration: underline;
+    color: var(--color-green-700);
+}
+
+.reviewsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-lg);
+}
+
+.reviewsGrid > .reviewCard:last-child:nth-child(odd) {
+    grid-column: span 2;
+}
+
+.reviewCard {
+    background: #ffffff;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    transition: box-shadow 0.2s;
+}
+
+.reviewCard:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.productInfo {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.productImage {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid var(--color-border);
+}
+
+.productDetails {
+    flex: 1;
+}
+
+.productName {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    margin: 0;
+}
+
+.productName:hover {
+    color: var(--color-green-600);
+    text-decoration: underline;
+}
+
+.reviewContent {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.reviewHeader {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+}
+
+.reviewRating {
+    display: flex;
+    gap: 2px;
+}
+
+.star {
+    color: var(--color-green-600);
+}
+
+.verifiedBadge {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    padding: 4px 8px;
+    background: var(--color-green-600);
+    color: var(--color-text-inverse);
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.reviewComment {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+    margin: var(--spacing-sm) 0;
+}
+
+.reviewFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--spacing-sm);
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid var(--color-border);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+.reviewDate {
+    color: var(--color-text-secondary);
+}
+
+.usefulButton {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    color: var(--color-green-600);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.usefulButton:hover {
+    background: var(--color-background-secondary);
+    color: var(--color-green-700);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .reviewsCard {
+        padding: var(--spacing-lg);
+    }
+
+    .pageHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-md);
+    }
+
+    .reviewsGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .reviewsGrid > .reviewCard:last-child:nth-child(odd) {
+        grid-column: span 1;
+    }
+}
+

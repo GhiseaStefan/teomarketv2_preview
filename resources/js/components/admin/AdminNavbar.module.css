@@ -1,0 +1,403 @@
+/* ============================================
+   Admin Navbar - Main Container
+   ============================================ */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background-color: var(--color-background);
+    border-bottom: 2px solid var(--color-admin-200);
+    z-index: 1000;
+    box-shadow: 0 1px 3px var(--color-shadow-sm);
+}
+
+/* ============================================
+   Admin Navbar - Content
+   ============================================ */
+.navbarContent {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    padding: 0 var(--spacing-lg);
+    max-width: 100%;
+}
+
+/* ============================================
+   Admin Navbar - Logo Section
+   ============================================ */
+.logoSection {
+    flex: 0 0 auto;
+}
+
+.logo {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+    /* Transformă logo-ul în albastru folosind CSS filter */
+    /* Ajustat pentru a se potrivi cu --color-admin-600 (#2563eb) */
+    filter: brightness(0) saturate(100%) invert(38%) sepia(96%) saturate(2000%) hue-rotate(210deg) brightness(0.95) contrast(1.1);
+    transition: filter 0.2s ease;
+}
+
+.logo:hover {
+    /* Hover cu o nuanță mai închisă de albastru */
+    filter: brightness(0) saturate(100%) invert(25%) sepia(96%) saturate(2000%) hue-rotate(210deg) brightness(0.85) contrast(1.1);
+}
+
+/* ============================================
+   Admin Navbar - Search Section
+   ============================================ */
+.searchSection {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+    max-width: 800px;
+    margin: 0 var(--spacing-lg);
+    position: relative;
+}
+
+.searchWrapper {
+    position: relative;
+    flex: 1;
+    max-width: 500px;
+}
+
+.searchIcon {
+    position: absolute;
+    left: var(--spacing-md);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-text-secondary);
+    pointer-events: none;
+}
+
+.searchInput {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) 40px;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    font-size: var(--font-size-base);
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    transition: border-color 0.2s ease;
+}
+
+.searchInput:focus {
+    outline: none;
+    border-color: var(--color-admin-500);
+    box-shadow: 0 0 0 3px var(--color-admin-100);
+}
+
+.searchInput::placeholder {
+    color: var(--color-text-tertiary);
+}
+
+/* ============================================
+   Admin Navbar - Right Section
+   ============================================ */
+.rightSection {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    flex: 0 0 auto;
+}
+
+/* ============================================
+   Admin Navbar - Save/Discard Buttons
+   ============================================ */
+.saveDiscardButtons {
+    position: absolute;
+    left: calc(50% + 250px + var(--spacing-md));
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-shrink: 0;
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+    white-space: nowrap;
+}
+
+.saveDiscardButtons.buttonsVisible {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+    animation: slideInFade 0.3s ease-out;
+}
+
+.saveDiscardButtons.buttonsHidden {
+    opacity: 0;
+    transform: translateY(-50%) translateX(10px);
+}
+
+@keyframes slideInFade {
+    from {
+        opacity: 0;
+        transform: translateY(-50%) translateX(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(-50%) translateX(0);
+    }
+}
+
+.saveButton,
+.discardButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    white-space: nowrap;
+    font-weight: var(--font-weight-medium);
+    border-radius: 6px;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.discardButton {
+    border: 1px solid var(--color-error) !important;
+    color: var(--color-error-dark) !important;
+    background-color: var(--color-error-light) !important;
+    padding: var(--spacing-xs) var(--spacing-md);
+}
+
+.discardButton:hover,
+.discardButton.secondary:hover:not(:disabled) {
+    background-color: var(--color-error-light) !important;
+    border-color: var(--color-error) !important;
+    color: var(--color-error-dark) !important;
+    box-shadow: 0 2px 4px 0 rgba(239, 68, 68, 0.15);
+    transform: translateY(-1px);
+}
+
+.discardButton:active,
+.discardButton.secondary:active:not(:disabled) {
+    background-color: var(--color-error-light) !important;
+    border-color: var(--color-error) !important;
+    color: var(--color-error-dark) !important;
+    transform: translateY(0);
+    box-shadow: 0 1px 2px 0 rgba(239, 68, 68, 0.1);
+}
+
+.saveButton {
+    border: 1px solid var(--color-admin-200) !important;
+    color: var(--color-admin-700) !important;
+    background-color: var(--color-admin-50) !important;
+    padding: var(--spacing-xs) var(--spacing-md);
+}
+
+.saveButton:hover,
+.saveButton.primary:hover:not(:disabled) {
+    background-color: var(--color-admin-50) !important;
+    border-color: var(--color-admin-200) !important;
+    color: var(--color-admin-700) !important;
+    box-shadow: 0 2px 4px 0 rgba(37, 99, 235, 0.1);
+    transform: translateY(-1px);
+}
+
+.saveButton:active,
+.saveButton.primary:active:not(:disabled) {
+    background-color: var(--color-admin-50) !important;
+    border-color: var(--color-admin-200) !important;
+    color: var(--color-admin-700) !important;
+    transform: translateY(0);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 768px) {
+    .saveDiscardButtons {
+        gap: var(--spacing-xs);
+    }
+
+    .saveButton span,
+    .discardButton span {
+        display: none;
+    }
+
+    .saveButton,
+    .discardButton {
+        padding: var(--spacing-xs) var(--spacing-sm);
+        min-width: 36px;
+    }
+}
+
+/* ============================================
+   Admin Navbar - Language Selector
+   ============================================ */
+.languageSelectorWrapper {
+    position: relative;
+}
+
+.languageSelector {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.languageSelector:hover {
+    background-color: var(--color-admin-50);
+    border-color: var(--color-admin-300);
+    color: var(--color-admin-700);
+}
+
+.languageDropdownMenu {
+    position: absolute;
+    top: calc(100% + var(--spacing-xs));
+    right: 0;
+    min-width: 140px;
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px var(--color-shadow-sm), 0 2px 4px -1px var(--color-shadow-sm);
+    z-index: 1001;
+    padding: var(--spacing-xs) 0;
+}
+
+.languageDropdownItem {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: none;
+    background: none;
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.languageDropdownItem:hover {
+    background-color: var(--color-admin-50);
+    color: var(--color-admin-700);
+}
+
+.languageDropdownItemActive {
+    background-color: var(--color-admin-100);
+    color: var(--color-admin-800);
+    font-weight: var(--font-weight-semibold);
+}
+
+/* ============================================
+   Admin Navbar - User Section
+   ============================================ */
+.userSection {
+    flex: 0 0 auto;
+}
+
+.userDropdown {
+    position: relative;
+}
+
+.userButton {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: none;
+    border-radius: 20px;
+    background-color: var(--color-admin-100);
+    color: var(--color-admin-700);
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.userButton:hover {
+    background-color: var(--color-admin-200);
+    color: var(--color-admin-800);
+}
+
+.userIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.userName {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.dropdownMenu {
+    position: absolute;
+    top: calc(100% + var(--spacing-xs));
+    right: 0;
+    min-width: 160px;
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px var(--color-shadow-sm), 0 2px 4px -1px var(--color-shadow-sm);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+    z-index: 1001;
+    padding: var(--spacing-xs) 0;
+}
+
+.userDropdown:hover .dropdownMenu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdownItem {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: none;
+    background: none;
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.dropdownItem:hover {
+    background-color: var(--color-admin-50);
+    color: var(--color-admin-700);
+}
+
+.dropdownItem span {
+    flex: 1;
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+@media (max-width: 768px) {
+    .navbarContent {
+        padding: 0 var(--spacing-md);
+    }
+
+    .logo {
+        font-size: var(--font-size-lg);
+    }
+
+    .searchSection {
+        margin: 0 var(--spacing-sm);
+        max-width: 300px;
+    }
+
+    .searchInput {
+        font-size: var(--font-size-sm);
+    }
+}

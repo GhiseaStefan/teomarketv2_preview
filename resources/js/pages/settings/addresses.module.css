@@ -1,0 +1,246 @@
+.addressesPage {
+    grid-column: 1 / -1;
+}
+
+.addressesCard {
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: var(--spacing-xl);
+    box-shadow: 0 1px 2px var(--color-shadow-sm);
+}
+
+.pageHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.pageTitle {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0;
+}
+
+.addButton {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: var(--color-green-600);
+    color: var(--color-text-inverse);
+    border: none;
+    border-radius: 8px;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.addButton:hover {
+    background: var(--color-green-700);
+}
+
+.addressesGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-lg);
+}
+
+.addressesGrid > .addressCard:last-child:nth-child(odd) {
+    grid-column: span 2;
+}
+
+.addressCard {
+    background: #ffffff;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: var(--spacing-lg);
+    display: flex;
+    gap: var(--spacing-md);
+    transition: box-shadow 0.2s;
+}
+
+.addressCard:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.addressIcon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-green-600);
+}
+
+.addressContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.addressHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.addressName {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+}
+
+.addressTypeBadge {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    padding: 4px 8px;
+    background: var(--color-background-secondary);
+    border-radius: 4px;
+}
+
+.preferredBadge {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-green-600);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.addressText {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+}
+
+.preferredAddress {
+    color: var(--color-green-600) !important;
+}
+
+.addressActions {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-sm);
+}
+
+.actionLink {
+    background: none;
+    border: none;
+    color: var(--color-green-600);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0;
+    font-family: inherit;
+}
+
+.actionLink:hover {
+    color: var(--color-green-700);
+}
+
+/* Form Styles */
+.addressForm {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.formRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-lg);
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.label {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+}
+
+.inputError {
+    border-color: var(--color-error) !important;
+}
+
+.errorMessage {
+    font-size: var(--font-size-sm);
+    color: var(--color-error);
+}
+
+.select {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    font-size: var(--font-size-sm);
+    font-family: var(--font-primary);
+    color: var(--color-text-primary);
+    background-color: var(--color-background);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.select:focus {
+    outline: none;
+    border-color: var(--color-green-600);
+}
+
+.select:disabled {
+    background-color: var(--color-background-secondary);
+    color: var(--color-text-tertiary);
+    cursor: not-allowed;
+}
+
+.modalFormActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-md);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .addressesCard {
+        padding: var(--spacing-lg);
+    }
+
+    .pageHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-md);
+    }
+
+    .addButton {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .addressesGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .addressesGrid > .addressCard:last-child:nth-child(odd) {
+        grid-column: span 1;
+    }
+
+    .formRow {
+        grid-template-columns: 1fr;
+    }
+}

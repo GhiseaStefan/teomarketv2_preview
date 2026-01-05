@@ -1,0 +1,37 @@
+/* ============================================
+   Admin Layout - Main Container
+   ============================================ */
+.layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--color-background);
+}
+
+/* ============================================
+   Admin Layout - Content Wrapper
+   ============================================ */
+.contentWrapper {
+    display: flex;
+    flex: 1;
+    margin-top: 60px; /* Height of navbar */
+}
+
+/* ============================================
+   Admin Layout - Main Content Area
+   ============================================ */
+.mainContent {
+    flex: 1;
+    padding: var(--spacing-lg);
+    background-color: var(--color-gray-50);
+    overflow-y: auto;
+    margin-left: 250px; /* Width of sidebar */
+    transition: margin-left 0.3s ease;
+}
+
+@media (max-width: 1024px) {
+    .mainContent {
+        margin-left: 0;
+        padding: var(--spacing-md);
+    }
+}

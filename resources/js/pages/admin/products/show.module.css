@@ -1,0 +1,821 @@
+/* ============================================
+   Product Edit Page - Main Container
+   ============================================ */
+.productPage {
+    padding: var(--spacing-md);
+    min-height: calc(100vh - 60px);
+}
+
+/* ============================================
+   Header Section
+   ============================================ */
+.header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.backButton {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.backButton:hover {
+    background-color: var(--color-admin-50);
+    border-color: var(--color-admin-300);
+}
+
+.headerTitle {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    flex: 1;
+}
+
+.pageTitle {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0;
+}
+
+.productId {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-normal);
+    color: var(--color-text-secondary);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background-color: var(--color-admin-50);
+    border: 1px solid var(--color-admin-200);
+    border-radius: 4px;
+}
+
+/* ============================================
+   Form Layout
+   ============================================ */
+.form {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: var(--spacing-lg);
+}
+
+.mainContent {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.sectionCard {
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.sectionTitle {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-xs) 0;
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 2px solid var(--color-border);
+}
+
+/* ============================================
+   Field Groups
+   ============================================ */
+.fieldGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+}
+
+.labelNote {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-normal);
+    color: var(--color-text-secondary);
+}
+
+.input {
+    width: 100%;
+}
+
+.input:focus {
+    outline: none;
+    border-color: var(--color-admin-500);
+    box-shadow: 0 0 0 3px var(--color-admin-100);
+}
+
+.priceInputWrapper {
+    position: relative;
+    width: 100%;
+}
+
+.priceInput {
+    width: 100%;
+}
+
+.priceInput :global(input) {
+    padding-right: 50px;
+}
+
+.priceCurrency {
+    position: absolute;
+    right: var(--spacing-md);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    pointer-events: none;
+    user-select: none;
+}
+
+.textarea {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    font-size: var(--font-size-sm);
+    font-family: var(--font-primary);
+    color: var(--color-text-primary);
+    background-color: var(--color-background);
+    resize: none;
+    transition: border-color 0.2s ease;
+}
+
+.textarea:focus {
+    outline: none;
+    border-color: var(--color-admin-500);
+    box-shadow: 0 0 0 3px var(--color-admin-100);
+}
+
+.select {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    font-size: var(--font-size-sm);
+    font-family: var(--font-primary);
+    color: var(--color-text-primary);
+    background-color: var(--color-background);
+    transition: border-color 0.2s ease;
+}
+
+.select:focus {
+    outline: none;
+    border-color: var(--color-admin-500);
+    box-shadow: 0 0 0 3px var(--color-admin-100);
+}
+
+.select[multiple] {
+    min-height: 120px;
+}
+
+/* ============================================
+   Row Group (Side-by-side fields)
+   ============================================ */
+.rowGroup {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+}
+
+.rowGroupThree {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: var(--spacing-md);
+}
+
+/* ============================================
+   Media Section
+   ============================================ */
+.mediaContainer {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: stretch;
+}
+
+.mainMediaItem {
+    position: relative;
+    width: 320px;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    overflow: hidden;
+    background-color: var(--color-admin-50);
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+    flex-shrink: 0;
+    align-self: stretch;
+}
+
+.mainMediaItem:hover {
+    border-color: var(--color-admin-500);
+}
+
+.coverBadge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background-color: var(--color-admin-600);
+    color: var(--color-text-inverse);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    z-index: 5;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.mainMediaImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.mediaGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: var(--spacing-sm);
+    align-items: flex-start;
+    flex: 1;
+}
+
+.mediaItem {
+    position: relative;
+    width: 120px;
+    height: 160px;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    overflow: hidden;
+    background-color: var(--color-admin-50);
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.mediaItem:hover {
+    border-color: var(--color-admin-500);
+}
+
+.mediaImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.removeImageButton {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: var(--color-text-inverse);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 10;
+}
+
+.mainMediaItem:hover .removeImageButton,
+.mediaItem:hover .removeImageButton {
+    opacity: 1;
+}
+
+.removeImageButton:hover {
+    background-color: rgba(239, 68, 68, 0.9);
+}
+
+.addImageButton {
+    width: 120px;
+    height: 160px;
+    border: 2px dashed var(--color-border);
+    border-radius: 6px;
+    background-color: var(--color-admin-50);
+    color: var(--color-text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+
+.addImageButton:hover {
+    border-color: var(--color-admin-500);
+    background-color: var(--color-admin-100);
+    color: var(--color-admin-600);
+}
+
+.urlInputContainer {
+    width: 120px;
+    height: 160px;
+    border: 2px dashed var(--color-admin-500);
+    border-radius: 6px;
+    background-color: var(--color-admin-50);
+    padding: var(--spacing-xs);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.urlInput {
+    width: 100%;
+    font-size: var(--font-size-xs);
+    padding: var(--spacing-xs);
+}
+
+.urlInputActions {
+    display: flex;
+    gap: var(--spacing-xs);
+}
+
+.urlInputButton {
+    flex: 1;
+    padding: 2px 4px;
+    font-size: var(--font-size-xs);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.urlInputButton:hover {
+    background-color: var(--color-admin-100);
+    border-color: var(--color-admin-500);
+}
+
+/* ============================================
+   Modal Content
+   ============================================ */
+.modalContent {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.modalActions {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: flex-end;
+}
+
+.modalButtonPrimary {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    border: 1px solid var(--color-admin-600);
+    border-radius: 4px;
+    background-color: var(--color-admin-600);
+    color: var(--color-text-inverse);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.modalButtonPrimary:hover:not(:disabled) {
+    background-color: var(--color-admin-700);
+    border-color: var(--color-admin-700);
+}
+
+.modalButtonPrimary:active:not(:disabled) {
+    background-color: var(--color-admin-800);
+    border-color: var(--color-admin-800);
+}
+
+.modalButtonPrimary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.modalButtonSecondary {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.modalButtonSecondary:hover {
+    background-color: var(--color-admin-50);
+    border-color: var(--color-admin-300);
+    color: var(--color-admin-700);
+}
+
+.modalButtonSecondary:active {
+    background-color: var(--color-admin-100);
+    border-color: var(--color-admin-400);
+}
+
+/* ============================================
+   Image View Modal
+   ============================================ */
+.imageViewModalContent {
+    max-width: fit-content !important;
+    width: fit-content;
+}
+
+.imageViewModalBody {
+    padding: var(--spacing-sm) !important;
+}
+
+.imageViewModal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: 0;
+    position: relative;
+}
+
+.imageViewCloseButton {
+    position: absolute;
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: var(--color-text-inverse);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: background-color 0.2s ease;
+}
+
+.imageViewCloseButton:hover {
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+.imageViewImage {
+    width: 800px;
+    height: 800px;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    background-color: var(--color-admin-50);
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+@media (max-width: 1024px) {
+    .form {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        border-top: 1px solid var(--color-border);
+        padding-top: var(--spacing-lg);
+    }
+
+    .rowGroup {
+        grid-template-columns: 1fr;
+    }
+
+    .rowGroupThree {
+        grid-template-columns: 1fr;
+    }
+
+    .mediaContainer {
+        flex-direction: column;
+    }
+
+    .mainMediaItem {
+        width: 100%;
+        max-width: 240px;
+    }
+
+    .mediaGrid {
+        width: 100%;
+    }
+
+    .mediaItem,
+    .addImageButton,
+    .urlInputContainer {
+        width: calc(50% - var(--spacing-xs));
+        height: 160px;
+    }
+
+    .imageViewImage {
+        width: 600px;
+        height: 600px;
+    }
+}
+
+/* ============================================
+   Group Prices Section
+   ============================================ */
+.groupPricesContainer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.emptyState {
+    padding: var(--spacing-sm);
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    background-color: var(--color-admin-50);
+    border-radius: 4px;
+}
+
+.groupPricesTable {
+    width: fit-content;
+    max-width: 500px;
+    overflow-x: auto;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background-color: var(--color-background);
+}
+
+.groupPricesTableElement {
+    width: auto;
+    border-collapse: collapse;
+    font-size: var(--font-size-sm);
+}
+
+.groupPriceLabelsRow {
+    border-bottom: none;
+}
+
+.groupPriceLabelCell {
+    padding: 4px 8px 2px 8px;
+    vertical-align: bottom;
+}
+
+.groupPriceMicroLabel {
+    font-size: 10px;
+    font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--color-text-tertiary);
+    display: block;
+}
+
+.groupPriceHeaderActions {
+    padding: var(--spacing-xs);
+    text-align: center;
+    width: 36px;
+    border-bottom: 2px solid var(--color-border);
+}
+
+.groupPriceRow {
+    border-bottom: 1px solid var(--color-border);
+    transition: background-color 0.15s ease;
+}
+
+.groupPriceRow:last-child {
+    border-bottom: none;
+}
+
+.groupPriceGroupHeader {
+    border-top: none;
+}
+
+.groupPriceGroupHeaderCell {
+    padding: 6px 8px;
+    background-color: var(--color-admin-50);
+    text-align: left;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.groupPriceBadge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid;
+    background-color: transparent;
+}
+
+
+.groupPriceRow:hover .removeGroupPriceButton {
+    opacity: 1;
+}
+
+.groupPriceCell {
+    padding: 4px 4px;
+    vertical-align: middle;
+    position: relative;
+}
+
+.groupPriceCell:nth-child(1) {
+    padding-right: 2px;
+    width: auto;
+}
+
+.groupPriceCell:nth-child(2) {
+    padding-left: 2px;
+    width: auto;
+}
+
+.groupPriceCell input {
+    text-align: left;
+}
+
+.groupPriceInputWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.groupPriceInputWrapper .groupPriceInput {
+    padding-right: 40px;
+}
+
+.groupPriceCurrency {
+    position: absolute;
+    right: 8px;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    font-weight: var(--font-weight-medium);
+    pointer-events: none;
+    user-select: none;
+}
+
+.groupPriceCellActions {
+    padding: var(--spacing-xs);
+    vertical-align: middle;
+    text-align: center;
+    width: 36px;
+}
+
+
+
+.groupPriceInput {
+    width: 100%;
+    padding: 8px 6px;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    font-size: var(--font-size-sm);
+    font-family: var(--font-primary);
+    color: var(--color-text-primary);
+    background-color: var(--color-background);
+    text-align: inherit;
+    transition: all 0.2s ease;
+    min-width: 60px;
+    max-width: 120px;
+    height: 36px;
+    box-sizing: border-box;
+}
+
+.groupPriceInput:hover {
+    border-color: var(--color-admin-300);
+}
+
+.groupPriceInput:focus {
+    outline: none;
+    border-color: var(--color-admin-500);
+    background-color: rgba(59, 130, 246, 0.05);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.groupPriceInput::placeholder {
+    color: var(--color-text-tertiary);
+}
+
+.removeGroupPriceButton {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    color: var(--color-text-tertiary);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    opacity: 0.2;
+}
+
+.removeGroupPriceButton:hover {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--color-error);
+    opacity: 1;
+}
+
+.addGroupPriceWrapper {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: var(--spacing-xs);
+}
+
+.addGroupPriceButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    padding: 6px var(--spacing-sm);
+    border: 1px solid var(--color-admin-500);
+    border-radius: 4px;
+    background-color: var(--color-admin-500);
+    color: var(--color-text-inverse);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.addGroupPriceButton:hover:not(:disabled) {
+    background-color: var(--color-admin-600);
+    border-color: var(--color-admin-600);
+}
+
+.addGroupPriceButton:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+.addGroupPriceButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: var(--color-admin-300);
+    border-color: var(--color-admin-300);
+}
+
+@media (max-width: 768px) {
+    .productPage {
+        padding: var(--spacing-sm);
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .pageTitle {
+        font-size: var(--font-size-lg);
+    }
+
+    .imageViewImage {
+        width: 90vw;
+        height: 90vw;
+        max-width: 600px;
+        max-height: 600px;
+    }
+
+    .groupPricesTable {
+        font-size: var(--font-size-xs);
+    }
+
+    .groupPriceHeader {
+        padding: var(--spacing-xs) var(--spacing-sm);
+        font-size: var(--font-size-xs);
+    }
+
+    .groupPriceCell {
+        padding: var(--spacing-xs) var(--spacing-sm);
+    }
+
+    .addGroupPriceWrapper {
+        justify-content: center;
+    }
+
+    .addGroupPriceButton {
+        width: 100%;
+    }
+}

@@ -1,0 +1,447 @@
+.progressWrapper {
+    width: 100%;
+    padding: var(--spacing-xl) var(--spacing-xl) 0;
+    box-sizing: border-box;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--spacing-xl);
+}
+
+.content {
+    padding: var(--spacing-2xl) 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+}
+
+.successCard {
+    width: 100%;
+    max-width: 800px;
+    background-color: var(--color-background);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px var(--color-shadow-sm), 0 2px 4px var(--color-shadow-md);
+    padding: var(--spacing-3xl);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xl);
+}
+
+.successIcon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: var(--color-success-light);
+    color: var(--color-success);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--spacing-sm);
+    animation: scaleIn 0.5s ease-out;
+}
+
+.successIcon svg {
+    width: 48px;
+    height: 48px;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.title {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0;
+    line-height: var(--line-height-tight);
+}
+
+.message {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    margin: 0;
+    line-height: var(--line-height-normal);
+}
+
+.description {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: var(--line-height-relaxed);
+    max-width: 500px;
+}
+
+.orderNumberSection {
+    width: 100%;
+    padding: var(--spacing-lg);
+    background-color: var(--color-background-secondary);
+    border-radius: 8px;
+    margin-top: var(--spacing-md);
+}
+
+.orderNumberLabel {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--spacing-xs) 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.orderNumber {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-success);
+    margin: 0;
+}
+
+.orderSummary {
+    width: 100%;
+    text-align: left;
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--color-border);
+}
+
+.sectionTitle {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-md) 0;
+}
+
+.productsList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.productItem {
+    display: flex;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background-color: var(--color-background-secondary);
+    border-radius: 8px;
+    align-items: center;
+}
+
+.productImage {
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+    border-radius: 6px;
+    overflow: hidden;
+    background-color: var(--color-gray-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.productImage img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.noImage {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    text-align: center;
+    padding: var(--spacing-sm);
+}
+
+.productDetails {
+    flex: 1;
+    min-width: 0;
+}
+
+.productName {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-xs) 0;
+}
+
+.productSku {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--spacing-xs) 0;
+}
+
+.productQuantity {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0;
+}
+
+.productUnitPrice {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: var(--spacing-xs) 0 0 0;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.productPrice {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.orderTotalSection {
+    width: 100%;
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-lg);
+    border-top: 2px solid var(--color-border);
+}
+
+.totalDetails {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.totalRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-primary);
+    font-size: var(--font-size-base);
+    color: var(--color-text-primary);
+}
+
+.totalRowFinal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-primary);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin-top: var(--spacing-xs);
+}
+
+.totalDivider {
+    height: 1px;
+    background-color: var(--color-border);
+    margin: var(--spacing-xs) 0;
+}
+
+.freeShipping {
+    color: var(--color-success);
+    font-weight: var(--font-weight-medium);
+}
+
+.totalVatLabel {
+    font-weight: var(--font-weight-normal);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+.orderTotal {
+    padding-top: var(--spacing-md);
+    border-top: 2px solid var(--color-border);
+    margin-top: var(--spacing-md);
+}
+
+.shippingSection {
+    width: 100%;
+    text-align: left;
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--color-border);
+}
+
+.shippingContent {
+    display: flex;
+    gap: var(--spacing-xl);
+    align-items: flex-start;
+}
+
+.addressColumn {
+    flex: 1;
+    min-width: 0;
+}
+
+.addressDetails {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-base);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-relaxed);
+}
+
+.addressDetails p {
+    margin: 0 0 var(--spacing-xs) 0;
+}
+
+.deliveryInline {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--color-border-light);
+}
+
+.deliveryLabel {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    font-weight: var(--font-weight-medium);
+}
+
+.deliveryDate {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-success);
+    margin: 0;
+}
+
+.errorMessage {
+    text-align: center;
+    padding: var(--spacing-xl);
+}
+
+.actionIcons {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    flex-shrink: 0;
+}
+
+.iconButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+
+.iconButton:hover {
+    background-color: var(--color-success-light);
+    border-color: var(--color-success);
+    color: var(--color-success);
+}
+
+.iconButton:active {
+    transform: scale(0.95);
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: var(--spacing-md);
+    }
+
+    .content {
+        padding: var(--spacing-xl) 0;
+        min-height: 50vh;
+    }
+
+    .successCard {
+        padding: var(--spacing-xl);
+        max-width: 100%;
+    }
+
+    .title {
+        font-size: var(--font-size-3xl);
+    }
+
+    .message {
+        font-size: var(--font-size-lg);
+    }
+
+    .orderNumber {
+        font-size: var(--font-size-xl);
+    }
+
+    .productItem {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .productImage {
+        width: 100%;
+        height: 200px;
+    }
+
+    .productPrice {
+        text-align: left;
+        width: 100%;
+    }
+
+    .shippingContent {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+
+    .actionIcons {
+        flex-direction: row;
+        justify-content: flex-start;
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .successCard {
+        padding: var(--spacing-lg);
+    }
+
+    .successIcon {
+        width: 64px;
+        height: 64px;
+    }
+
+    .successIcon svg {
+        width: 36px;
+        height: 36px;
+    }
+
+    .title {
+        font-size: var(--font-size-2xl);
+    }
+
+    .message {
+        font-size: var(--font-size-base);
+    }
+
+    .description {
+        font-size: var(--font-size-sm);
+    }
+}
+

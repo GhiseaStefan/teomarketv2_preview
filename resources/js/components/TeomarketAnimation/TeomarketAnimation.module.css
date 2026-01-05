@@ -1,0 +1,300 @@
+.container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-background);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+.contentWrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+}
+
+.logo {
+    max-width: clamp(60px, 12vw, 120px);
+    height: auto;
+    object-fit: contain;
+    opacity: 0;
+    animation: logoAnimation 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    will-change: transform, opacity, filter;
+    align-self: center;
+}
+
+@keyframes logoAnimation {
+    0% {
+        opacity: 0;
+        transform: scale(0.3) translateY(-50px);
+        filter: blur(8px) brightness(0.5);
+    }
+    50% {
+        opacity: 0.6;
+        transform: scale(0.8) translateY(-10px);
+        filter: blur(2px) brightness(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        filter: blur(0px) brightness(1);
+    }
+}
+
+.wordContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.1em;
+    font-family: var(--font-primary);
+    font-weight: var(--font-weight-bold);
+    font-size: clamp(3rem, 8vw, 8rem);
+    letter-spacing: 0.02em;
+    color: var(--color-text-primary);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.letter {
+    display: inline-block;
+    position: relative;
+    opacity: 0;
+    transform-origin: center;
+    animation: letterAnimation 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    font-feature-settings: "liga" 1, "kern" 1;
+    will-change: transform, opacity, filter;
+}
+
+.letter:first-child {
+    text-transform: uppercase;
+}
+
+/* Keyframe animation inspired by award-winning designs */
+@keyframes letterAnimation {
+    /* Phase 1: Start as deconstructed geometric shapes (0% - 30%) */
+    0% {
+        opacity: 0;
+        transform: 
+            translate(
+                calc(var(--start-x, 0) * 1px),
+                calc(var(--start-y, 0) * 1px)
+            )
+            rotate(calc(var(--start-rotation, 0) * 1deg))
+            scale(0.2)
+            skew(calc(var(--start-skew-x, 0) * 1deg), calc(var(--start-skew-y, 0) * 1deg));
+        filter: blur(12px) brightness(0.5);
+    }
+
+    /* Phase 2: Shapes start moving and morphing (30% - 65%) */
+    30% {
+        opacity: 0.3;
+        transform: 
+            translate(
+                calc(var(--mid-x, 0) * 1px),
+                calc(var(--mid-y, 0) * 1px)
+            )
+            rotate(calc(var(--mid-rotation, 0) * 1deg))
+            scale(0.6)
+            skew(calc(var(--mid-skew-x, 0) * 1deg), calc(var(--mid-skew-y, 0) * 1deg));
+        filter: blur(4px) brightness(0.8);
+    }
+
+    /* Phase 3: Letters come together (65% - 90%) */
+    65% {
+        opacity: 0.8;
+        transform: 
+            translate(0, 0)
+            rotate(0deg)
+            scale(0.95)
+            skew(0deg, 0deg);
+        filter: blur(1px) brightness(0.95);
+    }
+
+    /* Phase 4: Final approach with slight bounce (90% - 100%) */
+    90% {
+        opacity: 0.98;
+        transform: 
+            translate(0, 0)
+            rotate(0deg)
+            scale(1.05);
+        filter: blur(0px) brightness(1);
+    }
+
+    100% {
+        opacity: 1;
+        transform: 
+            translate(0, 0)
+            rotate(0deg)
+            scale(1);
+        filter: blur(0px) brightness(1);
+    }
+}
+
+/* Individual letter starting positions - creating deconstructed effect */
+.letter:nth-child(1) {
+    --start-x: -250;
+    --start-y: -180;
+    --start-rotation: -50;
+    --start-skew-x: 15;
+    --start-skew-y: -10;
+    --mid-x: -120;
+    --mid-y: -90;
+    --mid-rotation: -25;
+    --mid-skew-x: 8;
+    --mid-skew-y: -5;
+}
+
+.letter:nth-child(2) {
+    --start-x: -180;
+    --start-y: 140;
+    --start-rotation: 35;
+    --start-skew-x: -12;
+    --start-skew-y: 8;
+    --mid-x: -90;
+    --mid-y: 70;
+    --mid-rotation: 18;
+    --mid-skew-x: -6;
+    --mid-skew-y: 4;
+}
+
+.letter:nth-child(3) {
+    --start-x: -120;
+    --start-y: -240;
+    --start-rotation: -70;
+    --start-skew-x: 20;
+    --start-skew-y: -15;
+    --mid-x: -60;
+    --mid-y: -120;
+    --mid-rotation: -35;
+    --mid-skew-x: 10;
+    --mid-skew-y: -8;
+}
+
+.letter:nth-child(4) {
+    --start-x: 130;
+    --start-y: -220;
+    --start-rotation: 50;
+    --start-skew-x: -18;
+    --start-skew-y: 12;
+    --mid-x: 65;
+    --mid-y: -110;
+    --mid-rotation: 25;
+    --mid-skew-x: -9;
+    --mid-skew-y: 6;
+}
+
+.letter:nth-child(5) {
+    --start-x: 180;
+    --start-y: 150;
+    --start-rotation: -35;
+    --start-skew-x: 10;
+    --start-skew-y: -8;
+    --mid-x: 90;
+    --mid-y: 75;
+    --mid-rotation: -18;
+    --mid-skew-x: 5;
+    --mid-skew-y: -4;
+}
+
+.letter:nth-child(6) {
+    --start-x: 240;
+    --start-y: -130;
+    --start-rotation: 65;
+    --start-skew-x: -15;
+    --start-skew-y: 10;
+    --mid-x: 120;
+    --mid-y: -65;
+    --mid-rotation: 32;
+    --mid-skew-x: -8;
+    --mid-skew-y: 5;
+}
+
+.letter:nth-child(7) {
+    --start-x: 200;
+    --start-y: 180;
+    --start-rotation: -50;
+    --start-skew-x: 12;
+    --start-skew-y: -10;
+    --mid-x: 100;
+    --mid-y: 90;
+    --mid-rotation: -25;
+    --mid-skew-x: 6;
+    --mid-skew-y: -5;
+}
+
+.letter:nth-child(8) {
+    --start-x: -220;
+    --start-y: -150;
+    --start-rotation: 55;
+    --start-skew-x: -10;
+    --start-skew-y: 12;
+    --mid-x: -110;
+    --mid-y: -75;
+    --mid-rotation: 28;
+    --mid-skew-x: -5;
+    --mid-skew-y: 6;
+}
+
+.letter:nth-child(9) {
+    --start-x: 260;
+    --start-y: 200;
+    --start-rotation: -55;
+    --start-skew-x: 18;
+    --start-skew-y: -12;
+    --mid-x: 130;
+    --mid-y: 100;
+    --mid-rotation: -28;
+    --mid-skew-x: 9;
+    --mid-skew-y: -6;
+}
+
+/* Fade out animation */
+.fadeOut {
+    animation: fadeOut 0.15s ease-out forwards;
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .wordContainer {
+        font-size: clamp(2rem, 10vw, 4rem);
+        gap: 0.05em;
+    }
+
+    .letter:nth-child(1),
+    .letter:nth-child(2),
+    .letter:nth-child(3),
+    .letter:nth-child(4),
+    .letter:nth-child(5),
+    .letter:nth-child(6),
+    .letter:nth-child(7),
+    .letter:nth-child(8),
+    .letter:nth-child(9) {
+        --start-x: calc(var(--start-x, 0) * 0.6);
+        --start-y: calc(var(--start-y, 0) * 0.6);
+        --mid-x: calc(var(--mid-x, 0) * 0.6);
+        --mid-y: calc(var(--mid-y, 0) * 0.6);
+        --start-skew-x: calc(var(--start-skew-x, 0) * 0.8);
+        --start-skew-y: calc(var(--start-skew-y, 0) * 0.8);
+        --mid-skew-x: calc(var(--mid-skew-x, 0) * 0.8);
+        --mid-skew-y: calc(var(--mid-skew-y, 0) * 0.8);
+    }
+}
+

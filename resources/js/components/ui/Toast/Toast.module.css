@@ -1,0 +1,74 @@
+.toast {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px var(--color-shadow-sm), 
+                0 2px 4px -1px var(--color-shadow-sm);
+    min-width: 300px;
+    max-width: 500px;
+    animation: slideIn 0.3s ease-out;
+    position: relative;
+    z-index: 10000;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.success {
+    background-color: var(--color-success, #10b981);
+    color: white;
+}
+
+.error {
+    background-color: var(--color-error, #ef4444);
+    color: white;
+}
+
+.info {
+    background-color: var(--color-info, #3b82f6);
+    color: white;
+}
+
+.warning {
+    background-color: var(--color-warning, #f59e0b);
+    color: white;
+}
+
+.message {
+    flex: 1;
+    font-size: var(--font-size-sm, 14px);
+    line-height: 1.5;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    margin-left: var(--spacing-md);
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.closeButton:hover {
+    opacity: 1;
+}
+
+.closeButton:focus {
+    outline: 2px solid rgba(255, 255, 255, 0.5);
+    outline-offset: 2px;
+}
+

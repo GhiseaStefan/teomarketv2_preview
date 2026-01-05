@@ -1,0 +1,18 @@
+/* ============================================
+   Admin Dashboard - Main Container
+   ============================================ */
+.dashboard {
+    padding: var(--spacing-xl);
+}
+
+.title {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-admin-800);
+    margin-bottom: var(--spacing-md);
+}
+
+.subtitle {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+}

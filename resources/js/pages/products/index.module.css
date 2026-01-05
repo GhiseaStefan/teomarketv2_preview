@@ -1,0 +1,855 @@
+.container {
+    width: 80vw;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0;
+    background: linear-gradient(to bottom, var(--color-background) 0%, var(--color-background-secondary) 100%);
+    min-height: calc(100vh - 200px);
+}
+
+@media (max-width: 768px) {
+    .container {
+        width: 100%;
+    }
+}
+
+/* Breadcrumb */
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin: var(--spacing-xl) var(--spacing-xl) var(--spacing-md);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    flex-wrap: wrap;
+}
+
+.breadcrumb a {
+    color: var(--color-green-600);
+    text-decoration: none;
+    transition: color 0.2s ease;
+    font-weight: var(--font-weight-medium);
+}
+
+.breadcrumb a:hover {
+    color: var(--color-green-700);
+    text-decoration: underline;
+}
+
+.breadcrumbSeparator {
+    color: var(--color-text-tertiary);
+    flex-shrink: 0;
+}
+
+.breadcrumbCurrent {
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-medium);
+}
+
+@media (max-width: 768px) {
+    .breadcrumb {
+        margin: var(--spacing-md);
+        font-size: var(--font-size-xs);
+    }
+}
+
+/* Header Section */
+.header {
+    background-color: var(--color-background);
+    padding: var(--spacing-xl) var(--spacing-xl) var(--spacing-lg);
+    margin-bottom: 0;
+    border-bottom: 1px solid var(--color-border-light);
+    backdrop-filter: blur(10px);
+}
+
+.title {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-xs) 0;
+    line-height: var(--line-height-tight);
+    letter-spacing: -0.02em;
+}
+
+.subtitle {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    margin: 0;
+    font-weight: var(--font-weight-normal);
+}
+
+/* Filters Section */
+.filtersSection {
+    background: var(--color-background);
+    padding: var(--spacing-xl);
+    margin: var(--spacing-xl);
+    margin-top: var(--spacing-xl);
+    margin-bottom: var(--spacing-xl);
+    border-radius: 16px;
+    border: 1px solid var(--color-border);
+    box-shadow: 0 2px 8px var(--color-shadow-sm);
+    backdrop-filter: blur(10px);
+}
+
+.filtersHeader {
+    display: none;
+}
+
+.filtersTitle {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0;
+}
+
+.filtersRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-lg);
+    flex-wrap: wrap;
+    position: relative;
+}
+
+@media (max-width: 768px) {
+    .filtersSection {
+        margin: var(--spacing-md);
+        padding: var(--spacing-md);
+        border-radius: 12px;
+    }
+
+    .filtersRow {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--spacing-md);
+    }
+
+    .sortSection {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-sm);
+        padding-left: 0;
+    }
+
+    .sortHeader {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .filtersHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-sm);
+    }
+
+    .filtersToggleButton {
+        width: 100%;
+    }
+
+    .activeFiltersList {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .clearAllFiltersButton {
+        margin-left: 0;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .filtersContent {
+        grid-template-columns: 1fr;
+        padding: var(--spacing-md);
+    }
+
+    .filterActions {
+        justify-content: stretch;
+    }
+
+    .applyFiltersButton {
+        width: 100%;
+    }
+}
+
+.sortSection {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+}
+
+.sortButtons {
+    display: flex;
+    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+}
+
+.sortButton {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-md);
+    background: var(--color-background);
+    border: 1.5px solid var(--color-border);
+    border-radius: 8px;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: var(--font-primary);
+    white-space: nowrap;
+}
+
+.sortButton:hover {
+    background: var(--color-background-secondary);
+    border-color: var(--color-green-300);
+    color: var(--color-text-primary);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px var(--color-shadow-sm);
+}
+
+.sortButton:active {
+    transform: translateY(0);
+}
+
+.sortButtonActive {
+    background: var(--color-green-50);
+    border-color: var(--color-green-600);
+    color: var(--color-green-700);
+    font-weight: var(--font-weight-semibold);
+    box-shadow: 0 2px 6px rgba(22, 163, 74, 0.15);
+}
+
+.sortButtonActive:hover {
+    background: var(--color-green-100);
+    border-color: var(--color-green-700);
+    box-shadow: 0 3px 8px rgba(22, 163, 74, 0.2);
+}
+
+.sortArrow {
+    color: var(--color-green-600);
+    flex-shrink: 0;
+    animation: fadeIn 0.2s ease;
+}
+
+.sortArrowInactive {
+    color: var(--color-text-tertiary);
+    flex-shrink: 0;
+    opacity: 0.4;
+    transition: opacity 0.2s ease;
+}
+
+.sortButton:hover .sortArrowInactive {
+    opacity: 0.7;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Active Filters Section */
+.activeFiltersSection {
+    margin-top: var(--spacing-lg);
+    padding: var(--spacing-md);
+    background: var(--color-green-50);
+    border-radius: 12px;
+    border: 1px solid var(--color-green-200);
+}
+
+.activeFiltersLabel {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-green-700);
+    margin-bottom: var(--spacing-sm);
+}
+
+.activeFiltersList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    align-items: center;
+}
+
+.activeFilterBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: var(--color-background);
+    border: 1px solid var(--color-green-300);
+    border-radius: 8px;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+}
+
+.activeFilterLabel {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-green-700);
+}
+
+.activeFilterValue {
+    color: var(--color-text-primary);
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.removeFilterButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    background: var(--color-green-100);
+    border: none;
+    border-radius: 50%;
+    color: var(--color-green-700);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    margin-left: var(--spacing-xs);
+}
+
+.removeFilterButton:hover {
+    background: var(--color-green-200);
+    color: var(--color-green-800);
+    transform: scale(1.1);
+}
+
+.clearAllFiltersButton {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-md);
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: var(--font-primary);
+    margin-left: auto;
+}
+
+.clearAllFiltersButton:hover {
+    background: var(--color-background-secondary);
+    border-color: var(--color-error);
+    color: var(--color-error);
+}
+
+/* Filters Panel */
+.filtersPanel {
+    margin-top: var(--spacing-lg);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--color-border);
+}
+
+.filtersHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-md);
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+}
+
+.filtersTitleWrapper {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.filtersTitleIcon {
+    color: var(--color-green-600);
+}
+
+.filtersTitle {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0;
+}
+
+.filtersToggleButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: var(--spacing-xs) var(--spacing-md);
+    background: var(--color-background);
+    border: 1.5px solid var(--color-border);
+    border-radius: 8px;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: var(--font-primary);
+    min-width: 40px;
+    height: 36px;
+}
+
+.filtersToggleButton:hover {
+    background: var(--color-background-secondary);
+    border-color: var(--color-green-300);
+    color: var(--color-text-primary);
+}
+
+.filtersToggleButtonActive {
+    background: var(--color-green-50);
+    border-color: var(--color-green-600);
+    color: var(--color-green-700);
+}
+
+.filtersToggleButtonActive:hover {
+    background: var(--color-green-100);
+    border-color: var(--color-green-700);
+}
+
+.filtersToggleBadge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    background-color: var(--color-green-600);
+    color: var(--color-text-inverse);
+    border-radius: 9px;
+    font-size: 10px;
+    font-weight: var(--font-weight-semibold);
+    border: 2px solid var(--color-background);
+}
+
+.filtersContent {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg);
+    background: var(--color-background-secondary);
+    border-radius: 12px;
+    border: 1px solid var(--color-border);
+    animation: fadeIn 0.3s ease;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .filtersContent {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-md);
+    }
+}
+
+@media (max-width: 600px) {
+    .filtersContent {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-sm);
+        padding: var(--spacing-sm);
+    }
+
+    .filterGroup {
+        gap: var(--spacing-xs);
+    }
+
+    .filterLabel {
+        font-size: var(--font-size-xs);
+    }
+
+    .filterSelect {
+        font-size: var(--font-size-xs);
+        padding: var(--spacing-xs) var(--spacing-sm);
+        height: 36px;
+    }
+
+    .filterCheckboxLabel {
+        height: 36px;
+        font-size: var(--font-size-xs);
+    }
+
+    .priceInput :global(input) {
+        height: 36px;
+        font-size: var(--font-size-xs);
+    }
+}
+
+.filterGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.filterCheckboxLabel {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    user-select: none;
+    padding: 0;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+    margin: 0;
+    height: 40px;
+    box-sizing: border-box;
+}
+
+.filterCheckboxLabel:hover {
+    background: var(--color-background-secondary);
+}
+
+.filterCheckbox {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--color-green-600);
+    flex-shrink: 0;
+    margin: 0;
+}
+
+.filterLabel {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.filterSelect {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1.5px solid var(--color-border);
+    border-radius: 8px;
+    font-size: var(--font-size-sm);
+    font-family: var(--font-primary);
+    color: var(--color-text-primary);
+    background: var(--color-background);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    height: 40px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.filterSelect:hover {
+    border-color: var(--color-green-300);
+}
+
+.filterSelect:focus {
+    outline: none;
+    border-color: var(--color-green-600);
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+}
+
+.priceRangeWrapper {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.priceInputWrapper {
+    flex: 1;
+    min-width: 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.priceInput {
+    flex: 1;
+    min-width: 0;
+}
+
+.priceInput :global(input) {
+    width: 100%;
+    height: 40px;
+    box-sizing: border-box;
+    padding-right: 40px;
+}
+
+.priceCurrency {
+    position: absolute;
+    right: var(--spacing-sm);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    pointer-events: none;
+    user-select: none;
+}
+
+/* Remove spin buttons from number inputs */
+.priceInput :global(input[type="number"])::-webkit-inner-spin-button,
+.priceInput :global(input[type="number"])::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.priceInput :global(input[type="number"]) {
+    -moz-appearance: textfield;
+}
+
+/* Alternative approach - target directly */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.priceRangeSeparator {
+    color: var(--color-text-secondary);
+    font-weight: var(--font-weight-medium);
+    flex-shrink: 0;
+}
+
+.filterCheckboxLabel {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    user-select: none;
+    padding: 0;
+    margin: 0;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+    height: 40px;
+    box-sizing: border-box;
+}
+
+.filterCheckboxLabel:hover {
+    background: var(--color-background-secondary);
+}
+
+.filterCheckbox {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--color-green-600);
+}
+
+.filterActions {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end;
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid var(--color-border);
+}
+
+.applyFiltersButton {
+    min-width: 150px;
+}
+
+/* Products Grid Wrapper */
+.productsGridWrapper {
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: var(--spacing-xl);
+    margin: var(--spacing-xl);
+    box-shadow: 0 1px 3px var(--color-shadow-sm);
+}
+
+/* Products Grid - Exactly 5 per row */
+.productsGrid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--spacing-lg);
+    margin: 0;
+    padding: 0;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    margin: 0;
+    padding: var(--spacing-xl) var(--spacing-xl);
+    background-color: var(--color-background);
+    border-top: 1px solid var(--color-border-light);
+    flex-wrap: wrap;
+}
+
+.paginationPages {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+}
+
+.paginationEllipsis {
+    padding: 0 var(--spacing-sm);
+    color: var(--color-text-secondary);
+    font-weight: var(--font-weight-medium);
+}
+
+/* No Products */
+.noProducts {
+    text-align: center;
+    padding: var(--spacing-3xl) var(--spacing-md);
+    background-color: var(--color-background);
+}
+
+.noProducts p {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--spacing-lg);
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-medium);
+}
+
+/* Responsive */
+@media (max-width: 1400px) {
+    .container {
+        width: 90vw;
+    }
+
+    .productsGrid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 1200px) {
+    .container {
+        width: 95vw;
+    }
+
+    .productsGrid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .filtersContent {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .productsGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        padding: var(--spacing-md) var(--spacing-lg);
+    }
+
+    .title {
+        font-size: var(--font-size-2xl);
+    }
+
+    .subtitle {
+        font-size: var(--font-size-sm);
+    }
+
+
+    .productsGridWrapper {
+        margin: var(--spacing-md);
+        padding: var(--spacing-md);
+    }
+
+    .productsGrid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-sm);
+    }
+
+    .pagination {
+        flex-direction: column;
+        padding: var(--spacing-md) var(--spacing-lg);
+    }
+
+    .paginationPages {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        width: 100%;
+        padding: 0;
+    }
+
+    .header {
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+
+    .title {
+        font-size: var(--font-size-xl);
+    }
+
+    .subtitle {
+        font-size: var(--font-size-xs);
+    }
+
+    .filtersSection {
+        margin: var(--spacing-sm);
+        padding: var(--spacing-sm);
+    }
+
+    .productsGridWrapper {
+        margin: var(--spacing-sm);
+        padding: var(--spacing-sm);
+    }
+
+    .productsGrid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-xs);
+    }
+
+    .pagination {
+        padding: var(--spacing-sm);
+        gap: var(--spacing-xs);
+    }
+
+    .paginationPages {
+        gap: var(--spacing-xs);
+    }
+}
+
+@media (max-width: 360px) {
+    .productsGrid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-xs);
+    }
+
+    .header {
+        padding: var(--spacing-xs) var(--spacing-sm);
+    }
+
+    .title {
+        font-size: var(--font-size-lg);
+    }
+
+    .filtersSection {
+        margin: var(--spacing-xs);
+        padding: var(--spacing-xs);
+    }
+
+    .productsGridWrapper {
+        margin: var(--spacing-xs);
+        padding: var(--spacing-xs);
+    }
+}
+
