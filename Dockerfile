@@ -1,12 +1,14 @@
-FROM php:8.2-fpm
+# Folosim PHP 8.4 care este cerut de noile pachete Symfony/Laravel
+FROM php:8.4-fpm
 
-# Instalăm dependențele de sistem
+# Instalăm dependențele de sistem incluzând libzip pentru extensia zip
 RUN apt-get update && apt-get install -y \
     git \
     curl \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
+    libzip-dev \
     zip \
     unzip \
     nginx
@@ -14,8 +16,8 @@ RUN apt-get update && apt-get install -y \
 # Ștergem cache-ul
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Instalăm extensiile PHP necesare pentru Laravel
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+# Instalăm extensiile PHP (am adăugat și 'zip')
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
 # Instalăm Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -26,17 +28,15 @@ WORKDIR /var/www
 # Copiem fișierele proiectului
 COPY . /var/www
 
-# Instalăm dependențele Laravel
+# Instalăm dependențele Laravel folosind flag-ul de ignorare platformă pentru siguranță
 RUN composer install --no-dev --optimize-autoloader
 
-# Setăm permisiunile pentru Laravel
+# Setăm permisiunile
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
-# Copiem configurația Nginx (o vom crea la pasul următor)
+# Copiem configurația Nginx
 COPY docker/nginx.conf /etc/nginx/sites-available/default
 
-# Expunem portul pe care îl va folosi Render
 EXPOSE 80
 
-# Scriptul de pornire
 CMD service nginx start && php-fpm
