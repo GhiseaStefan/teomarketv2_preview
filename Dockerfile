@@ -1,14 +1,14 @@
 # ETAPA 1: Build (PHP + Node.js)
 FROM php:8.4-fpm AS build
 
-# Instalăm Node.js, npm și dependențele de sistem necesare
+# Instalăm dependențele de sistem (am adăugat libpq-dev pentru Postgres)
 RUN apt-get update && apt-get install -y \
-    curl git unzip libpng-dev libonig-dev libxml2-dev libzip-dev zip \
+    curl git unzip libpng-dev libonig-dev libxml2-dev libzip-dev zip libpq-dev \
     && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs
 
-# Instalăm extensiile PHP necesare pentru ca 'php artisan' să funcționeze
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
+# Instalăm extensiile PHP (am adăugat pdo_pgsql și pgsql)
+RUN docker-php-ext-install pdo_mysql pdo_pgsql pgsql mbstring exif pcntl bcmath gd zip
 
 # Instalăm Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -16,37 +16,40 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /app
 COPY . .
 
-# Instalăm dependențele PHP (necesare pentru Wayfinder/Artisan)
+# Instalăm dependențele PHP
 RUN composer install --no-dev --optimize-autoloader
 
 # Instalăm dependențele JS și compilăm frontend-ul
 RUN npm install
 RUN npm run build
 
-# ETAPA 2: Serverul Final (Imagine curată)
+# ETAPA 2: Serverul Final
 FROM php:8.4-fpm
 
+# Instalăm dependențele de sistem și în imaginea finală
 RUN apt-get update && apt-get install -y \
-    git curl libpng-dev libonig-dev libxml2-dev libzip-dev zip unzip nginx \
+    git curl libpng-dev libonig-dev libxml2-dev libzip-dev zip unzip nginx libpq-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
+# Instalăm extensiile PHP și aici
+RUN docker-php-ext-install pdo_mysql pdo_pgsql pgsql mbstring exif pcntl bcmath gd zip
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
 COPY . .
 
-# Copiem build-ul de React din prima etapă
+# Copiem build-ul de React și folderul vendor
 COPY --from=build /app/public/build ./public/build
-# Copiem și folderul vendor creat în prima etapă pentru a economisi timp
 COPY --from=build /app/vendor ./vendor
 
-RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+# Permisiuni și link de storage
+RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache && \
+    chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
 COPY docker/nginx.conf /etc/nginx/sites-available/default
 
 EXPOSE 80
 
-# Rulăm migrările, apoi seeder-ele, apoi pornim serviciile web
-CMD php artisan migrate --force --seed && service nginx start && php-fpm
+# Comanda de start: Migrări, Seed, Link Storage și Pornire Server
+CMD php artisan migrate --force --seed && php artisan storage:link && service nginx start && php-fpm
