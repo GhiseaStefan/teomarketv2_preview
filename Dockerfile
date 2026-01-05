@@ -48,4 +48,5 @@ COPY docker/nginx.conf /etc/nginx/sites-available/default
 
 EXPOSE 80
 
-CMD php artisan migrate --force && service nginx start && php-fpm
+# Rulăm migrările, apoi seeder-ele, apoi pornim serviciile web
+CMD php artisan migrate --force --seed && service nginx start && php-fpm
