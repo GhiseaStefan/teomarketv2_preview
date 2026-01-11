@@ -9,8 +9,12 @@ use App\Http\Controllers\LanguageController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/categories', [\App\Http\Controllers\CategoryController::class, 'index'])->name('categories.index');
 Route::get('/categories/{slug}', [\App\Http\Controllers\CategoryController::class, 'show'])->name('categories.show');
 Route::get('/products', [\App\Http\Controllers\ProductController::class, 'index'])->name('products.index');
+Route::get('/products/autocomplete', [\App\Http\Controllers\ProductController::class, 'autocomplete'])->name('products.autocomplete');
+Route::get('/products/{id}/price', [\App\Http\Controllers\ProductController::class, 'getPrice'])->name('products.price');
+Route::get('/products/{id}/quick-view', [\App\Http\Controllers\ProductController::class, 'quickView'])->name('products.quick-view');
 Route::get('/products/{id}', [\App\Http\Controllers\ProductController::class, 'show'])->name('products.show');
 Route::post('/currency/update', [CurrencyController::class, 'update'])->name('currency.update');
 Route::post('/language/update', [LanguageController::class, 'update'])->name('language.update');
@@ -51,5 +55,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/reviews/{reviewId}/useful', [\App\Http\Controllers\ReviewController::class, 'markUseful'])->name('reviews.markUseful');
 });
 Route::get('/products/{productId}/reviews', [\App\Http\Controllers\ReviewController::class, 'getProductReviews'])->name('reviews.product');
+
+// Return routes
+Route::get('/returns/create', [\App\Http\Controllers\ReturnController::class, 'create'])->name('returns.create');
+Route::post('/returns/search-order', [\App\Http\Controllers\ReturnController::class, 'searchOrder'])->middleware('throttle:5,1')->name('returns.search-order');
+Route::post('/returns', [\App\Http\Controllers\ReturnController::class, 'store'])->name('returns.store');
+Route::get('/returns/confirmation', [\App\Http\Controllers\ReturnController::class, 'confirmation'])->name('returns.confirmation');
 
 require __DIR__ . '/settings.php';

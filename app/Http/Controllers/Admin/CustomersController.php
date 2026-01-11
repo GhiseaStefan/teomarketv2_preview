@@ -23,7 +23,10 @@ class CustomersController extends Controller
             'users',
             'addresses',
             'orders' => function ($query) {
-                $query->select('customer_id', 'total_ron_incl_vat');
+                $query->select('id', 'customer_id', 'total_ron_incl_vat');
+            },
+            'orders.shipping' => function ($query) {
+                $query->select('order_id', 'shipping_cost_ron_incl_vat');
             }
         ]);
 
@@ -54,7 +57,9 @@ class CustomersController extends Controller
                 ->first() ?? $customer->addresses->first();
             
             $ordersCount = $customer->orders->count();
-            $amountSpent = $customer->orders->sum('total_ron_incl_vat') ?? 0;
+            $amountSpent = $customer->orders->sum(function ($order) {
+                return ($order->total_ron_incl_vat ?? 0) + ($order->shipping?->shipping_cost_ron_incl_vat ?? 0);
+            }) ?? 0;
 
             // Build customer name
             $customerName = '';
@@ -126,9 +131,11 @@ class CustomersController extends Controller
         }
 
         // Get all orders for statistics
-        $allOrders = $customer->orders()->get();
+        $allOrders = $customer->orders()->with('shipping')->get();
         $totalOrders = $allOrders->count();
-        $totalSpent = $allOrders->sum('total_ron_incl_vat') ?? 0;
+        $totalSpent = $allOrders->sum(function ($order) {
+            return ($order->total_ron_incl_vat ?? 0) + ($order->shipping?->shipping_cost_ron_incl_vat ?? 0);
+        }) ?? 0;
         $averageOrderValue = $totalOrders > 0 ? $totalSpent / $totalOrders : 0;
         $lastOrder = $allOrders->sortByDesc('created_at')->first();
 

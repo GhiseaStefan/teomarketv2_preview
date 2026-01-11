@@ -35,6 +35,7 @@ class OrdersSeeder extends Seeder
     {
         $this->command->info('Seeding orders...');
         $this->seedOrders();
+        $this->seedRecentOrders(); // Add 10 orders: 4 from yesterday, 6 from today
         $this->command->info('✓ Orders seeded successfully');
     }
 
@@ -1741,5 +1742,387 @@ class OrdersSeeder extends Seeder
             'series' => $series,
             'number' => $this->invoiceCounters[$series],
         ];
+    }
+
+    /**
+     * Seed 10 recent orders: 4 from yesterday, 6 from today
+     */
+    private function seedRecentOrders(): void
+    {
+        $this->command->info('Seeding 10 recent orders (4 from yesterday, 6 from today)...');
+
+        // Get currency exchange rates
+        $currencies = DB::table('currencies')->get()->keyBy('code');
+        $ronExchangeRate = 1.0;
+        $eurExchangeRate = (float) ($currencies->get('EUR')?->value ?? 0.20);
+        $usdExchangeRate = (float) ($currencies->get('USD')?->value ?? 0.22);
+
+        // Get payment methods
+        $paymentMethods = DB::table('payment_methods')->get()->keyBy('code');
+        $stripeId = $paymentMethods->get('stripe')?->id;
+        $cashOnDeliveryId = $paymentMethods->get('cash_on_delivery')?->id;
+        $bankTransferId = $paymentMethods->get('bank_transfer')?->id;
+        $paypalId = $paymentMethods->get('paypal')?->id;
+
+        if (!$stripeId || !$cashOnDeliveryId || !$bankTransferId) {
+            $this->command->warn('Required payment methods not found. Skipping recent orders.');
+            return;
+        }
+
+        $paymentMethodIds = array_filter([$stripeId, $bankTransferId, $cashOnDeliveryId, $paypalId], fn($id) => $id !== null);
+        $paymentMethodIds = array_values($paymentMethodIds);
+
+        // Get customers with users
+        $customersWithUsers = DB::table('customers')
+            ->join('users', 'customers.id', '=', 'users.customer_id')
+            ->whereNotNull('users.customer_id')
+            ->select('customers.*')
+            ->distinct()
+            ->get();
+
+        if ($customersWithUsers->isEmpty()) {
+            $this->command->warn('No customers with users found. Skipping recent orders.');
+            return;
+        }
+
+        $availableCustomerIds = $customersWithUsers->pluck('id')->toArray();
+
+        // Get products
+        $products = DB::table('products')
+            ->where('status', true)
+            ->whereNotNull('price_ron')
+            ->where('price_ron', '>', 0)
+            ->get(['id', 'name', 'sku', 'ean', 'price_ron', 'purchase_price_ron']);
+
+        if ($products->isEmpty()) {
+            $this->command->warn('No products found. Skipping recent orders.');
+            return;
+        }
+
+        $productIds = $products->pluck('id')->toArray();
+        $productsById = $products->keyBy('id');
+
+        // Get product group prices
+        $productGroupPrices = DB::table('product_group_prices')
+            ->get()
+            ->groupBy(['product_id', 'customer_group_id']);
+
+        // Dates
+        $yesterday = now()->subDay()->startOfDay();
+        $today = now()->startOfDay();
+
+        // Create 4 orders from yesterday
+        for ($i = 0; $i < 4; $i++) {
+            $this->createRecentOrder(
+                $availableCustomerIds,
+                $customersWithUsers,
+                $paymentMethodIds,
+                $productIds,
+                $productsById,
+                $productGroupPrices,
+                $yesterday->copy()->addHours(rand(8, 20))->addMinutes(rand(0, 59)), // Random time yesterday
+                $ronExchangeRate
+            );
+        }
+
+        // Create 6 orders from today
+        for ($i = 0; $i < 6; $i++) {
+            $this->createRecentOrder(
+                $availableCustomerIds,
+                $customersWithUsers,
+                $paymentMethodIds,
+                $productIds,
+                $productsById,
+                $productGroupPrices,
+                $today->copy()->addHours(rand(8, 20))->addMinutes(rand(0, 59)), // Random time today
+                $ronExchangeRate
+            );
+        }
+
+        $this->command->info('✓ 10 recent orders seeded successfully');
+    }
+
+    /**
+     * Create a single recent order with specific date
+     */
+    private function createRecentOrder(
+        array $availableCustomerIds,
+        $customersWithUsers,
+        array $paymentMethodIds,
+        array $productIds,
+        $productsById,
+        $productGroupPrices,
+        $orderCreatedAt,
+        float $ronExchangeRate
+    ): void {
+        // Select random customer
+        $customerId = $availableCustomerIds[array_rand($availableCustomerIds)];
+        $customer = $customersWithUsers->firstWhere('id', $customerId);
+
+        if (!$customer) {
+            return;
+        }
+
+        // Get customer data
+        $customerData = $this->getCustomerData($customerId);
+        if (!$customerData) {
+            return;
+        }
+
+        $paymentMethodId = $paymentMethodIds[array_rand($paymentMethodIds)];
+
+        // Select random products (1-5 products)
+        $numProducts = rand(1, min(5, count($productIds)));
+        $selectedProductIds = array_rand($productIds, $numProducts);
+        if (!is_array($selectedProductIds)) {
+            $selectedProductIds = [$selectedProductIds];
+        }
+
+        // Determine if order should be paid
+        $paymentMethodCode = DB::table('payment_methods')->where('id', $paymentMethodId)->value('code');
+        $isPaid = $this->shouldMarkAsPaidAutomatically($paymentMethodCode);
+
+        $paidAt = null;
+        if ($isPaid) {
+            $paidAt = $orderCreatedAt->copy()->addMinutes(rand(0, 60));
+        } elseif (rand(1, 100) <= 30) {
+            $paidAt = $orderCreatedAt->copy()->addHours(rand(1, 24));
+        }
+
+        // Get VAT rate
+        $vatRate = $this->getVatRateForCountry($customerData['country_id']);
+
+        // Generate invoice data
+        $invoiceData = $this->generateInvoiceData();
+
+        // Get order counter
+        $orderCounter = DB::table('orders')->max('id') ?? 0;
+        $orderCounter++;
+
+        // Create order
+        $orderId = DB::table('orders')->insertGetId([
+            'customer_id' => $customerId,
+            'order_number' => 'TEMP-' . $orderCounter,
+            'invoice_series' => $invoiceData ? $invoiceData['series'] : null,
+            'invoice_number' => $invoiceData ? $invoiceData['number'] : null,
+            'currency' => 'RON',
+            'exchange_rate' => $ronExchangeRate,
+            'vat_rate_applied' => $vatRate,
+            'is_vat_exempt' => false,
+            'total_excl_vat' => 0,
+            'total_incl_vat' => 0,
+            'total_ron_excl_vat' => 0,
+            'total_ron_incl_vat' => 0,
+            'payment_method_id' => $paymentMethodId,
+            'status' => OrderStatus::PENDING->value,
+            'is_paid' => $paidAt !== null,
+            'paid_at' => $paidAt,
+            'created_at' => $orderCreatedAt,
+            'updated_at' => $orderCreatedAt,
+        ]);
+
+        // Generate order number
+        $orderNumber = $this->codeGenerator->generateFromId($orderId);
+        DB::table('orders')
+            ->where('id', $orderId)
+            ->update(['order_number' => $orderNumber]);
+
+        // Add products to order
+        $orderTotalExclVat = 0;
+        $orderTotalInclVat = 0;
+        $orderTotalRonExclVat = 0;
+        $orderTotalRonInclVat = 0;
+        $vatRates = [];
+
+        foreach ($selectedProductIds as $productIdKey) {
+            $productId = $productIds[$productIdKey];
+            $product = $productsById->get($productId);
+
+            if (!$product) {
+                continue;
+            }
+
+            $quantity = rand(1, 5);
+
+            $unitPriceRon = $this->getProductPriceForCustomerGroup(
+                $productId,
+                $customer->customer_group_id,
+                $quantity,
+                (float) $product->price_ron
+            );
+            $unitPurchasePriceRon = (float) ($product->purchase_price_ron ?? 0);
+
+            // Calculate VAT
+            $unitPriceExclVatRon = round($unitPriceRon / (1 + $vatRate / 100), 2);
+            $totalRonExclVat = round($unitPriceExclVatRon * $quantity, 2);
+            $totalRonInclVat = round($unitPriceRon * $quantity, 2);
+
+            $exchangeRate = $ronExchangeRate;
+            $unitPriceCurrency = round($unitPriceRon / $exchangeRate, 2);
+            $unitPriceExclVatCurrency = round($unitPriceExclVatRon / $exchangeRate, 2);
+            $totalCurrencyExclVat = round($unitPriceExclVatCurrency * $quantity, 2);
+            $totalCurrencyInclVat = round($unitPriceCurrency * $quantity, 2);
+
+            $profitRon = round(($unitPriceExclVatRon - $unitPurchasePriceRon) * $quantity, 2);
+
+            // Insert order product
+            DB::table('order_products')->insert([
+                'order_id' => $orderId,
+                'product_id' => $productId,
+                'name' => $product->name,
+                'sku' => $product->sku,
+                'ean' => $product->ean,
+                'quantity' => $quantity,
+                'vat_percent' => $vatRate,
+                'exchange_rate' => $exchangeRate,
+                'unit_price_currency' => $unitPriceCurrency,
+                'unit_price_ron' => $unitPriceRon,
+                'unit_purchase_price_ron' => $unitPurchasePriceRon,
+                'total_currency_excl_vat' => $totalCurrencyExclVat,
+                'total_currency_incl_vat' => $totalCurrencyInclVat,
+                'total_ron_excl_vat' => $totalRonExclVat,
+                'total_ron_incl_vat' => $totalRonInclVat,
+                'profit_ron' => $profitRon,
+                'created_at' => $orderCreatedAt,
+                'updated_at' => $orderCreatedAt,
+            ]);
+
+            $orderTotalExclVat = round($orderTotalExclVat + $totalCurrencyExclVat, 2);
+            $orderTotalInclVat = round($orderTotalInclVat + $totalCurrencyInclVat, 2);
+            $orderTotalRonExclVat = round($orderTotalRonExclVat + $totalRonExclVat, 2);
+            $orderTotalRonInclVat = round($orderTotalRonInclVat + $totalRonInclVat, 2);
+            $vatRates[] = $vatRate;
+        }
+
+        // Calculate average VAT rate
+        $averageVatRate = !empty($vatRates) ? round(array_sum($vatRates) / count($vatRates), 2) : $vatRate;
+
+        // Update order totals
+        DB::table('orders')
+            ->where('id', $orderId)
+            ->update([
+                'total_excl_vat' => $orderTotalExclVat,
+                'total_incl_vat' => $orderTotalInclVat,
+                'total_ron_excl_vat' => $orderTotalRonExclVat,
+                'total_ron_incl_vat' => $orderTotalRonInclVat,
+                'vat_rate_applied' => $averageVatRate,
+            ]);
+
+        // Create order addresses (simplified - using customer addresses)
+        $customer = DB::table('customers')->where('id', $customerId)->first();
+        if ($customer) {
+            $user = DB::table('users')->where('customer_id', $customerId)->first();
+            if ($user) {
+                $shippingAddress = DB::table('addresses')
+                    ->where('customer_id', $customerId)
+                    ->where('address_type', 'shipping')
+                    ->orderBy('is_preferred', 'desc')
+                    ->first();
+
+                if (!$shippingAddress) {
+                    $shippingAddress = DB::table('addresses')
+                        ->where('customer_id', $customerId)
+                        ->orderBy('is_preferred', 'desc')
+                        ->first();
+                }
+
+                $billingAddress = DB::table('addresses')
+                    ->where('customer_id', $customerId)
+                    ->where(function ($q) {
+                        $q->where('address_type', 'headquarters')
+                            ->orWhere('address_type', 'billing');
+                    })
+                    ->orderByRaw("CASE WHEN address_type = 'headquarters' THEN 0 ELSE 1 END")
+                    ->first();
+
+                if (!$billingAddress) {
+                    $billingAddress = $shippingAddress;
+                }
+
+                $defaultCountryId = DB::table('countries')->where('iso_code_2', 'RO')->value('id');
+
+                if ($shippingAddress) {
+                    DB::table('order_addresses')->insert([
+                        'order_id' => $orderId,
+                        'type' => 'shipping',
+                        'company_name' => $shippingAddress->company_name ?? null,
+                        'fiscal_code' => null,
+                        'reg_number' => null,
+                        'first_name' => $user->first_name ?? $shippingAddress->first_name ?? '',
+                        'last_name' => $user->last_name ?? $shippingAddress->last_name ?? '',
+                        'phone' => $shippingAddress->phone ?? '',
+                        'email' => $user->email ?? null,
+                        'address_line_1' => $shippingAddress->address_line_1 ?? '',
+                        'address_line_2' => $shippingAddress->address_line_2 ?? null,
+                        'city' => $shippingAddress->city ?? '',
+                        'county_name' => $shippingAddress->county_name ?? null,
+                        'county_code' => $shippingAddress->county_code ?? null,
+                        'country_id' => $shippingAddress->country_id ?? $defaultCountryId,
+                        'zip_code' => $shippingAddress->zip_code ?? '',
+                        'created_at' => $orderCreatedAt,
+                        'updated_at' => $orderCreatedAt,
+                    ]);
+                }
+
+                if ($billingAddress) {
+                    DB::table('order_addresses')->insert([
+                        'order_id' => $orderId,
+                        'type' => 'billing',
+                        'company_name' => $billingAddress->company_name ?? null,
+                        'fiscal_code' => $billingAddress->fiscal_code ?? null,
+                        'reg_number' => $billingAddress->reg_number ?? null,
+                        'first_name' => $user->first_name ?? $billingAddress->first_name ?? '',
+                        'last_name' => $user->last_name ?? $billingAddress->last_name ?? '',
+                        'phone' => $billingAddress->phone ?? '',
+                        'email' => $user->email ?? null,
+                        'address_line_1' => $billingAddress->address_line_1 ?? '',
+                        'address_line_2' => $billingAddress->address_line_2 ?? null,
+                        'city' => $billingAddress->city ?? '',
+                        'county_name' => $billingAddress->county_name ?? null,
+                        'county_code' => $billingAddress->county_code ?? null,
+                        'country_id' => $billingAddress->country_id ?? $defaultCountryId,
+                        'zip_code' => $billingAddress->zip_code ?? '',
+                        'created_at' => $orderCreatedAt,
+                        'updated_at' => $orderCreatedAt,
+                    ]);
+                }
+            }
+        }
+
+        // Create order shipping
+        $shippingMethods = DB::table('shipping_methods')->get();
+        if ($shippingMethods->isNotEmpty()) {
+            $shippingMethod = $shippingMethods->random();
+            $methodCode = $shippingMethod->code ?? 'default';
+            
+            // Generate tracking number based on method
+            $trackingCounter = DB::table('order_shipping')->max('id') ?? 0;
+            $trackingCounter++;
+            
+            $trackingNumber = match ($methodCode) {
+                'sameday_locker' => 'SD' . str_pad($trackingCounter, 10, '0', STR_PAD_LEFT) . 'RO',
+                'fancourier' => 'FC' . str_pad($trackingCounter, 10, '0', STR_PAD_LEFT) . 'RO',
+                'gls' => 'GLS' . str_pad($trackingCounter, 9, '0', STR_PAD_LEFT),
+                'dpd' => 'DPD' . str_pad($trackingCounter, 9, '0', STR_PAD_LEFT),
+                default => 'TRK' . str_pad($trackingCounter, 10, '0', STR_PAD_LEFT),
+            };
+
+            $shippingCostExclVat = round(rand(15, 30) + (rand(0, 99) / 100), 2);
+            $shippingCostInclVat = round($shippingCostExclVat * 1.19, 2);
+
+            DB::table('order_shipping')->insert([
+                'order_id' => $orderId,
+                'shipping_method_id' => $shippingMethod->id,
+                'title' => 'Livrare standard',
+                'pickup_point_id' => null,
+                'tracking_number' => $trackingNumber,
+                'shipping_cost_excl_vat' => $shippingCostExclVat,
+                'shipping_cost_incl_vat' => $shippingCostInclVat,
+                'shipping_cost_ron_excl_vat' => $shippingCostExclVat,
+                'shipping_cost_ron_incl_vat' => $shippingCostInclVat,
+                'created_at' => $orderCreatedAt,
+                'updated_at' => $orderCreatedAt,
+            ]);
+        }
     }
 }

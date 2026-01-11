@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Wishlist;
+use App\Models\Product;
 use App\Models\Currency;
 use App\Models\CustomerGroup;
 use App\Services\ProductService;
+use App\Enums\ProductType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -81,6 +83,7 @@ class WishlistController extends Controller
     }
     /**
      * Add a product to the wishlist.
+     * For configurable products with variants, always add the parent configurable product.
      */
     public function add(Request $request)
     {
@@ -101,9 +104,25 @@ class WishlistController extends Controller
                 ], 401);
             }
 
+            // Get the product to determine if it's a variant
+            $product = Product::find($validated['product_id']);
+            if (!$product) {
+                if ($request->header('X-Inertia')) {
+                    return back()->withErrors(['message' => 'Product not found']);
+                }
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Product not found',
+                ], 404);
+            }
+
+            // For variants, use the parent configurable product ID
+            // For configurable or simple products, use the product ID itself
+            $wishlistProductId = $product->parent_id ?? $product->id;
+
             // Check if already in wishlist
             $existing = Wishlist::where('customer_id', $user->customer_id)
-                ->where('product_id', $validated['product_id'])
+                ->where('product_id', $wishlistProductId)
                 ->first();
 
             if ($existing) {
@@ -118,7 +137,7 @@ class WishlistController extends Controller
 
             Wishlist::create([
                 'customer_id' => $user->customer_id,
-                'product_id' => $validated['product_id'],
+                'product_id' => $wishlistProductId,
             ]);
 
             // If Inertia request, return back with success
@@ -147,6 +166,7 @@ class WishlistController extends Controller
 
     /**
      * Remove a product from the wishlist.
+     * For variants, remove the parent configurable product from wishlist.
      */
     public function remove(int $productId)
     {
@@ -159,8 +179,21 @@ class WishlistController extends Controller
                 ], 401);
             }
 
+            // Get the product to determine if it's a variant
+            $product = Product::find($productId);
+            if (!$product) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Product not found',
+                ], 404);
+            }
+
+            // For variants, use the parent configurable product ID
+            // For configurable or simple products, use the product ID itself
+            $wishlistProductId = $product->parent_id ?? $product->id;
+
             $wishlistItem = Wishlist::where('customer_id', $user->customer_id)
-                ->where('product_id', $productId)
+                ->where('product_id', $wishlistProductId)
                 ->first();
 
             if (!$wishlistItem) {
@@ -186,6 +219,7 @@ class WishlistController extends Controller
 
     /**
      * Check if a product is in wishlist.
+     * For variants, check if the parent configurable product is in wishlist.
      */
     public function check(int $productId)
     {
@@ -197,8 +231,20 @@ class WishlistController extends Controller
                 ]);
             }
 
+            // Get the product to determine if it's a variant
+            $product = Product::find($productId);
+            if (!$product) {
+                return response()->json([
+                    'in_wishlist' => false,
+                ]);
+            }
+
+            // For variants, use the parent configurable product ID
+            // For configurable or simple products, use the product ID itself
+            $wishlistProductId = $product->parent_id ?? $product->id;
+
             $exists = Wishlist::where('customer_id', $user->customer_id)
-                ->where('product_id', $productId)
+                ->where('product_id', $wishlistProductId)
                 ->exists();
 
             return response()->json([

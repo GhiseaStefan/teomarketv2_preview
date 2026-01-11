@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Currency;
+use App\Enums\ProductType;
 use App\Services\ProductService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -15,6 +16,75 @@ class CategoryController extends Controller
     public function __construct(ProductService $productService)
     {
         $this->productService = $productService;
+    }
+
+    /**
+     * Display all categories page.
+     *
+     * @param Request $request
+     * @return \Inertia\Response
+     */
+    public function index(Request $request)
+    {
+        // Get current currency from session, cookie, or default to RON
+        $currentCurrencyCode = $request->session()->get('currency')
+            ?? $request->cookie('currency')
+            ?? 'RON';
+
+        // Restore currency to session if it was only in cookie
+        if (!$request->session()->has('currency') && $currentCurrencyCode !== 'RON') {
+            $request->session()->put('currency', $currentCurrencyCode);
+        }
+        $currentCurrency = Currency::where('code', $currentCurrencyCode)
+            ->where('status', true)
+            ->firstOrFail();
+
+        // Get all top-level categories with images only (no subcategories)
+        $categories = Category::whereNull('parent_id')
+            ->where('status', true)
+            ->orderBy('name')
+            ->with(['products' => function ($productQuery) {
+                $productQuery->where('status', true)
+                    ->where(function($q) {
+                        $q->where('type', ProductType::SIMPLE->value)
+                          ->orWhere('type', ProductType::CONFIGURABLE->value)
+                          ->orWhereNull('type');
+                    })
+                    ->with(['images' => function ($imgQuery) {
+                        $imgQuery->orderBy('sort_order')->limit(1);
+                    }])
+                    ->limit(1);
+            }])
+            ->get()
+            ->map(function ($category) {
+                $image = null;
+
+                // First, try to use the category's own image_url
+                if ($category->image_url) {
+                    $image = $category->image_url;
+                } else {
+                    // Fallback: Get first product's first image if available
+                    if ($category->products->count() > 0) {
+                        $firstProduct = $category->products->first();
+                        if ($firstProduct->images->count() > 0) {
+                            $image = $firstProduct->images->first()->image_url;
+                        } elseif ($firstProduct->main_image_url) {
+                            $image = $firstProduct->main_image_url;
+                        }
+                    }
+                }
+
+                return [
+                    'id' => $category->id,
+                    'name' => $category->name,
+                    'slug' => $category->slug,
+                    'image' => $image,
+                ];
+            });
+
+        return Inertia::render('categories/index', [
+            'categories' => $categories->toArray(),
+        ]);
     }
 
     /**
@@ -53,6 +123,11 @@ class CategoryController extends Controller
                     ->orderBy('name')
                     ->with(['products' => function ($productQuery) {
                         $productQuery->where('status', true)
+                            ->where(function($q) {
+                                $q->where('type', ProductType::SIMPLE->value)
+                                  ->orWhere('type', ProductType::CONFIGURABLE->value)
+                                  ->orWhereNull('type'); // Handle products created before migration
+                            })
                             ->with(['images' => function ($imgQuery) {
                                 $imgQuery->orderBy('sort_order')->limit(1);
                             }])
@@ -116,6 +191,11 @@ class CategoryController extends Controller
                         ->orderBy('name')
                         ->with(['products' => function ($productQuery) {
                             $productQuery->where('status', true)
+                                ->where(function($q) {
+                                    $q->where('type', ProductType::SIMPLE->value)
+                                      ->orWhere('type', ProductType::CONFIGURABLE->value)
+                                      ->orWhereNull('type'); // Handle products created before migration
+                                })
                                 ->with(['images' => function ($imgQuery) {
                                     $imgQuery->orderBy('sort_order')->limit(1);
                                 }])
@@ -157,6 +237,11 @@ class CategoryController extends Controller
                 ->orderBy('name')
                 ->with(['products' => function ($productQuery) {
                     $productQuery->where('status', true)
+                        ->where(function($q) {
+                            $q->where('type', ProductType::SIMPLE->value)
+                              ->orWhere('type', ProductType::CONFIGURABLE->value)
+                              ->orWhereNull('type'); // Handle products created before migration
+                        })
                         ->with(['images' => function ($imgQuery) {
                             $imgQuery->orderBy('sort_order')->limit(1);
                         }])
@@ -195,6 +280,11 @@ class CategoryController extends Controller
             ->orderBy('name')
             ->with(['products' => function ($productQuery) {
                 $productQuery->where('status', true)
+                    ->where(function($q) {
+                        $q->where('type', ProductType::SIMPLE->value)
+                          ->orWhere('type', ProductType::CONFIGURABLE->value)
+                          ->orWhereNull('type'); // Handle products created before migration
+                    })
                     ->with(['images' => function ($imgQuery) {
                         $imgQuery->orderBy('sort_order')->limit(1);
                     }])

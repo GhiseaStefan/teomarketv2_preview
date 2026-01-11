@@ -8,13 +8,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Laravel\Scout\Searchable;
 use App\Models\CustomerGroup;
+use App\Enums\ProductType;
 
 class Product extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, Searchable;
 
     protected $fillable = [
+        'parent_id',
+        'type',
         'sku',
         'ean',
         'model',
@@ -25,6 +29,7 @@ class Product extends Model
         'price_ron',
         'purchase_price_ron',
         'brand_id',
+        'family_id',
         'stock_quantity',
         'weight',
         'length',
@@ -35,6 +40,8 @@ class Product extends Model
     ];
 
     protected $casts = [
+        'parent_id' => 'integer',
+        'type' => ProductType::class,
         'price_ron' => 'decimal:2',
         'purchase_price_ron' => 'decimal:2',
         'stock_quantity' => 'integer',
@@ -92,6 +99,101 @@ class Product extends Model
     public function brand(): BelongsTo
     {
         return $this->belongsTo(Brand::class);
+    }
+
+    /**
+     * Get the family for this product.
+     */
+    public function family(): BelongsTo
+    {
+        return $this->belongsTo(ProductFamily::class, 'family_id');
+    }
+
+    /**
+     * Get the parent product (for variants).
+     */
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(Product::class, 'parent_id');
+    }
+
+    /**
+     * Get the child products (variants).
+     */
+    public function children(): HasMany
+    {
+        return $this->hasMany(Product::class, 'parent_id');
+    }
+
+    /**
+     * Get the variants (only direct children with type variant).
+     */
+    public function variants(): HasMany
+    {
+        return $this->hasMany(Product::class, 'parent_id')
+            ->where('type', ProductType::VARIANT->value);
+    }
+
+    /**
+     * Get the product attribute values for this product.
+     */
+    public function attributeValues(): HasMany
+    {
+        return $this->hasMany(ProductAttributeValue::class);
+    }
+
+    /**
+     * Get the attributes for this product through product attribute values.
+     */
+    public function attributes(): BelongsToMany
+    {
+        return $this->belongsToMany(Attribute::class, 'product_attribute_values')
+            ->withPivot('attribute_value_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * Determine if the model should be searchable.
+     * Variants should not be indexed directly - they are accessed through their parent configurable product.
+     *
+     * @return bool
+     */
+    public function shouldBeSearchable(): bool
+    {
+        // Only index simple and configurable products, not variants
+        return $this->type !== ProductType::VARIANT;
+    }
+
+    /**
+     * Get the indexable data array for the model.
+     * This method defines what data will be indexed for search.
+     *
+     * @return array
+     */
+    public function toSearchableArray(): array
+    {
+        // Load relationships to avoid N+1 queries
+        $this->loadMissing('brand', 'categories');
+
+        // Create clean SKU version (without special characters) for exact matching
+        // This allows searching for "SAMSUNG-S24-ULTRA" as "SAMSUNGS24ULTRA" or just "S24"
+        $skuClean = $this->sku ? str_replace(['-', '/', ' ', '_', '.'], '', strtoupper($this->sku)) : '';
+
+        // Create clean EAN version (without special characters) for exact matching
+        // This allows searching for "5901234123457" or "590-1234-1234-57" to find the same product
+        $eanClean = $this->ean ? str_replace(['-', '/', ' ', '_', '.'], '', strtoupper($this->ean)) : '';
+
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'sku' => $this->sku,
+            'sku_clean' => $skuClean, // Clean version for exact SKU matching
+            'ean' => $this->ean,
+            'ean_clean' => $eanClean, // Clean version for exact EAN matching
+            'brand_name' => $this->brand ? $this->brand->name : '',
+            'categories' => $this->categories->pluck('name')->implode(', '),
+            'description' => $this->short_description ?? '',
+        ];
     }
 
     /**

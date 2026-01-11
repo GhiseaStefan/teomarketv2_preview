@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Listeners\MergeCartOnLogin;
+use App\Models\Product;
+use App\Observers\ProductObserver;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider;
@@ -46,5 +48,8 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->environment('production') || !empty($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
             URL::forceScheme('https');
         }
+
+        // Register model observers
+        Product::observe(ProductObserver::class);
     }
 }

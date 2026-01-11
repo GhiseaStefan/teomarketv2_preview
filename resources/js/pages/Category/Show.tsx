@@ -116,8 +116,8 @@ export default function CategoryShow({ category }: CategoryPageProps) {
             <div className={styles.container}>
                 {/* Breadcrumb */}
                 <nav className={styles.breadcrumb}>
-                    <a href="/" onClick={(e) => { e.preventDefault(); router.get('/'); }}>
-                        {t('Home')}
+                    <a href="/categories" onClick={(e) => { e.preventDefault(); router.get('/categories'); }}>
+                        {t('Categories')}
                     </a>
                     {category.breadcrumb?.map((item, index) => (
                         <React.Fragment key={item.slug}>

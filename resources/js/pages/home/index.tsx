@@ -35,6 +35,9 @@ interface Category {
 interface Product {
     id: number;
     name: string;
+    type?: 'simple' | 'configurable' | 'variant';
+    has_variants?: boolean;
+    has_variants_in_stock?: boolean | null;
     price_raw?: number;
     vat_included?: boolean;
     image: string | null;
@@ -736,6 +739,8 @@ function HomePageContent({ categories = [], categoriesWithProducts = [], categor
                                             id={product.id}
                                             name={product.name}
                                             image={product.image}
+                                            type={product.type}
+                                            has_variants_in_stock={product.has_variants_in_stock}
                                             stock_quantity={product.stock_quantity}
                                             sku={product.sku}
                                             short_description={product.short_description}

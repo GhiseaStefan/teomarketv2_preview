@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('parent_id')->nullable()->after('id')->constrained('products')->onDelete('set null');
+            $table->string('type')->default('simple')->after('parent_id')->comment('simple, configurable, variant');
             $table->string('sku')->unique();
             $table->string('ean')->nullable()->comment('Barcode/GTIN');
             $table->string('model')->nullable()->comment('Manufacturer model');
@@ -23,6 +25,7 @@ return new class extends Migration
             $table->decimal('price_ron', 15, 2)->comment('Base price in RON');
             $table->decimal('purchase_price_ron', 15, 2)->nullable()->comment('Purchase price for profit calculation');
             $table->foreignId('brand_id')->nullable()->constrained('brands')->onDelete('set null');
+            $table->foreignId('family_id')->nullable()->after('brand_id')->constrained('product_families')->onDelete('set null');
             $table->integer('stock_quantity')->default(0);
             $table->decimal('weight', 15, 2)->nullable();
             $table->decimal('length', 15, 2)->nullable();
@@ -32,6 +35,8 @@ return new class extends Migration
             $table->boolean('status')->default(true);
             $table->timestamps();
             $table->softDeletes();
+
+            $table->index('parent_id');
         });
     }
 

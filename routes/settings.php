@@ -4,6 +4,7 @@ use App\Http\Controllers\Settings\AddressController;
 use App\Http\Controllers\Settings\OrderController;
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
+use App\Http\Controllers\Settings\ReturnController;
 use App\Http\Controllers\Settings\TwoFactorAuthenticationController;
 use Illuminate\Support\Facades\Route;
 
@@ -44,4 +45,7 @@ Route::middleware('auth')->group(function () {
     Route::get('settings/history/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('settings/history/orders/search', [OrderController::class, 'search'])->name('orders.search');
     Route::get('settings/history/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
+
+    // Returns history
+    Route::get('settings/returns', [ReturnController::class, 'index'])->name('returns.index');
 });

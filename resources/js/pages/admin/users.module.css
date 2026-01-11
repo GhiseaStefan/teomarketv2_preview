@@ -8,20 +8,133 @@
 }
 
 /* ============================================
-   Search Section
+   Top Filters Row (Actions + Toggle Button)
    ============================================ */
-.searchSection {
+.topFiltersRow {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: var(--spacing-sm) 0;
-    border-bottom: 1px solid var(--color-admin-200);
-    margin-bottom: var(--spacing-sm);
-    flex-wrap: wrap;
-    gap: var(--spacing-sm);
-    position: relative;
+    justify-content: flex-end;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
 }
 
+.topActionsContainer {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-shrink: 0;
+}
+
+.searchFilterToggleButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    padding: 6px var(--spacing-sm);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    flex-shrink: 0;
+    height: 28px;
+}
+
+.searchFilterToggleButton:hover {
+    background-color: var(--color-admin-50);
+    border-color: var(--color-admin-300);
+}
+
+.searchFilterToggleButton:active {
+    background-color: var(--color-admin-100);
+}
+
+/* ============================================
+   Search Bar Section
+   ============================================ */
+.searchBarContainer {
+    margin-bottom: var(--spacing-md);
+    overflow: hidden;
+    animation: slideDownSearch 0.2s ease-out;
+}
+
+@keyframes slideDownSearch {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.searchBarForm {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    padding: 0;
+    transition: border-color 0.2s ease;
+}
+
+.searchBarForm:focus-within {
+    border-color: var(--color-admin-500);
+    box-shadow: 0 0 0 2px var(--color-admin-100);
+}
+
+.searchBarIcon {
+    position: absolute;
+    left: var(--spacing-sm);
+    color: var(--color-text-secondary);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.searchBarInput {
+    flex: 1;
+    padding: var(--spacing-xs) var(--spacing-sm) var(--spacing-xs) 32px;
+    border: none;
+    background: transparent;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+    outline: none;
+}
+
+.searchBarInput::placeholder {
+    color: var(--color-text-secondary);
+}
+
+.searchBarCancel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xs);
+    margin-right: var(--spacing-xs);
+    border: none;
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    width: 20px;
+    height: 20px;
+}
+
+.searchBarCancel:hover {
+    background-color: var(--color-admin-50);
+    color: var(--color-text-primary);
+}
+
+/* ============================================
+   Actions Container
+   ============================================ */
 .actionsContainer {
     display: flex;
     align-items: center;
@@ -66,7 +179,7 @@
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     z-index: 1000;
-    min-width: 200px;
+    min-width: 250px;
     overflow: hidden;
 }
 
@@ -87,37 +200,6 @@
 
 .dropdownItem:hover {
     background-color: var(--color-admin-50);
-}
-
-.searchForm {
-    position: relative;
-    display: flex;
-    align-items: center;
-    max-width: 400px;
-}
-
-.searchIcon {
-    position: absolute;
-    left: var(--spacing-sm);
-    color: var(--color-text-secondary);
-    pointer-events: none;
-}
-
-.searchInput {
-    padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) 32px;
-    border: 1px solid var(--color-border);
-    border-radius: 6px;
-    font-size: var(--font-size-sm);
-    background-color: var(--color-background);
-    color: var(--color-text-primary);
-    width: 100%;
-    transition: border-color 0.2s ease;
-}
-
-.searchInput:focus {
-    outline: none;
-    border-color: var(--color-admin-500);
-    box-shadow: 0 0 0 3px var(--color-admin-100);
 }
 
 /* ============================================
@@ -237,26 +319,31 @@
 
 .roleBadge {
     display: inline-block;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: var(--font-size-xs);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 11px;
     font-weight: var(--font-weight-medium);
     text-transform: capitalize;
+    line-height: 1.4;
+    white-space: nowrap;
 }
 
 .roleBadgeAdmin {
     background-color: #fee2e2;
     color: #991b1b;
+    border: 1px solid #fca5a5;
 }
 
 .roleBadgeManager {
     background-color: #dbeafe;
     color: #1e40af;
+    border: 1px solid #93c5fd;
 }
 
 .roleBadgeCustomer {
     background-color: #f3f4f6;
     color: #374151;
+    border: 1px solid #d1d5db;
 }
 
 .status {
@@ -265,20 +352,27 @@
 
 .statusBadge {
     display: inline-block;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: var(--font-size-xs);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 11px;
     font-weight: var(--font-weight-medium);
+    border: 1px solid;
+    line-height: 1.4;
+    min-width: 60px;
+    text-align: center;
+    white-space: nowrap;
 }
 
 .statusActive {
     background-color: #d1fae5;
-    color: #065f46;
+    color: #059669;
+    border-color: #10b981;
 }
 
 .statusInactive {
-    background-color: #fee2e2;
-    color: #991b1b;
+    background-color: #ef444420;
+    color: #ef4444;
+    border-color: #ef4444;
 }
 
 .emailVerified {
@@ -344,8 +438,13 @@
         padding: var(--spacing-md);
     }
 
-    .searchForm {
-        max-width: 100%;
+    .topFiltersRow {
+        flex-wrap: wrap;
+        gap: var(--spacing-sm);
+    }
+
+    .searchFilterToggleButton {
+        flex-shrink: 0;
     }
 }
 

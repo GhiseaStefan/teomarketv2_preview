@@ -1,12 +1,170 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { router } from '@inertiajs/react';
-import { ArrowLeft, Plus, X } from 'lucide-react';
+import { ArrowLeft, Plus, X, Package, ChevronRight } from 'lucide-react';
 import { AdminLayout, MultiSelect } from '../../../components/admin';
 import { useTranslations } from '../../../utils/translations';
 import { useEdit } from '../../../contexts/EditContext';
 import { Input } from '../../../components/ui/Input';
 import { Modal } from '../../../components/ui/Modal';
 import styles from './show.module.css';
+
+// Product Attributes Manager Component
+interface ProductAttributesManagerProps {
+    attributes: Attribute[];
+    productAttributes: Array<{
+        attribute_id: number;
+        attribute_value_id: number;
+    }>;
+    onChange: (attributes: Array<{ attribute_id: number; attribute_value_id: number }>) => void;
+    t: (key: string, fallback: string) => string;
+}
+
+function ProductAttributesManager({ attributes, productAttributes, onChange, t }: ProductAttributesManagerProps) {
+    const handleAttributeChange = (attributeId: number, attributeValueId: number) => {
+        const updated = productAttributes.filter(attr => attr.attribute_id !== attributeId);
+        updated.push({ attribute_id: attributeId, attribute_value_id: attributeValueId });
+        onChange(updated);
+    };
+
+    const getSelectedValue = (attributeId: number): number | null => {
+        const attr = productAttributes.find(a => a.attribute_id === attributeId);
+        return attr ? attr.attribute_value_id : null;
+    };
+
+    return (
+        <div className={styles.productAttributesManager}>
+            {attributes.length === 0 ? (
+                <div className={styles.emptyState}>
+                    {t('No attributes available', 'Nu sunt atribute disponibile')}
+                </div>
+            ) : (
+                <div className={styles.productAttributesList}>
+                    {attributes.map((attribute) => {
+                        const selectedValueId = getSelectedValue(attribute.id);
+                        return (
+                            <div key={attribute.id} className={styles.productAttributeCard}>
+                                <label className={styles.productAttributeLabel}>
+                                    {attribute.name}
+                                </label>
+                                {attribute.type === 'color_swatch' ? (
+                                    <div className={styles.colorSwatches}>
+                                        {attribute.values.map((value) => {
+                                            const isSelected = selectedValueId === value.id;
+                                            return (
+                                                <button
+                                                    key={value.id}
+                                                    type="button"
+                                                    className={`${styles.colorSwatch} ${isSelected ? styles.colorSwatchSelected : ''}`}
+                                                    onClick={() => handleAttributeChange(attribute.id, value.id)}
+                                                    style={{
+                                                        backgroundColor: value.meta_value || '#ccc',
+                                                    }}
+                                                    title={value.value}
+                                                >
+                                                    {isSelected && <span className={styles.checkmark}>✓</span>}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                ) : (
+                                    <select
+                                        className={styles.productAttributeSelect}
+                                        value={selectedValueId || ''}
+                                        onChange={(e) => {
+                                            const valueId = parseInt(e.target.value);
+                                            if (valueId) {
+                                                handleAttributeChange(attribute.id, valueId);
+                                            }
+                                        }}
+                                    >
+                                        <option value="">{t('Select value...', 'Selecteaza valoare...')}</option>
+                                        {attribute.values.map((value) => (
+                                            <option key={value.id} value={value.id}>
+                                                {value.value}
+                                            </option>
+                                        ))}
+                                    </select>
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+        </div>
+    );
+}
+
+// Variants Manager Component - Simplified: Just shows links to variant edit pages
+interface VariantsManagerProps {
+    variants: Variant[];
+    attributes: Attribute[];
+    t: (key: string, fallback: string) => string;
+}
+
+function VariantsManager({ variants, attributes, t }: VariantsManagerProps) {
+    // Generate variant display name from attributes
+    const getVariantDisplayName = (variant: Variant): string => {
+        if (variant.name) {
+            return variant.name;
+        }
+
+        const selectedAttributes = variant.attributes
+            .map(attr => {
+                const attribute = attributes.find(a => a.id === attr.attribute_id);
+                if (!attribute) return null;
+                const value = attribute.values.find(v => v.id === attr.attribute_value_id);
+                return value ? value.value : null;
+            })
+            .filter(Boolean);
+        
+        return selectedAttributes.length > 0 
+            ? selectedAttributes.join(' - ')
+            : `Variant #${variant.id || 'New'}`;
+    };
+
+    return (
+        <div className={styles.variantsManager}>
+            {variants.length === 0 ? (
+                <div className={styles.emptyState}>
+                    {t('No variants added yet', 'Nu sunt variante adaugate inca')}
+                </div>
+            ) : (
+                <div className={styles.variantsGrid}>
+                    {variants.map((variant) => {
+                        if (!variant.id) return null;
+                        
+                        const displayName = getVariantDisplayName(variant);
+                        
+                        return (
+                            <a
+                                key={variant.id}
+                                href={`/admin/products/${variant.id}`}
+                                className={styles.variantCard}
+                            >
+                                <div className={styles.variantCardImage}>
+                                    {variant.image_url ? (
+                                        <img
+                                            src={variant.image_url}
+                                            alt={displayName}
+                                            className={styles.variantImage}
+                                        />
+                                    ) : (
+                                        <div className={styles.variantImagePlaceholder}>
+                                            <Package size={24} />
+                                        </div>
+                                    )}
+                                </div>
+                                <div className={styles.variantCardTitle}>
+                                    {displayName}
+                                </div>
+                            </a>
+                        );
+                    })}
+                </div>
+            )}
+        </div>
+    );
+}
 
 interface ProductImage {
     id: number;
@@ -36,6 +194,12 @@ interface Product {
     price_ron: string;
     purchase_price_ron: string;
     brand_id: number | null;
+    family_id?: number | null;
+    family?: {
+        id: number;
+        name: string;
+        code: string;
+    } | null;
     stock_quantity: number;
     weight: string;
     length: string;
@@ -45,6 +209,56 @@ interface Product {
     main_image_url: string | null;
     images: ProductImage[];
     category_ids: number[] | number | null;
+    type?: 'simple' | 'configurable' | 'variant';
+    parent_id?: number | null;
+    parent_product?: {
+        id: number;
+        name: string;
+    } | null;
+    product_attributes?: Array<{
+        attribute_id: number;
+        attribute_value_id: number;
+    }>;
+}
+
+interface Attribute {
+    id: number;
+    name: string;
+    code: string;
+    type: 'select' | 'text' | 'color_swatch';
+    is_filterable: boolean;
+    values: AttributeValue[];
+}
+
+interface AttributeValue {
+    id: number;
+    value: string;
+    meta_value: string | null;
+    sort_order: number;
+}
+
+interface Variant {
+    id?: number;
+    name: string;
+    sku: string;
+    price_ron: string;
+    stock_quantity: number;
+    status: boolean;
+    image_url?: string | null;
+    attributes: Array<{
+        attribute_id: number;
+        attribute_value_id: number;
+    }>;
+}
+
+interface ParentProduct {
+    id: number;
+    name: string;
+}
+
+interface ProductType {
+    value: 'simple' | 'configurable' | 'variant';
+    label: string;
 }
 
 interface CustomerGroup {
@@ -62,15 +276,37 @@ interface ProductGroupPrice {
     price_ron: string;
 }
 
+interface ProductFamily {
+    id: number;
+    name: string;
+    code: string;
+}
+
 interface ProductShowPageProps {
     product: Product;
     categories: Category[];
     brands: Brand[];
+    productFamilies?: ProductFamily[];
     customerGroups?: CustomerGroup[];
     groupPrices?: ProductGroupPrice[];
+    attributes?: Attribute[];
+    variants?: Variant[];
+    parentProducts?: ParentProduct[];
+    productTypes?: ProductType[];
 }
 
-function AdminProductShowContent({ product, categories, brands, customerGroups = [], groupPrices = [] }: ProductShowPageProps) {
+function AdminProductShowContent({ 
+    product, 
+    categories, 
+    brands,
+    productFamilies = [],
+    customerGroups = [], 
+    groupPrices = [],
+    attributes = [],
+    variants: initialVariants = [],
+    parentProducts = [],
+    productTypes = []
+}: ProductShowPageProps) {
     const { t } = useTranslations();
     const { setHasUnsavedChanges, setSaveHandler, setDiscardHandler } = useEdit();
 
@@ -94,7 +330,10 @@ function AdminProductShowContent({ product, categories, brands, customerGroups =
         slug: product.slug || '',
         purchase_price_ron: product.purchase_price_ron || '',
         brand_id: product.brand_id || null,
+        family_id: product.family_id || null,
         status: product.status !== undefined ? product.status : true,
+        type: product.type || 'simple',
+        parent_id: product.parent_id || null,
     });
 
     // Initialize images array - ensure main_image_url is included if it exists and is not already in images
@@ -157,6 +396,9 @@ function AdminProductShowContent({ product, categories, brands, customerGroups =
     const initialImages = useRef<ProductImage[]>(initialImagesOrdered);
     const initialMainImage = useRef<string | null>(initialMainImageUrl);
     const initialGroupPrices = useRef<ProductGroupPrice[]>(groupPrices);
+    const initialProductAttributes = useRef<Array<{ attribute_id: number; attribute_value_id: number }>>(
+        product.product_attributes || []
+    );
 
     const [formData, setFormData] = useState(initialFormData.current);
     const [images, setImages] = useState<ProductImage[]>(initialImagesOrdered);
@@ -166,6 +408,9 @@ function AdminProductShowContent({ product, categories, brands, customerGroups =
     const [isSaving, setIsSaving] = useState(false);
     const [selectedImageForView, setSelectedImageForView] = useState<string | null>(null);
     const [productGroupPrices, setProductGroupPrices] = useState<ProductGroupPrice[]>(groupPrices);
+    const [productAttributes, setProductAttributes] = useState<Array<{ attribute_id: number; attribute_value_id: number }>>(
+        product.product_attributes || []
+    );
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
@@ -257,6 +502,7 @@ function AdminProductShowContent({ product, categories, brands, customerGroups =
             const currentImages = images;
             const currentMainImage = selectedMainImage;
             const currentGroupPrices = productGroupPrices;
+            const currentProductAttributes = productAttributes;
 
             // Validate group prices before saving
             const errors: string[] = [];
@@ -294,12 +540,11 @@ function AdminProductShowContent({ product, categories, brands, customerGroups =
             const existingImageIds = currentImages.filter(img => img.id > 0).map(img => img.id);
             const newImages = currentImages.filter(img => img.id < 0);
 
-            const updateData = {
+            const updateData: any = {
                 name: currentFormData.name,
                 model: currentFormData.model,
                 description: currentFormData.description,
                 short_description: currentFormData.short_description,
-                price_ron: currentFormData.price_ron,
                 category_ids: currentFormData.category_ids !== null ? [currentFormData.category_ids] : [],
                 stock_quantity: currentFormData.stock_quantity,
                 weight: currentFormData.weight,
@@ -309,8 +554,8 @@ function AdminProductShowContent({ product, categories, brands, customerGroups =
                 sku: currentFormData.sku,
                 ean: currentFormData.ean,
                 slug: currentFormData.slug,
-                purchase_price_ron: currentFormData.purchase_price_ron,
                 brand_id: currentFormData.brand_id,
+                family_id: currentFormData.family_id,
                 status: currentFormData.status,
                 main_image_url: currentMainImage,
                 image_ids: existingImageIds,
@@ -318,7 +563,13 @@ function AdminProductShowContent({ product, categories, brands, customerGroups =
                     image_url: img.image_url,
                     sort_order: img.sort_order,
                 })),
-                group_prices: currentGroupPrices
+            };
+
+            // Only include pricing fields for non-configurable products
+            if (currentFormData.type !== 'configurable') {
+                updateData.price_ron = currentFormData.price_ron;
+                updateData.purchase_price_ron = currentFormData.purchase_price_ron;
+                updateData.group_prices = currentGroupPrices
                     .filter(gp => gp.customer_group_id && gp.min_quantity && gp.price_ron) // Filter out incomplete entries
                     .map(gp => {
                         const priceValue = typeof gp.price_ron === 'string' ? parseFloat(gp.price_ron) : (typeof gp.price_ron === 'number' ? gp.price_ron : 0);
@@ -328,8 +579,13 @@ function AdminProductShowContent({ product, categories, brands, customerGroups =
                             min_quantity: gp.min_quantity,
                             price_ron: priceValue || 0,
                         };
-                    }),
-            };
+                    });
+            }
+
+            // Include product attributes for simple and variant products
+            if (currentFormData.type === 'simple' || currentFormData.type === 'variant') {
+                updateData.product_attributes = currentProductAttributes;
+            }
 
             const response = await fetch(`/admin/products/${product.id}`, {
                 method: 'PUT',
@@ -348,10 +604,11 @@ function AdminProductShowContent({ product, categories, brands, customerGroups =
                 initialImages.current = [...currentImages];
                 initialMainImage.current = currentMainImage;
                 initialGroupPrices.current = [...currentGroupPrices];
+                initialProductAttributes.current = [...currentProductAttributes];
                 setHasUnsavedChanges(false);
 
                 // Reload page to get updated data
-                router.reload({ only: ['product', 'groupPrices'] });
+                router.reload({ only: ['product', 'groupPrices', 'variants', 'attributes', 'productFamilies'] });
             } else {
                 const errorData = await response.json();
                 alert(errorData.message || t('Error saving product', 'Eroare la salvarea produsului'));
@@ -362,7 +619,7 @@ function AdminProductShowContent({ product, categories, brands, customerGroups =
         } finally {
             setIsSaving(false);
         }
-    }, [isSaving, formData, images, selectedMainImage, productGroupPrices, product.id, setHasUnsavedChanges, t]);
+    }, [isSaving, formData, images, selectedMainImage, productGroupPrices, productAttributes, product.id, setHasUnsavedChanges, t]);
 
     const handleDiscard = useCallback(() => {
         // Reset form data to initial values
@@ -370,6 +627,7 @@ function AdminProductShowContent({ product, categories, brands, customerGroups =
         setImages([...initialImages.current]);
         setSelectedMainImage(initialMainImage.current);
         setProductGroupPrices([...initialGroupPrices.current]);
+        setProductAttributes([...initialProductAttributes.current]);
         setHasUnsavedChanges(false);
     }, [setHasUnsavedChanges]);
 
@@ -384,6 +642,32 @@ function AdminProductShowContent({ product, categories, brands, customerGroups =
             return prev;
         });
     }, [selectedMainImage]);
+
+    // Reload attributes when family changes (to get filtered attributes)
+    const previousFamilyId = useRef(formData.family_id);
+    useEffect(() => {
+        if (previousFamilyId.current !== formData.family_id) {
+            previousFamilyId.current = formData.family_id;
+            // Only reload if family actually changed (not initial load)
+            if (initialFormData.current.family_id !== formData.family_id && formData.family_id) {
+                // Reload page to get filtered attributes for the new family
+                // Pass the family_id as query parameter so backend can filter before saving
+                const url = new URL(window.location.href);
+                url.searchParams.set('family_id', formData.family_id.toString());
+                
+                router.get(
+                    url.pathname + url.search,
+                    {},
+                    { 
+                        only: ['attributes'], 
+                        preserveState: true, 
+                        preserveScroll: true,
+                        replace: true
+                    }
+                );
+            }
+        }
+    }, [formData.family_id]);
 
     // Check if form has changes
     useEffect(() => {
@@ -404,13 +688,15 @@ function AdminProductShowContent({ product, categories, brands, customerGroups =
             formData.slug !== initialFormData.current.slug ||
             formData.purchase_price_ron !== initialFormData.current.purchase_price_ron ||
             formData.brand_id !== initialFormData.current.brand_id ||
+            formData.family_id !== initialFormData.current.family_id ||
             formData.status !== initialFormData.current.status ||
             JSON.stringify(images) !== JSON.stringify(initialImages.current) ||
             selectedMainImage !== initialMainImage.current ||
-            JSON.stringify(productGroupPrices) !== JSON.stringify(initialGroupPrices.current);
+            JSON.stringify(productGroupPrices) !== JSON.stringify(initialGroupPrices.current) ||
+            JSON.stringify(productAttributes) !== JSON.stringify(initialProductAttributes.current);
 
         setHasUnsavedChanges(hasChanges);
-    }, [formData, images, selectedMainImage, productGroupPrices, setHasUnsavedChanges]);
+    }, [formData, images, selectedMainImage, productGroupPrices, productAttributes, setHasUnsavedChanges]);
 
     // Set up save and discard handlers
     useEffect(() => {
@@ -431,13 +717,42 @@ function AdminProductShowContent({ product, categories, brands, customerGroups =
     return (
         <div className={styles.productPage}>
             <div className={styles.header}>
-                <button
-                    onClick={() => router.get('/admin/products')}
-                    className={styles.backButton}
-                >
-                    <ArrowLeft size={18} />
-                    {t('Back', 'Inapoi')}
-                </button>
+                <div className={styles.headerTop}>
+                    {product.type === 'variant' && product.parent_product ? (
+                        <div className={styles.breadcrumbs}>
+                            <button
+                                onClick={() => router.get('/admin/products')}
+                                className={styles.breadcrumbLink}
+                            >
+                                {t('Products', 'Produse')}
+                            </button>
+                            <ChevronRight size={16} className={styles.breadcrumbSeparator} />
+                            <button
+                                onClick={() => router.get(`/admin/products/${product.parent_product!.id}`)}
+                                className={styles.breadcrumbLink}
+                            >
+                                {product.parent_product.name}
+                            </button>
+                            <ChevronRight size={16} className={styles.breadcrumbSeparator} />
+                            <span className={styles.breadcrumbCurrent}>
+                                {product.name}
+                            </span>
+                        </div>
+                    ) : (
+                        <div className={styles.breadcrumbs}>
+                            <button
+                                onClick={() => router.get('/admin/products')}
+                                className={styles.breadcrumbLink}
+                            >
+                                {t('Products', 'Produse')}
+                            </button>
+                            <ChevronRight size={16} className={styles.breadcrumbSeparator} />
+                            <span className={styles.breadcrumbCurrent}>
+                                {product.name}
+                            </span>
+                        </div>
+                    )}
+                </div>
                 <div className={styles.headerTitle}>
                     <h1 className={styles.pageTitle}>{t('Edit Product', 'Editeaza Produs')}</h1>
                     <span className={styles.productId}>{t('ID', 'ID')}: {product.id}</span>
@@ -497,6 +812,24 @@ function AdminProductShowContent({ product, categories, brands, customerGroups =
                                     multiple={false}
                                 />
                             </div>
+                        </div>
+                        <div className={styles.fieldGroup}>
+                            <label className={styles.label}>{t('Family', 'Familie')}</label>
+                            <MultiSelect
+                                options={productFamilies}
+                                value={formData.family_id}
+                                onChange={(selectedId) => {
+                                    const familyId = Array.isArray(selectedId) ? selectedId[0] : selectedId;
+                                    setFormData(prev => ({ ...prev, family_id: familyId }));
+                                    // Clear product attributes when family changes
+                                    if (familyId !== formData.family_id) {
+                                        setProductAttributes([]);
+                                    }
+                                }}
+                                placeholder={t('Select family...', 'Selecteaza familie...')}
+                                searchPlaceholder={t('Search family...', 'Cauta familie...')}
+                                multiple={false}
+                            />
                         </div>
                         <div className={styles.fieldGroup}>
                             <label className={styles.label}>{t('Description', 'Descriere')}</label>
@@ -578,45 +911,47 @@ function AdminProductShowContent({ product, categories, brands, customerGroups =
                         </div>
                     </div>
 
-                    {/* Pricing */}
-                    <div className={styles.sectionCard}>
-                        <h2 className={styles.sectionTitle}>{t('Pricing', 'Preturi')}</h2>
-                        <div className={styles.rowGroup}>
-                            <div className={styles.fieldGroup}>
-                                <label className={styles.label}>
-                                    {t('Sale Price', 'Pret Vanzare')} <span className={styles.labelNote}>({t('without VAT', 'fara TVA')})</span>
-                                </label>
-                                <div className={styles.priceInputWrapper}>
-                                    <Input
-                                        type="text"
-                                        name="price_ron"
-                                        value={formData.price_ron}
-                                        onChange={handleInputChange}
-                                        className={styles.priceInput}
-                                        placeholder="0.00"
-                                    />
-                                    <span className={styles.priceCurrency}>RON</span>
+                    {/* Pricing - Hidden for configurable products */}
+                    {formData.type !== 'configurable' && (
+                        <div className={styles.sectionCard}>
+                            <h2 className={styles.sectionTitle}>{t('Pricing', 'Preturi')}</h2>
+                            <div className={styles.rowGroup}>
+                                <div className={styles.fieldGroup}>
+                                    <label className={styles.label}>
+                                        {t('Sale Price', 'Pret Vanzare')} <span className={styles.labelNote}>({t('without VAT', 'fara TVA')})</span>
+                                    </label>
+                                    <div className={styles.priceInputWrapper}>
+                                        <Input
+                                            type="text"
+                                            name="price_ron"
+                                            value={formData.price_ron}
+                                            onChange={handleInputChange}
+                                            className={styles.priceInput}
+                                            placeholder="0.00"
+                                        />
+                                        <span className={styles.priceCurrency}>RON</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className={styles.fieldGroup}>
-                                <label className={styles.label}>
-                                    {t('Purchase Price', 'Pret Achizitie')} <span className={styles.labelNote}>({t('without VAT', 'fara TVA')})</span>
-                                </label>
-                                <div className={styles.priceInputWrapper}>
-                                    <Input
-                                        type="text"
-                                        name="purchase_price_ron"
-                                        value={formData.purchase_price_ron}
-                                        onChange={handleInputChange}
-                                        className={styles.priceInput}
-                                        placeholder="0.00"
-                                        disabled
-                                    />
-                                    <span className={styles.priceCurrency}>RON</span>
+                                <div className={styles.fieldGroup}>
+                                    <label className={styles.label}>
+                                        {t('Purchase Price', 'Pret Achizitie')} <span className={styles.labelNote}>({t('without VAT', 'fara TVA')})</span>
+                                    </label>
+                                    <div className={styles.priceInputWrapper}>
+                                        <Input
+                                            type="text"
+                                            name="purchase_price_ron"
+                                            value={formData.purchase_price_ron}
+                                            onChange={handleInputChange}
+                                            className={styles.priceInput}
+                                            placeholder="0.00"
+                                            disabled
+                                        />
+                                        <span className={styles.priceCurrency}>RON</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    )}
 
                     {/* Inventory & Identification */}
                     <div className={styles.sectionCard}>
@@ -665,6 +1000,7 @@ function AdminProductShowContent({ product, categories, brands, customerGroups =
                                     value={formData.stock_quantity}
                                     onChange={handleInputChange}
                                     className={styles.input}
+                                    disabled={formData.type === 'configurable'}
                                 />
                             </div>
                         </div>
@@ -743,11 +1079,43 @@ function AdminProductShowContent({ product, categories, brands, customerGroups =
                         </div>
                     </div>
 
-                    {/* Group Prices */}
-                    <div className={styles.sectionCard}>
-                        <h2 className={styles.sectionTitle}>{t('Group Prices', 'Preturi Grupuri')}</h2>
-                        <div className={styles.fieldGroup}>
-                            <div className={styles.groupPricesContainer}>
+                    {/* Variants Management - Only for configurable products */}
+                    {formData.type === 'configurable' && (
+                        <div className={styles.sectionCard}>
+                            <h2 className={styles.sectionTitle}>{t('Variants', 'Variante')}</h2>
+                            <VariantsManager
+                                variants={initialVariants}
+                                attributes={attributes}
+                                t={t}
+                            />
+                        </div>
+                    )}
+
+                    {/* Product Attributes - For simple and variant products */}
+                    {(formData.type === 'simple' || formData.type === 'variant') && (
+                        <div className={styles.sectionCard}>
+                            <h2 className={styles.sectionTitle}>{t('Attributes', 'Atribute')}</h2>
+                            {!formData.family_id ? (
+                                <div className={styles.emptyState}>
+                                    {t('Please select a family first to assign attributes', 'Selecteaza mai intai o familie pentru a atribui atribute')}
+                                </div>
+                            ) : (
+                                <ProductAttributesManager
+                                    attributes={attributes}
+                                    productAttributes={productAttributes}
+                                    onChange={setProductAttributes}
+                                    t={t}
+                                />
+                            )}
+                        </div>
+                    )}
+
+                    {/* Group Prices - Hidden for configurable products */}
+                    {formData.type !== 'configurable' && (
+                        <div className={styles.sectionCard}>
+                            <h2 className={styles.sectionTitle}>{t('Group Prices', 'Preturi Grupuri')}</h2>
+                            <div className={styles.fieldGroup}>
+                                <div className={styles.groupPricesContainer}>
                                 {productGroupPrices.length === 0 ? (
                                     <div className={styles.emptyState}>
                                         <span>{t('No group prices set', 'Nu sunt preturi pentru grupuri')}</span>
@@ -849,6 +1217,7 @@ function AdminProductShowContent({ product, categories, brands, customerGroups =
                             </div>
                         </div>
                     </div>
+                    )}
                 </div>
             </form>
 

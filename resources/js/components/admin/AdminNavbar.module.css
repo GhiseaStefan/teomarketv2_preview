@@ -40,6 +40,7 @@
     /* Ajustat pentru a se potrivi cu --color-admin-600 (#2563eb) */
     filter: brightness(0) saturate(100%) invert(38%) sepia(96%) saturate(2000%) hue-rotate(210deg) brightness(0.95) contrast(1.1);
     transition: filter 0.2s ease;
+    cursor: pointer;
 }
 
 .logo:hover {
@@ -226,6 +227,31 @@
 }
 
 /* ============================================
+   Admin Navbar - Shop Button
+   ============================================ */
+.shopButton {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.shopButton:hover {
+    background-color: var(--color-admin-50);
+    border-color: var(--color-admin-300);
+    color: var(--color-admin-700);
+}
+
+/* ============================================
    Admin Navbar - Language Selector
    ============================================ */
 .languageSelectorWrapper {
@@ -399,5 +425,15 @@
 
     .searchInput {
         font-size: var(--font-size-sm);
+    }
+
+    .shopButton span {
+        display: none;
+    }
+
+    .shopButton {
+        padding: var(--spacing-xs);
+        min-width: 36px;
+        justify-content: center;
     }
 }

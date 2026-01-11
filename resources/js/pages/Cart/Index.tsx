@@ -5,6 +5,7 @@ import { Button } from '../../components/ui/Button';
 import { useTranslations } from '../../utils/translations';
 import { ShoppingCart, Trash2, Plus, Minus, ArrowLeft, Info } from 'lucide-react';
 import { PriceDisplay } from '../../components/PriceDisplay/PriceDisplay';
+import { formatPriceWithCurrency } from '../../utils/priceFormatter';
 import type { SharedData, Currency } from '../../types';
 import styles from './Index.module.css';
 
@@ -79,25 +80,34 @@ export default function CartIndex({ cart }: CartPageProps) {
 
     // Cache CSRF token to avoid querying DOM on every request
     const csrfTokenRef = useRef<string | null>(null);
-    const getCsrfToken = useCallback(() => {
-        if (!csrfTokenRef.current) {
-            csrfTokenRef.current = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    
+    // Initialize CSRF token on mount
+    useEffect(() => {
+        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        if (token) {
+            csrfTokenRef.current = token;
         }
-        return csrfTokenRef.current;
     }, []);
 
-    const formatPriceWithCurrency = (price: number): string => {
-        const formattedPrice = price.toFixed(2);
-        if (currentCurrency) {
-            if (currentCurrency.symbol_left) {
-                return `${currentCurrency.symbol_left}${formattedPrice}`;
-            } else if (currentCurrency.symbol_right) {
-                return `${formattedPrice}${currentCurrency.symbol_right}`;
-            } else {
-                return `${formattedPrice} ${currentCurrency.code}`;
-            }
+    const getCsrfToken = useCallback(() => {
+        // Always try to get fresh token from DOM first (in case it changed)
+        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        if (token) {
+            csrfTokenRef.current = token;
+            return token;
         }
-        return formattedPrice;
+        // Fallback to cached token if available
+        if (csrfTokenRef.current) {
+            return csrfTokenRef.current;
+        }
+        return '';
+    }, []);
+
+    const formatPrice = (price: number): string => {
+        if (!currentCurrency) {
+            return price.toFixed(2);
+        }
+        return formatPriceWithCurrency(price, currentCurrency);
     };
 
     const handleQuantityChange = useCallback(async (cartKey: string, newQuantity: number) => {
@@ -113,14 +123,54 @@ export default function CartIndex({ cart }: CartPageProps) {
         setUpdatingItems(prev => new Set(prev).add(cartKey));
 
         try {
+            const csrfToken = getCsrfToken();
+            if (!csrfToken) {
+                console.error('CSRF token not available, reloading page');
+                window.location.reload();
+                return;
+            }
+
             const response = await fetch(`/cart/${encodeURIComponent(cartKey)}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': getCsrfToken(),
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
                 },
+                credentials: 'same-origin',
                 body: JSON.stringify({ quantity: newQuantity }),
             });
+
+            // Check response status first
+            if (!response.ok) {
+                // Get content type to determine if it's JSON or HTML
+                const contentType = response.headers.get('content-type') || '';
+                
+                if (contentType.includes('application/json')) {
+                    // It's a JSON error response, parse it
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+                } else {
+                    // It's likely an HTML error page (CSRF mismatch, validation error page, etc.)
+                    // Read as text to avoid JSON parse error
+                    const text = await response.text();
+                    
+                    // Check if it's a CSRF error
+                    if (response.status === 419 || text.includes('CSRF') || text.includes('419')) {
+                        console.error('CSRF token mismatch, reloading page');
+                        window.location.reload();
+                        return;
+                    }
+                    
+                    throw new Error(`Server returned non-JSON response (status: ${response.status})`);
+                }
+            }
+
+            // Response is OK, check content type
+            const contentType = response.headers.get('content-type') || '';
+            if (!contentType.includes('application/json')) {
+                throw new Error(`Expected JSON response, got ${contentType || 'unknown content type'}`);
+            }
 
             const data = await response.json();
 
@@ -131,6 +181,10 @@ export default function CartIndex({ cart }: CartPageProps) {
             }
         } catch (error) {
             console.error('Error updating quantity:', error);
+            // Only reload on CSRF errors, not on other errors
+            if (error instanceof Error && (error.message.includes('CSRF') || error.message.includes('419'))) {
+                window.location.reload();
+            }
         } finally {
             setUpdatingItems(prev => {
                 const next = new Set(prev);
@@ -149,12 +203,52 @@ export default function CartIndex({ cart }: CartPageProps) {
         setRemovingItems(prev => new Set(prev).add(cartKey));
 
         try {
+            const csrfToken = getCsrfToken();
+            if (!csrfToken) {
+                console.error('CSRF token not available, reloading page');
+                window.location.reload();
+                return;
+            }
+
             const response = await fetch(`/cart/${encodeURIComponent(cartKey)}`, {
                 method: 'DELETE',
                 headers: {
-                    'X-CSRF-TOKEN': getCsrfToken(),
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
                 },
+                credentials: 'same-origin',
             });
+
+            // Check response status first
+            if (!response.ok) {
+                // Get content type to determine if it's JSON or HTML
+                const contentType = response.headers.get('content-type') || '';
+                
+                if (contentType.includes('application/json')) {
+                    // It's a JSON error response, parse it
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+                } else {
+                    // It's likely an HTML error page (CSRF mismatch, validation error page, etc.)
+                    // Read as text to avoid JSON parse error
+                    const text = await response.text();
+                    
+                    // Check if it's a CSRF error
+                    if (response.status === 419 || text.includes('CSRF') || text.includes('419')) {
+                        console.error('CSRF token mismatch, reloading page');
+                        window.location.reload();
+                        return;
+                    }
+                    
+                    throw new Error(`Server returned non-JSON response (status: ${response.status})`);
+                }
+            }
+
+            // Response is OK, check content type
+            const contentType = response.headers.get('content-type') || '';
+            if (!contentType.includes('application/json')) {
+                throw new Error(`Expected JSON response, got ${contentType || 'unknown content type'}`);
+            }
 
             const data = await response.json();
 
@@ -163,6 +257,10 @@ export default function CartIndex({ cart }: CartPageProps) {
             }
         } catch (error) {
             console.error('Error removing item:', error);
+            // Only reload on CSRF errors, not on other errors
+            if (error instanceof Error && (error.message.includes('CSRF') || error.message.includes('419'))) {
+                window.location.reload();
+            }
         } finally {
             setRemovingItems(prev => {
                 const next = new Set(prev);
@@ -222,8 +320,9 @@ export default function CartIndex({ cart }: CartPageProps) {
 
                                 <div className={styles.tableBody}>
                                     {cart.items.map((item) => {
-                                        // Use vat_included from cart summary to determine which price to show
-                                        const showVat = cart.summary.vat_included;
+                                        // Use vat_included from item to determine which price to show
+                                        // Each item can have its own customer_group, so use item.vat_included instead of summary
+                                        const showVat = item.vat_included;
                                         const unitPrice = showVat
                                             ? (item.unit_price_incl_vat ?? item.unit_price_raw)
                                             : (item.unit_price_excl_vat ?? item.unit_price_raw);
@@ -259,9 +358,9 @@ export default function CartIndex({ cart }: CartPageProps) {
                                                             </div>
                                                             <div className={styles.tierTooltipPrice}>
                                                                 {showVat ? (
-                                                                    <PriceDisplay price={formatPriceWithCurrency(tier.price_incl_vat)} />
+                                                                    <PriceDisplay price={formatPrice(tier.price_incl_vat)} />
                                                                 ) : (
-                                                                    <PriceDisplay price={formatPriceWithCurrency(tier.price_excl_vat)} />
+                                                                    <PriceDisplay price={formatPrice(tier.price_excl_vat)} />
                                                                 )}
                                                             </div>
                                                         </div>
@@ -352,7 +451,7 @@ export default function CartIndex({ cart }: CartPageProps) {
                                                 </div>
 
                                                 <div className={styles.tableCell} data-label={t('Price')}>
-                                                    <PriceDisplay price={formatPriceWithCurrency(unitPrice)} />
+                                                    <PriceDisplay price={formatPrice(unitPrice)} />
                                                 </div>
 
                                                 <div className={styles.tableCell} data-label={t('Quantity')}>
@@ -436,7 +535,7 @@ export default function CartIndex({ cart }: CartPageProps) {
                                                                 title={t('Click to apply quantity for next tier')}
                                                             >
                                                                 <span className={styles.nextTierText}>
-                                                                    +{item.items_to_next_tier} {t('buc')} → <PriceDisplay price={formatPriceWithCurrency(nextTierPrice)} />
+                                                                    +{item.items_to_next_tier} {t('buc')} → <PriceDisplay price={formatPrice(nextTierPrice)} />
                                                                 </span>
                                                             </div>
                                                         )}
@@ -444,7 +543,7 @@ export default function CartIndex({ cart }: CartPageProps) {
                                                 </div>
 
                                                 <div className={styles.tableCell} data-label={t('Total')}>
-                                                    <PriceDisplay price={formatPriceWithCurrency(totalPrice)} />
+                                                    <PriceDisplay price={formatPrice(totalPrice)} />
                                                 </div>
 
                                                 <div className={`${styles.tableCell} ${styles.removeButtonCell}`} data-label="">
@@ -472,14 +571,14 @@ export default function CartIndex({ cart }: CartPageProps) {
                                     <div className={styles.summaryRow}>
                                         <span>{t('Subtotal (excl. VAT)')}:</span>
                                         <span>
-                                            <PriceDisplay price={formatPriceWithCurrency(cart.summary.total_excl_vat)} />
+                                            <PriceDisplay price={formatPrice(cart.summary.total_excl_vat)} />
                                         </span>
                                     </div>
 
                                     <div className={styles.summaryRow}>
                                         <span>{t('VAT')} ({cart.summary.vat_rate}%):</span>
                                         <span>
-                                            <PriceDisplay price={formatPriceWithCurrency(cart.summary.total_incl_vat - cart.summary.total_excl_vat)} />
+                                            <PriceDisplay price={formatPrice(cart.summary.total_incl_vat - cart.summary.total_excl_vat)} />
                                         </span>
                                     </div>
 
@@ -488,7 +587,7 @@ export default function CartIndex({ cart }: CartPageProps) {
                                     <div className={styles.summaryRowTotal}>
                                         <span>{t('Total (incl. VAT)')}:</span>
                                         <span>
-                                            <PriceDisplay price={formatPriceWithCurrency(cart.summary.total_incl_vat)} />
+                                            <PriceDisplay price={formatPrice(cart.summary.total_incl_vat)} />
                                         </span>
                                     </div>
                                 </div>

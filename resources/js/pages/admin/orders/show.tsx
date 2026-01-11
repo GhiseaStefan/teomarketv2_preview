@@ -1,5 +1,5 @@
 import { router } from '@inertiajs/react';
-import { ArrowLeft, Package, Truck, MapPin, CreditCard, Calendar, User, Receipt, Euro, Calculator, FileText, MoreVertical, ChevronDown, Wallet, Banknote, Phone, Mail } from 'lucide-react';
+import { ArrowLeft, Package, Truck, MapPin, CreditCard, Calendar, User, Receipt, Euro, Calculator, FileText, MoreVertical, ChevronDown, Wallet, Banknote, Phone, Mail, ChevronRight } from 'lucide-react';
 import { AdminLayout } from '../../../components/admin';
 import { useTranslations } from '../../../utils/translations';
 import { formatPrice } from '../../../utils/formatPrice';
@@ -410,13 +410,23 @@ export default function OrderShow({ order }: OrderShowPageProps) {
                 {/* Header */}
                 <div className={styles.header}>
                     <div className={styles.headerLeft}>
-                        <button
-                            className={styles.backButton}
-                            onClick={() => router.get('/admin/orders')}
-                        >
-                            <ArrowLeft size={18} />
-                            <span>{t('Back', 'Inapoi')}</span>
-                        </button>
+                        {/* Breadcrumb */}
+                        <nav className={styles.breadcrumb}>
+                            <a 
+                                href="/admin/orders" 
+                                onClick={(e) => { 
+                                    e.preventDefault(); 
+                                    router.get('/admin/orders'); 
+                                }}
+                                className={styles.breadcrumbLink}
+                            >
+                                {t('Orders', 'Comenzi')}
+                            </a>
+                            <ChevronRight size={16} className={styles.breadcrumbSeparator} />
+                            <span className={styles.breadcrumbCurrent}>
+                                #{order.order_number}
+                            </span>
+                        </nav>
                         <div className={styles.orderTitle}>
                             <h1 className={styles.orderNumber}>#{order.order_number}</h1>
                             <span
@@ -461,11 +471,11 @@ export default function OrderShow({ order }: OrderShowPageProps) {
                         </button>
                         {isActionsDropdownOpen && (
                             <div className={styles.actionsDropdownMenu}>
-                                <button className={styles.actionDropdownItem}>
-                                    {t('Modify Order', 'Modifica Comanda')} <span className={styles.soonBadge}>{t('Soon', 'In curand')}</span>
-                                </button>
-                                <button className={styles.actionDropdownItem}>
-                                    {t('Change Status', 'Schimba Status')} <span className={styles.soonBadge}>{t('Soon', 'In curand')}</span>
+                                <button 
+                                    className={styles.actionDropdownItem}
+                                    onClick={() => router.get(`/admin/orders/${order.order_number}/edit`)}
+                                >
+                                    {t('Modify Order', 'Modifica Comanda')}
                                 </button>
                                 <button className={styles.actionDropdownItem}>
                                     {t('Generate Invoice', 'Genereaza Factura')} <span className={styles.soonBadge}>{t('Soon', 'In curand')}</span>
@@ -574,7 +584,7 @@ export default function OrderShow({ order }: OrderShowPageProps) {
                                     <div className={styles.summaryRow}>
                                         <div className={styles.summaryLabel}>
                                             <span className={styles.summaryLabelText}>
-                                                {t('Shipping', 'Livrare')}
+                                                {t('Shipping', 'Livrare')} <span className={styles.summaryNote}>(fara TVA)</span>
                                             </span>
                                         </div>
                                         <div className={styles.summaryValue}>

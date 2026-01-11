@@ -44,6 +44,18 @@ class ProductionSeeder extends Seeder
             // Shipping configurations (depends on Shipping Methods)
             ShippingMethodConfigsSeeder::class,
 
+            // Product attributes (required for variant products)
+            AttributesSeeder::class,
+
+            // Product attribute values (required for variant products)
+            AttributeValuesSeeder::class,
+
+            // Product families (electronice, fashion, mobila, jucarii, sport, casa si gradina)
+            ProductFamiliesSeeder::class,
+
+            // Associate attributes with product families
+            AttributeFamilySeeder::class,
+
             // Admin user (creates production admin user)
             AdminSeeder::class,
         ]);

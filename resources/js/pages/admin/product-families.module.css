@@ -1,0 +1,430 @@
+/* ============================================
+   Product Families Page - Main Container
+   ============================================ */
+.productFamiliesPage {
+    padding: var(--spacing-md);
+    background-color: var(--color-background);
+    min-height: calc(100vh - 60px);
+}
+
+/* ============================================
+   Top Filters Row (Actions + Toggle Button)
+   ============================================ */
+.topFiltersRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.pageTitle {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0;
+}
+
+.topActionsContainer {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-shrink: 0;
+}
+
+/* ============================================
+   Actions Container
+   ============================================ */
+.actionsContainer {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    position: relative;
+}
+
+.selectedCount {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+.actionsButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xs);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.actionsButton:hover:not(:disabled) {
+    background-color: var(--color-admin-50);
+    border-color: var(--color-admin-300);
+}
+
+.actionsButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.dropdownMenu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    min-width: 250px;
+    overflow: hidden;
+}
+
+.dropdownItem {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: none;
+    background: transparent;
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    text-align: left;
+}
+
+.dropdownItem:hover {
+    background-color: var(--color-admin-50);
+}
+
+.searchFilterToggleButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    padding: 6px var(--spacing-sm);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    flex-shrink: 0;
+    height: 28px;
+}
+
+.searchFilterToggleButton:hover {
+    background-color: var(--color-admin-50);
+    border-color: var(--color-admin-300);
+}
+
+.searchFilterToggleButton:active {
+    background-color: var(--color-admin-100);
+}
+
+/* ============================================
+   Search Bar Section
+   ============================================ */
+.searchBarContainer {
+    margin-bottom: var(--spacing-md);
+    overflow: hidden;
+    animation: slideDownSearch 0.2s ease-out;
+}
+
+@keyframes slideDownSearch {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.searchBarForm {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    padding: 0;
+    transition: border-color 0.2s ease;
+}
+
+.searchBarForm:focus-within {
+    border-color: var(--color-admin-500);
+    box-shadow: 0 0 0 2px var(--color-admin-100);
+}
+
+.searchBarIcon {
+    position: absolute;
+    left: var(--spacing-sm);
+    color: var(--color-text-secondary);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.searchBarInput {
+    flex: 1;
+    padding: var(--spacing-xs) var(--spacing-sm) var(--spacing-xs) 32px;
+    border: none;
+    background: transparent;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+    outline: none;
+}
+
+.searchBarInput::placeholder {
+    color: var(--color-text-secondary);
+}
+
+.searchBarCancel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xs);
+    margin-right: var(--spacing-xs);
+    border: none;
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    width: 20px;
+    height: 20px;
+}
+
+.searchBarCancel:hover {
+    background-color: var(--color-admin-50);
+    color: var(--color-text-primary);
+}
+
+/* ============================================
+   Table Container
+   ============================================ */
+.tableContainer {
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+.familiesTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--font-size-xs);
+}
+
+.familiesTable thead {
+    background-color: var(--color-admin-50);
+    border-bottom: 1px solid var(--color-admin-200);
+}
+
+.familiesTable th {
+    padding: 8px 16px;
+    text-align: left;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-xs);
+    white-space: nowrap;
+}
+
+.checkboxHeader {
+    width: 40px;
+    text-align: center;
+}
+
+.idHeader {
+    width: 60px;
+}
+
+.checkboxCell {
+    width: 40px;
+    text-align: center;
+    padding: 8px;
+}
+
+.checkbox {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: var(--color-admin-600);
+}
+
+.familiesTable tbody tr {
+    border-bottom: 1px solid var(--color-border);
+    transition: background-color 0.2s ease;
+}
+
+.familiesTable tbody tr:hover {
+    background-color: var(--color-admin-50);
+}
+
+.familiesTable tbody tr.inactiveRow {
+    opacity: 0.5;
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.familiesTable tbody tr.inactiveRow:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+    opacity: 0.7;
+}
+
+.familiesTable tbody tr.inactiveRow td {
+    color: var(--color-text-secondary);
+    text-decoration: line-through;
+}
+
+.familiesTable td {
+    padding: 8px 16px;
+    vertical-align: middle;
+}
+
+.emptyState {
+    text-align: center;
+    padding: var(--spacing-xl) !important;
+    color: var(--color-text-secondary);
+}
+
+/* ============================================
+   Table Cell Styles
+   ============================================ */
+.familyId {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-admin-700);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-xs);
+}
+
+.familyName {
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-xs);
+}
+
+.familyLink {
+    color: var(--color-admin-700);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.familyLink:hover {
+    color: var(--color-admin-800);
+    text-decoration: underline;
+}
+
+.familiesTable tbody tr.inactiveRow .familyLink {
+    color: var(--color-text-secondary);
+    text-decoration: line-through;
+}
+
+.familyCode {
+    font-family: var(--font-mono);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+}
+
+.familyCode code {
+    background-color: var(--color-admin-50);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+}
+
+.statusBadge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: var(--font-weight-medium);
+    border: 1px solid;
+    line-height: 1.4;
+    min-width: 70px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.productsCount {
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-xs);
+    text-align: center;
+}
+
+.createdAt {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+    white-space: nowrap;
+}
+
+/* ============================================
+   Pagination
+   ============================================ */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+    padding: var(--spacing-md) 0;
+}
+
+.paginationButton {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.paginationButton:hover:not(:disabled) {
+    background-color: var(--color-admin-50);
+    border-color: var(--color-admin-300);
+}
+
+.paginationButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.paginationInfo {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+@media (max-width: 1024px) {
+    .productFamiliesPage {
+        padding: var(--spacing-md);
+    }
+
+    .headerRow {
+        flex-wrap: wrap;
+        gap: var(--spacing-sm);
+    }
+}
+
+@media (max-width: 768px) {
+    .tableContainer {
+        overflow-x: scroll;
+    }
+
+    .familiesTable {
+        min-width: 600px;
+    }
+}

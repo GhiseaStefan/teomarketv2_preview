@@ -401,7 +401,7 @@ function OrdersContent({ orders: pageOrders, pagination: pagePagination, filters
         const pages = [];
         const maxVisible = 5;
         let startPage = Math.max(1, pagination.current_page - Math.floor(maxVisible / 2));
-        let endPage = Math.min(pagination.last_page, startPage + maxVisible - 1);
+        const endPage = Math.min(pagination.last_page, startPage + maxVisible - 1);
 
         if (endPage - startPage < maxVisible - 1) {
             startPage = Math.max(1, endPage - maxVisible + 1);
@@ -878,11 +878,11 @@ function OrdersContent({ orders: pageOrders, pagination: pagePagination, filters
                                                                         <PriceDisplay price={formatPriceInOrderCurrency(order.total_excl_vat, getOrderCurrency(order.currency))} />
                                                                     </span>
                                                                 </div>
-                                                                {order.shipping && (order.shipping.shipping_cost_incl_vat !== null && order.shipping.shipping_cost_incl_vat !== undefined) && (
+                                                                {order.shipping && (order.shipping.shipping_cost_excl_vat !== null && order.shipping.shipping_cost_excl_vat !== undefined) && (
                                                                     <div className={styles.summaryRow}>
                                                                         <span>{t('Shipping Cost')}</span>
                                                                         <span>
-                                                                            <PriceDisplay price={formatPriceInOrderCurrency(order.shipping.shipping_cost_incl_vat || 0, getOrderCurrency(order.currency))} />
+                                                                            <PriceDisplay price={formatPriceInOrderCurrency(order.shipping.shipping_cost_excl_vat || 0, getOrderCurrency(order.currency))} />
                                                                         </span>
                                                                     </div>
                                                                 )}
@@ -903,7 +903,7 @@ function OrdersContent({ orders: pageOrders, pagination: pagePagination, filters
                                                                 </div>
                                                                 <div className={`${styles.summaryRow} ${styles.summaryRowTotal}`}>
                                                                     <span>
-                                                                        {t('Total')}
+                                                                        {t('Total')} <span className={styles.vatRateLabel}>(cu TVA)</span>
                                                                     </span>
                                                                     <span>
                                                                         <PriceDisplay price={formatPriceInOrderCurrency(

@@ -38,9 +38,49 @@ interface PriceTier {
     price_display?: number; // Price already calculated for customer group display (preferred)
 }
 
+interface ProductAttribute {
+    id: number;
+    name: string;
+    code: string;
+    type: 'select' | 'text' | 'color_swatch';
+    is_filterable: boolean;
+    values: AttributeValue[];
+}
+
+interface AttributeValue {
+    id: number;
+    value: string;
+    meta_value?: string;
+}
+
+interface VariantAttribute {
+    attribute_id: number;
+    attribute_code: string;
+    attribute_name: string;
+    value_id: number;
+    value: string;
+    meta_value?: string;
+}
+
+interface Variant {
+    id: number;
+    name: string;
+    price_raw: number;
+    price_tiers: PriceTier[];
+    stock_quantity: number;
+    attributes: VariantAttribute[];
+    images: ProductImage[];
+    model?: string | null;
+    weight?: number | null;
+    length?: number | null;
+    width?: number | null;
+    height?: number | null;
+}
+
 interface Product {
     id: number;
     name: string;
+    type?: 'simple' | 'configurable' | 'variant';
     price_raw: number;
     price_tiers: PriceTier[];
     description: string | null;
@@ -56,6 +96,7 @@ interface Product {
     width: number | null;
     height: number | null;
     vat_included: boolean;
+    attributes?: VariantAttribute[];
 }
 
 interface ReviewStats {
@@ -72,12 +113,15 @@ interface ReviewStats {
 
 interface ProductShowProps {
     product: Product;
+    variants?: Variant[];
+    availableAttributes?: ProductAttribute[];
+    preselectedAttributes?: Record<string, number>;
     reviewStats?: ReviewStats;
     canReview?: boolean;
     hasReviewed?: boolean;
 }
 
-function ProductShowContent({ product, reviewStats, canReview = false, hasReviewed = false }: ProductShowProps) {
+export function ProductShowContent({ product, variants = [], availableAttributes = [], preselectedAttributes = {}, reviewStats, canReview = false, hasReviewed = false }: ProductShowProps) {
     const { props } = usePage<SharedData>();
     const { t } = useTranslations();
     const { showToast } = useToast();
@@ -94,8 +138,167 @@ function ProductShowContent({ product, reviewStats, canReview = false, hasReview
     const isScrollingRef = useRef(false);
     const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    const mainImage = product.images[selectedImageIndex] || product.images[0];
-    const isInStock = product.stock_quantity > 0;
+    const isConfigurable = product.type === 'configurable' && variants.length > 0 && availableAttributes.length > 0;
+    
+    const [selectedAttributes, setSelectedAttributes] = useState<Record<string, number>>(() => {
+        if (preselectedAttributes && Object.keys(preselectedAttributes).length > 0 && isConfigurable) {
+            return preselectedAttributes;
+        }
+        return {};
+    });
+    const [selectedVariant, setSelectedVariant] = useState<Variant | null>(null);
+
+    useEffect(() => {
+        if (preselectedAttributes && Object.keys(preselectedAttributes).length > 0 && isConfigurable) {
+            setSelectedAttributes(preselectedAttributes);
+        }
+    }, [preselectedAttributes, isConfigurable]);
+
+    // Auto-select first available color if no color is selected
+    useEffect(() => {
+        if (!isConfigurable || !availableAttributes.length || !variants.length) {
+            return;
+        }
+
+        // Check if color attribute exists
+        const colorAttribute = availableAttributes.find(attr => 
+            attr.code.toLowerCase() === 'color' || 
+            attr.name.toLowerCase().includes('culoare') ||
+            attr.type === 'color_swatch'
+        );
+
+        if (!colorAttribute) {
+            return;
+        }
+
+        // Check if color should be auto-selected using callback to avoid dependency on selectedAttributes
+        setSelectedAttributes(prev => {
+            // Check if color is already selected (either in preselectedAttributes or current state)
+            const hasColorSelected = preselectedAttributes[colorAttribute.code] !== undefined ||
+                                    prev[colorAttribute.code] !== undefined;
+
+            if (hasColorSelected) {
+                return prev; // Don't change state if already selected
+            }
+
+            // Find first available color value (check if it exists in any variant)
+            const availableColorValues = colorAttribute.values.filter(val => 
+                variants.some(variant => 
+                    variant.attributes.some(attr => 
+                        attr.attribute_code === colorAttribute.code && attr.value_id === val.id
+                    )
+                )
+            );
+
+            if (availableColorValues.length > 0) {
+                const firstColorValue = availableColorValues[0];
+                return {
+                    ...prev,
+                    [colorAttribute.code]: firstColorValue.id,
+                };
+            }
+
+            return prev; // No available colors, don't change state
+        });
+    }, [isConfigurable, availableAttributes, variants, preselectedAttributes]);
+
+    // Find variant based on selected attributes
+    useEffect(() => {
+        if (!isConfigurable) {
+            setSelectedVariant(null);
+            return;
+        }
+
+        // Check if all attributes are selected
+        const allSelected = availableAttributes.every(attr => 
+            selectedAttributes[attr.code] !== undefined
+        );
+
+        if (allSelected) {
+            // Find matching variant
+            const matchingVariant = variants.find(variant => {
+                return availableAttributes.every(attr => {
+                    const selectedValueId = selectedAttributes[attr.code];
+                    return variant.attributes.some(vAttr => 
+                        vAttr.attribute_code === attr.code && vAttr.value_id === selectedValueId
+                    );
+                });
+            });
+
+            if (matchingVariant) {
+                setSelectedVariant(matchingVariant);
+                // Update images when variant changes
+                if (matchingVariant.images && matchingVariant.images.length > 0) {
+                    setSelectedImageIndex(0);
+                }
+            } else {
+                setSelectedVariant(null);
+            }
+        } else {
+            const partiallyMatchingVariants = variants.filter(variant => {
+                return availableAttributes.every(attr => {
+                    const selectedValueId = selectedAttributes[attr.code];
+                    if (selectedValueId === undefined) {
+                        return true;
+                    }
+                    return variant.attributes.some(vAttr => 
+                        vAttr.attribute_code === attr.code && vAttr.value_id === selectedValueId
+                    );
+                });
+            });
+
+            if (partiallyMatchingVariants.length > 0) {
+                const previewVariant = partiallyMatchingVariants[0];
+                if (previewVariant.images && previewVariant.images.length > 0) {
+                    setSelectedImageIndex(0);
+                }
+                setSelectedVariant(null);
+            } else {
+                setSelectedVariant(null);
+            }
+        }
+    }, [selectedAttributes, variants, availableAttributes, isConfigurable]);
+
+    let displayImages = product.images;
+    
+    if (isConfigurable && variants.length > 0) {
+        if (selectedVariant && selectedVariant.images.length > 0) {
+            displayImages = selectedVariant.images;
+        } else if (selectedAttributes && Object.keys(selectedAttributes).length > 0) {
+            const partiallyMatchingVariant = variants.find(variant => {
+                return availableAttributes.every(attr => {
+                    const selectedValueId = selectedAttributes[attr.code];
+                    if (selectedValueId === undefined) return true;
+                    return variant.attributes.some(vAttr => 
+                        vAttr.attribute_code === attr.code && vAttr.value_id === selectedValueId
+                    );
+                });
+            });
+            
+            if (partiallyMatchingVariant && partiallyMatchingVariant.images.length > 0) {
+                displayImages = partiallyMatchingVariant.images;
+            }
+        }
+    }
+    const displayProduct = (isConfigurable && selectedVariant) 
+        ? { ...product, ...selectedVariant }
+        : product;
+
+    const mainImage = displayImages[selectedImageIndex] || displayImages[0];
+    
+    // Check if any variant has stock (for configurable products)
+    const hasVariantsInStock = isConfigurable 
+        ? variants.some(v => v.stock_quantity > 0)
+        : true; // For simple products, assume true (we'll check the product stock)
+    
+    // For configurable products without a selected variant:
+    // - If no variants have stock, show "out of stock"
+    // - If some variants have stock, don't show stock status yet (wait for selection)
+    // For configurable products with a selected variant, use the variant's stock
+    // For simple products, use the product's stock
+    const isInStock = isConfigurable && !selectedVariant
+        ? (hasVariantsInStock ? null : false) // null = waiting for selection, false = all out of stock
+        : displayProduct.stock_quantity > 0;
     const isB2CDefault = !customerGroup || customerGroup.code === 'B2C';
     const showTechnicalInfo = true;
     const user = props.auth?.user;
@@ -104,7 +307,9 @@ function ProductShowContent({ product, reviewStats, canReview = false, hasReview
     const [isTogglingWishlist, setIsTogglingWishlist] = useState(false);
 
     // Check if product is in wishlist from props (reacts to changes automatically)
-    const isInWishlist = wishlistItems.some((item: any) => (item.product_id || item.id) === product.id);
+    // For configurable products, always check the configurable product ID (parent), not variants
+    const wishlistProductId = product.id;
+    const isInWishlist = wishlistItems.some((item: any) => (item.product_id || item.id) === wishlistProductId);
 
     const checkScroll = () => {
         if (thumbnailsRef.current) {
@@ -128,9 +333,10 @@ function ProductShowContent({ product, reviewStats, canReview = false, hasReview
 
     const getPriceForQuantity = (qty: number): string => {
         if (currentCurrency) {
-            if (product.price_tiers && product.price_tiers.length > 0) {
-                for (let i = product.price_tiers.length - 1; i >= 0; i--) {
-                    const tier = product.price_tiers[i];
+            const priceTiers = displayProduct.price_tiers || [];
+            if (priceTiers.length > 0) {
+                for (let i = priceTiers.length - 1; i >= 0; i--) {
+                    const tier = priceTiers[i];
                     if (qty >= tier.min_quantity) {
                         // Use price_display if available (already calculated by backend), otherwise fallback to price_raw
                         const displayPrice = tier.price_display ?? tier.price_raw;
@@ -139,23 +345,105 @@ function ProductShowContent({ product, reviewStats, canReview = false, hasReview
                 }
             }
             // For base price, price_raw from backend is already the display price (calculated by backend)
-            return formatPriceWithCurrency(product.price_raw, currentCurrency);
+            return formatPriceWithCurrency(displayProduct.price_raw, currentCurrency);
         }
 
         // Fallback if no currency available
-        return product.price_raw.toFixed(2);
+        return displayProduct.price_raw.toFixed(2);
     };
 
     const getActiveTierForQuantity = (qty: number): number | null => {
-        if (product.price_tiers && product.price_tiers.length > 0) {
-            for (let i = product.price_tiers.length - 1; i >= 0; i--) {
-                const tier = product.price_tiers[i];
+        const priceTiers = displayProduct.price_tiers || [];
+        if (priceTiers.length > 0) {
+            for (let i = priceTiers.length - 1; i >= 0; i--) {
+                const tier = priceTiers[i];
                 if (qty >= tier.min_quantity) {
                     return tier.min_quantity;
                 }
             }
         }
         return null;
+    };
+
+    const handleAttributeSelect = (attributeCode: string, valueId: number) => {
+        setSelectedAttributes(prev => ({
+            ...prev,
+            [attributeCode]: valueId,
+        }));
+    };
+
+    const isValueAvailable = (attributeCode: string, valueId: number): boolean => {
+        if (!isConfigurable) return true;
+        
+        // Check if there are variants with this attribute value
+        const variantsWithAttribute = variants.filter(variant => 
+            variant.attributes.some(attr => 
+                attr.attribute_code === attributeCode && attr.value_id === valueId
+            )
+        );
+        
+        if (variantsWithAttribute.length === 0) {
+            return false; // No variant has this attribute value
+        }
+        
+        // Check if any variant with this attribute value has stock > 0
+        // Also consider already selected attributes to ensure valid combinations
+        const hasStockAvailable = variantsWithAttribute.some(variant => {
+            // Check if variant matches currently selected attributes (except the one being checked)
+            const matchesSelectedAttributes = availableAttributes.every(attr => {
+                if (attr.code === attributeCode) {
+                    return true; // Skip current attribute being checked
+                }
+                const selectedValueId = selectedAttributes[attr.code];
+                if (selectedValueId === undefined) {
+                    return true; // No selection for this attribute yet, allow any
+                }
+                return variant.attributes.some(vAttr => 
+                    vAttr.attribute_code === attr.code && vAttr.value_id === selectedValueId
+                );
+            });
+            
+            return matchesSelectedAttributes && variant.stock_quantity > 0;
+        });
+        
+        return hasStockAvailable;
+    };
+
+    const getValueStockStatus = (attributeCode: string, valueId: number): { hasStock: boolean; hasVariants: boolean } => {
+        if (!isConfigurable) return { hasStock: true, hasVariants: true };
+        
+        // Check if there are variants with this attribute value
+        const variantsWithAttribute = variants.filter(variant => 
+            variant.attributes.some(attr => 
+                attr.attribute_code === attributeCode && attr.value_id === valueId
+            )
+        );
+        
+        if (variantsWithAttribute.length === 0) {
+            return { hasStock: false, hasVariants: false };
+        }
+        
+        // Check if any variant with this attribute value has stock > 0
+        // Also consider already selected attributes to ensure valid combinations
+        const hasStockAvailable = variantsWithAttribute.some(variant => {
+            // Check if variant matches currently selected attributes (except the one being checked)
+            const matchesSelectedAttributes = availableAttributes.every(attr => {
+                if (attr.code === attributeCode) {
+                    return true;
+                }
+                const selectedValueId = selectedAttributes[attr.code];
+                if (selectedValueId === undefined) {
+                    return true;
+                }
+                return variant.attributes.some(vAttr => 
+                    vAttr.attribute_code === attr.code && vAttr.value_id === selectedValueId
+                );
+            });
+            
+            return matchesSelectedAttributes && variant.stock_quantity > 0;
+        });
+        
+        return { hasStock: hasStockAvailable, hasVariants: true };
     };
 
     const scrollThumbnails = (direction: 'up' | 'down') => {
@@ -170,7 +458,6 @@ function ProductShowContent({ product, reviewStats, canReview = false, hasReview
         }
     };
 
-    // Scroll to selected image in carousel (only when not user scrolling)
     useEffect(() => {
         if (imageCarouselRef.current && !isScrollingRef.current) {
             const imageWidth = imageCarouselRef.current.clientWidth;
@@ -186,21 +473,17 @@ function ProductShowContent({ product, reviewStats, canReview = false, hasReview
         }
     }, [selectedImageIndex]);
 
-    // Handle scroll to update selected image
     const handleCarouselScroll = () => {
         if (imageCarouselRef.current && !isScrollingRef.current) {
-            // Clear existing timeout
             if (scrollTimeoutRef.current) {
                 clearTimeout(scrollTimeoutRef.current);
             }
-
-            // Debounce scroll handling
             scrollTimeoutRef.current = setTimeout(() => {
-                if (imageCarouselRef.current && !isScrollingRef.current) {
-                    const scrollLeft = imageCarouselRef.current.scrollLeft;
-                    const imageWidth = imageCarouselRef.current.clientWidth;
-                    const newIndex = Math.round(scrollLeft / imageWidth);
-                    if (newIndex !== selectedImageIndex && newIndex >= 0 && newIndex < product.images.length) {
+                    if (imageCarouselRef.current && !isScrollingRef.current) {
+                        const scrollLeft = imageCarouselRef.current.scrollLeft;
+                        const imageWidth = imageCarouselRef.current.clientWidth;
+                        const newIndex = Math.round(scrollLeft / imageWidth);
+                        if (newIndex !== selectedImageIndex && newIndex >= 0 && newIndex < displayImages.length) {
                         isScrollingRef.current = true;
                         setSelectedImageIndex(newIndex);
                         setTimeout(() => {
@@ -212,7 +495,6 @@ function ProductShowContent({ product, reviewStats, canReview = false, hasReview
         }
     };
 
-    // Check scroll on mount and resize
     useEffect(() => {
         checkScroll();
         const handleResize = () => {
@@ -232,15 +514,26 @@ function ProductShowContent({ product, reviewStats, canReview = false, hasReview
     const [isAddingToCart, setIsAddingToCart] = useState(false);
 
     const handleAddToCart = async () => {
-        if (!isInStock || isAddingToCart) {
+        // For configurable products, require variant selection
+        if (isConfigurable && !selectedVariant) {
+            showToast(t('Please select all product options'), 'error');
+            return;
+        }
+
+        if (isInStock === false || isAddingToCart) {
             return;
         }
 
         setIsAddingToCart(true);
 
         try {
+            // Use variant ID if configurable product, otherwise use product ID
+            const productIdToAdd = (isConfigurable && selectedVariant) 
+                ? selectedVariant.id 
+                : product.id;
+
             router.post('/cart/add', {
-                product_id: product.id,
+                product_id: productIdToAdd,
                 quantity: quantity,
             }, {
                 preserveScroll: true,
@@ -373,7 +666,7 @@ function ProductShowContent({ product, reviewStats, canReview = false, hasReview
                     {/* Images Gallery */}
                     <div className={styles.imagesGallery}>
                         {/* Thumbnail Navigation - Desktop: Left side, Mobile: Hidden initially */}
-                        {product.images.length > 1 && (
+                        {displayImages.length > 1 && (
                             <div className={styles.thumbnailsWrapper}>
                                 {canScrollUp && (
                                     <button
@@ -389,13 +682,13 @@ function ProductShowContent({ product, reviewStats, canReview = false, hasReview
                                     ref={thumbnailsRef}
                                     onScroll={checkScroll}
                                 >
-                                    {product.images.map((image, index) => (
+                                    {displayImages.map((image, index) => (
                                         <button
                                             key={image.id}
                                             className={`${styles.thumbnail} ${selectedImageIndex === index ? styles.thumbnailActive : ''}`}
                                             onClick={() => setSelectedImageIndex(index)}
                                         >
-                                            <img src={image.url} alt={`${product.name} ${index + 1}`} />
+                                            <img src={image.url} alt={`${displayProduct.name} ${index + 1}`} />
                                         </button>
                                     ))}
                                 </div>
@@ -419,7 +712,7 @@ function ProductShowContent({ product, reviewStats, canReview = false, hasReview
                             {mainImage ? (
                                 <img
                                     src={mainImage.url}
-                                    alt={product.name}
+                                    alt={displayProduct.name}
                                     className={styles.mainImage}
                                 />
                             ) : (
@@ -427,7 +720,7 @@ function ProductShowContent({ product, reviewStats, canReview = false, hasReview
                                     {t('No image')}
                                 </div>
                             )}
-                            {!isInStock && (
+                            {isInStock === false && (
                                 <div className={styles.outOfStockBadge}>
                                     {t('Out of stock')}
                                 </div>
@@ -440,14 +733,14 @@ function ProductShowContent({ product, reviewStats, canReview = false, hasReview
                             ref={imageCarouselRef}
                             onScroll={handleCarouselScroll}
                         >
-                            {product.images.map((image, index) => (
+                            {displayImages.map((image, index) => (
                                 <div key={image.id} className={styles.carouselImageWrapper}>
                                     <img
                                         src={image.url}
-                                        alt={`${product.name} ${index + 1}`}
+                                        alt={`${displayProduct.name} ${index + 1}`}
                                         className={styles.carouselImage}
                                     />
-                                    {!isInStock && index === 0 && (
+                                    {isInStock === false && index === 0 && (
                                         <div className={styles.outOfStockBadge}>
                                             {t('Out of stock')}
                                         </div>
@@ -458,15 +751,15 @@ function ProductShowContent({ product, reviewStats, canReview = false, hasReview
                     </div>
 
                     {/* Thumbnails Horizontal - Mobile only */}
-                    {product.images.length > 1 && (
+                    {displayImages.length > 1 && (
                         <div className={styles.thumbnailsHorizontal}>
-                            {product.images.map((image, index) => (
+                            {displayImages.map((image, index) => (
                                 <button
                                     key={image.id}
                                     className={`${styles.thumbnailHorizontal} ${selectedImageIndex === index ? styles.thumbnailHorizontalActive : ''}`}
                                     onClick={() => setSelectedImageIndex(index)}
                                 >
-                                    <img src={image.url} alt={`${product.name} ${index + 1}`} />
+                                    <img src={image.url} alt={`${displayProduct.name} ${index + 1}`} />
                                 </button>
                             ))}
                         </div>
@@ -488,30 +781,63 @@ function ProductShowContent({ product, reviewStats, canReview = false, hasReview
                     <div className={styles.specificationsSection}>
                         <h2 className={styles.sectionTitle}>{t('Specifications')}</h2>
                         <div className={styles.specificationsContent}>
-                            {product.model && (
-                                <div className={styles.specificationRow}>
-                                    <span className={styles.specificationLabel}>{t('Model')}:</span>
-                                    <span className={styles.specificationValue}>{product.model}</span>
-                                </div>
-                            )}
-                            {product.weight && (
-                                <div className={styles.specificationRow}>
-                                    <span className={styles.specificationLabel}>{t('Weight')}:</span>
-                                    <span className={styles.specificationValue}>{product.weight} kg</span>
-                                </div>
-                            )}
-                            {(product.length || product.width || product.height) && (
-                                <div className={styles.specificationRow}>
-                                    <span className={styles.specificationLabel}>{t('Dimensions')}:</span>
-                                    <span className={styles.specificationValue}>
-                                        {product.length && `${product.length} cm`}
-                                        {product.length && (product.width || product.height) && ' × '}
-                                        {product.width && `${product.width} cm`}
-                                        {product.width && product.height && ' × '}
-                                        {product.height && `${product.height} cm`}
-                                    </span>
-                                </div>
-                            )}
+                            {(() => {
+                                // For configurable products, use variant data if selected, otherwise use product data
+                                const displayModel = (isConfigurable && selectedVariant) 
+                                    ? (selectedVariant as any).model || product.model
+                                    : product.model;
+                                const displayWeight = (isConfigurable && selectedVariant) 
+                                    ? (selectedVariant as any).weight || product.weight
+                                    : product.weight;
+                                const displayLength = (isConfigurable && selectedVariant) 
+                                    ? (selectedVariant as any).length || product.length
+                                    : product.length;
+                                const displayWidth = (isConfigurable && selectedVariant) 
+                                    ? (selectedVariant as any).width || product.width
+                                    : product.width;
+                                const displayHeight = (isConfigurable && selectedVariant) 
+                                    ? (selectedVariant as any).height || product.height
+                                    : product.height;
+                                // Use variant attributes if selected, otherwise use product attributes
+                                const displayAttributes = (isConfigurable && selectedVariant) 
+                                    ? selectedVariant.attributes
+                                    : (product.attributes || []);
+
+                                return (
+                                    <>
+                                        {displayModel && (
+                                            <div className={styles.specificationRow}>
+                                                <span className={styles.specificationLabel}>{t('Model')}:</span>
+                                                <span className={styles.specificationValue}>{displayModel}</span>
+                                            </div>
+                                        )}
+                                        {displayWeight && (
+                                            <div className={styles.specificationRow}>
+                                                <span className={styles.specificationLabel}>{t('Weight')}:</span>
+                                                <span className={styles.specificationValue}>{displayWeight} kg</span>
+                                            </div>
+                                        )}
+                                        {(displayLength || displayWidth || displayHeight) && (
+                                            <div className={styles.specificationRow}>
+                                                <span className={styles.specificationLabel}>{t('Dimensions')}:</span>
+                                                <span className={styles.specificationValue}>
+                                                    {displayLength && `${displayLength} cm`}
+                                                    {displayLength && (displayWidth || displayHeight) && ' × '}
+                                                    {displayWidth && `${displayWidth} cm`}
+                                                    {displayWidth && displayHeight && ' × '}
+                                                    {displayHeight && `${displayHeight} cm`}
+                                                </span>
+                                            </div>
+                                        )}
+                                        {displayAttributes && displayAttributes.length > 0 && displayAttributes.map((attr) => (
+                                            <div key={`${attr.attribute_id}-${attr.value_id}`} className={styles.specificationRow}>
+                                                <span className={styles.specificationLabel}>{attr.attribute_name}:</span>
+                                                <span className={styles.specificationValue}>{attr.value}</span>
+                                            </div>
+                                        ))}
+                                    </>
+                                );
+                            })()}
                         </div>
                     </div>
 
@@ -535,11 +861,11 @@ function ProductShowContent({ product, reviewStats, canReview = false, hasReview
                             <div className={styles.rating}>
                                 <div className={styles.ratingStars}>
                                     {[1, 2, 3, 4, 5].map((star) => (
-                                        <Star 
-                                            key={star} 
-                                            size={18} 
-                                            className={styles.star} 
-                                            fill={star <= Math.round(reviewStats.average_rating) ? 'currentColor' : 'none'} 
+                                        <Star
+                                            key={star}
+                                            size={18}
+                                            className={styles.star}
+                                            fill={star <= Math.round(reviewStats.average_rating) ? 'currentColor' : 'none'}
                                         />
                                     ))}
                                 </div>
@@ -551,7 +877,7 @@ function ProductShowContent({ product, reviewStats, canReview = false, hasReview
 
                         {/* Price */}
                         <div className={styles.priceSection}>
-                            {product.price_tiers && product.price_tiers.length > 0 ? (
+                            {displayProduct.price_tiers && displayProduct.price_tiers.length > 0 ? (
                                 <div className={styles.priceTiers}>
                                     <div className={styles.currentPrice}>
                                         <PriceDisplay price={currentPrice} />
@@ -565,7 +891,7 @@ function ProductShowContent({ product, reviewStats, canReview = false, hasReview
                                             <div className={`${styles.priceTierHeader} ${styles.priceTierHeaderRight}`}>{t('Price')}</div>
                                         </div>
                                         <div className={styles.priceTiersBody}>
-                                            {product.price_tiers.map((tier) => {
+                                            {displayProduct.price_tiers.map((tier) => {
                                                 const isActive = activeTierMinQuantity === tier.min_quantity;
                                                 // Use price_display if available (already calculated by backend), otherwise fallback to price_raw
                                                 const displayPriceValue = tier.price_display ?? tier.price_raw;
@@ -594,21 +920,130 @@ function ProductShowContent({ product, reviewStats, canReview = false, hasReview
                             )}
                         </div>
 
-                        {/* Stock Information */}
-                        {showTechnicalInfo && (
+                        {/* Variant Selector */}
+                        {isConfigurable && (
+                            <div className={styles.variantSelector}>
+                                {availableAttributes && availableAttributes.length > 0 ? (
+                                    availableAttributes.map(attr => (
+                                        <div key={attr.id} className={styles.attributeGroup}>
+                                            <label className={styles.attributeLabel}>
+                                                {attr.name}
+                                            </label>
+                                            {attr.type === 'color_swatch' ? (
+                                                <div className={styles.colorSwatch}>
+                                                    {attr.values.map(val => {
+                                                        const isSelected = selectedAttributes[attr.code] === val.id;
+                                                        const stockStatus = getValueStockStatus(attr.code, val.id);
+                                                        const isAvailable = stockStatus.hasStock && stockStatus.hasVariants;
+                                                        const isOutOfStock = stockStatus.hasVariants && !stockStatus.hasStock;
+                                                        const title = isOutOfStock 
+                                                            ? `${val.value} - ${t('Out of stock', 'Stoc epuizat')}`
+                                                            : !stockStatus.hasVariants
+                                                            ? `${val.value} - ${t('Unavailable', 'Indisponibil')}`
+                                                            : val.value;
+                                                        
+                                                        return (
+                                                            <button
+                                                                key={val.id}
+                                                                type="button"
+                                                                className={`${styles.colorOption} ${isSelected ? styles.selected : ''} ${!isAvailable ? styles.unavailable : ''} ${isOutOfStock ? styles.outOfStock : ''}`}
+                                                                style={{ 
+                                                                    backgroundColor: val.meta_value || '#ccc'
+                                                                }}
+                                                                onClick={() => isAvailable && handleAttributeSelect(attr.code, val.id)}
+                                                                title={title}
+                                                                disabled={!isAvailable}
+                                                                aria-label={`Select ${val.value}${isOutOfStock ? ' - Out of stock' : ''}`}
+                                                            />
+                                                        );
+                                                    })}
+                                                </div>
+                                            ) : (attr.code.toLowerCase() === 'size' || attr.code.toLowerCase() === 'marime' || attr.name.toLowerCase().includes('mărime') || attr.name.toLowerCase().includes('size')) ? (
+                                                <div className={styles.sizeOptions}>
+                                                    {attr.values.map(val => {
+                                                        const isSelected = selectedAttributes[attr.code] === val.id;
+                                                        const stockStatus = getValueStockStatus(attr.code, val.id);
+                                                        const isAvailable = stockStatus.hasStock && stockStatus.hasVariants;
+                                                        const isOutOfStock = stockStatus.hasVariants && !stockStatus.hasStock;
+                                                        const title = isOutOfStock 
+                                                            ? `${val.value} - ${t('Out of stock', 'Stoc epuizat')}`
+                                                            : !stockStatus.hasVariants
+                                                            ? `${val.value} - ${t('Unavailable', 'Indisponibil')}`
+                                                            : undefined;
+                                                        
+                                                        return (
+                                                            <button
+                                                                key={val.id}
+                                                                type="button"
+                                                                className={`${styles.sizeOption} ${isSelected ? styles.selected : ''} ${!isAvailable ? styles.unavailable : ''} ${isOutOfStock ? styles.outOfStock : ''}`}
+                                                                onClick={() => isAvailable && handleAttributeSelect(attr.code, val.id)}
+                                                                disabled={!isAvailable}
+                                                                title={title}
+                                                                aria-label={`Select size ${val.value}${isOutOfStock ? ' - Out of stock' : ''}`}
+                                                            >
+                                                                {val.value}
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            ) : (
+                                                <select
+                                                    className={styles.attributeSelect}
+                                                    value={selectedAttributes[attr.code] || ''}
+                                                    onChange={(e) => handleAttributeSelect(attr.code, parseInt(e.target.value))}
+                                                >
+                                                    <option value="">{t('Select')} {attr.name}</option>
+                                                    {attr.values.map(val => {
+                                                        const stockStatus = getValueStockStatus(attr.code, val.id);
+                                                        const isAvailable = stockStatus.hasStock && stockStatus.hasVariants;
+                                                        const isOutOfStock = stockStatus.hasVariants && !stockStatus.hasStock;
+                                                        const label = isOutOfStock 
+                                                            ? `${val.value} (${t('Out of stock', 'Stoc epuizat')})`
+                                                            : !stockStatus.hasVariants
+                                                            ? `${val.value} (${t('Unavailable', 'Indisponibil')})`
+                                                            : val.value;
+                                                        
+                                                        return (
+                                                            <option 
+                                                                key={val.id} 
+                                                                value={val.id} 
+                                                                disabled={!isAvailable}
+                                                            >
+                                                                {label}
+                                                            </option>
+                                                        );
+                                                    })}
+                                                </select>
+                                            )}
+                                        </div>
+                                    ))
+                                ) : variants && variants.length === 0 ? (
+                                    <p className={styles.noVariantsMessage}>
+                                        {t('This product has no variants available. Please contact us for more information.')}
+                                    </p>
+                                ) : (
+                                    <p className={styles.noVariantsMessage}>
+                                        {t('Product variants are being set up. Please check back later.')}
+                                    </p>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Stock Information - Only show for simple products or when variant is selected */}
+                        {showTechnicalInfo && (!isConfigurable || selectedVariant) && (
                             <div className={styles.stockInfo}>
                                 <Package size={16} />
                                 <span>
-                                    {t('Stock')}: {product.stock_quantity} {t('units')}
+                                    {t('Stock')}: {displayProduct.stock_quantity} {t('units')}
                                 </span>
                             </div>
                         )}
 
                         {/* SKU */}
-                        {showTechnicalInfo && product.sku && (
+                        {showTechnicalInfo && displayProduct.sku && (
                             <div className={styles.skuInfo}>
                                 <span className={styles.skuLabel}>SKU:</span>
-                                <span className={styles.skuValue}>{product.sku}</span>
+                                <span className={styles.skuValue}>{displayProduct.sku}</span>
                             </div>
                         )}
 
@@ -663,16 +1098,23 @@ function ProductShowContent({ product, reviewStats, canReview = false, hasReview
 
                         {/* Action Buttons */}
                         <div className={styles.actionButtons}>
-                            <Button
-                                variant="primary"
-                                size="lg"
+                            <button
+                                type="button"
                                 className={styles.buyButton}
-                                disabled={!isInStock || isAddingToCart}
+                                disabled={isInStock === false || isAddingToCart || (isConfigurable && !selectedVariant)}
                                 onClick={handleAddToCart}
                             >
-                                <ShoppingCart size={20} />
-                                {isAddingToCart ? t('Adding...') : t('Add to Cart')}
-                            </Button>
+                                <span className={styles.buyButtonIcon}>
+                                    <ShoppingCart size={20} />
+                                </span>
+                                <span className={styles.buyButtonText}>
+                                    {isConfigurable && !selectedVariant 
+                                        ? t('Select options to add to cart')
+                                        : isAddingToCart 
+                                        ? t('Adding...') 
+                                        : t('Add to Cart')}
+                                </span>
+                            </button>
                         </div>
 
                         {/* Service Information */}
@@ -952,11 +1394,19 @@ function ReviewsSection({ productId, reviewStats, canReview, hasReviewed }: Revi
     );
 }
 
-export default function ProductShow({ product, reviewStats, canReview, hasReviewed }: ProductShowProps) {
+export default function ProductShow({ product, variants = [], availableAttributes = [], preselectedAttributes = {}, reviewStats, canReview, hasReviewed }: ProductShowProps) {
     return (
         <Layout activeSidebarItem="products">
             <Head title={product.name} />
-            <ProductShowContent product={product} reviewStats={reviewStats} canReview={canReview} hasReviewed={hasReviewed} />
+            <ProductShowContent 
+                product={product} 
+                variants={variants}
+                availableAttributes={availableAttributes}
+                preselectedAttributes={preselectedAttributes}
+                reviewStats={reviewStats} 
+                canReview={canReview} 
+                hasReviewed={hasReviewed} 
+            />
         </Layout>
     );
 }

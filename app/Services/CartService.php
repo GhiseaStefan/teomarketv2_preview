@@ -11,6 +11,7 @@ use App\Models\Cart;
 use App\Models\CartItem;
 use App\Services\CountryDetectionService;
 use App\Utils\CurrencyConverter;
+use App\Enums\ProductType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -190,12 +191,22 @@ class CartService
      * @param int|null $customerGroupId
      * @param Request|null $request Optional request object for country detection
      * @return array
+     * @throws \Exception If trying to add a configurable product (only variants can be added)
      */
     public function addToCart(int $productId, int $quantity, ?int $customerGroupId = null, ?Request $request = null): array
     {
         $product = Product::where('id', $productId)
             ->where('status', true)
             ->firstOrFail();
+
+        // Validate: Configurable products cannot be added directly to cart, only their variants
+        $productType = $product->type instanceof ProductType 
+            ? $product->type 
+            : ProductType::from($product->type ?? 'simple');
+        
+        if ($productType === ProductType::CONFIGURABLE) {
+            throw new \Exception('Configurable products cannot be added directly to cart. Please select a variant.');
+        }
 
         // Get customer group ID - use provided or get from session, fallback to B2C
         if ($customerGroupId === null) {
@@ -691,18 +702,36 @@ class CartService
             }
 
             // Format all tiers with prices for display
+            // This uses the same logic as ProductPriceService::getPriceTiers()
             $formattedTiers = [];
             if (!empty($priceTiers)) {
-                foreach ($priceTiers as $index => $tier) {
-                    $tierPriceRon = (float) $tier['price_ron'];
-                    $tierPrice = $this->priceService->convertToCurrency($tierPriceRon, $currency);
+                // Determine if this is a B2B customer
+                $itemIsB2B = !$this->priceService->shouldShowVat($itemCustomerGroupId);
 
-                    // Get VAT rate (use detected country)
+                // For B2B: TVA is always 0% (reverse charge)
+                // For B2C: Get VAT rate based on detected country
+                if ($itemIsB2B) {
+                    $vatRate = 0.0;
+                } else {
+                    // B2C: Get VAT rate for detected country
                     $vatRate = $this->priceService->getVatRate($product, $countryId, null, $request, $itemCustomerGroupId);
+                }
 
-                    // Calculate prices with and without VAT
-                    $tierPriceExclVat = $this->priceService->calculatePriceExclVat($tierPrice, $vatRate);
-                    $tierPriceInclVat = $tierPrice; // Price in RON already includes VAT
+                foreach ($priceTiers as $index => $tier) {
+                    // price_ron in database is stored WITHOUT VAT
+                    $tierPriceRonExclVat = (float) $tier['price_ron'];
+
+                    // For B2B: price stays the same (no VAT)
+                    // For B2C: add VAT to base price
+                    if ($itemIsB2B) {
+                        $tierPriceRonInclVat = $tierPriceRonExclVat;
+                    } else {
+                        $tierPriceRonInclVat = $this->priceService->calculatePriceInclVat($tierPriceRonExclVat, $vatRate);
+                    }
+
+                    // Convert to target currency
+                    $tierPriceInclVat = round($this->priceService->convertToCurrency($tierPriceRonInclVat, $currency), 2);
+                    $tierPriceExclVat = round($this->priceService->convertToCurrency($tierPriceRonExclVat, $currency), 2);
 
                     // Format quantity range
                     $quantityRange = $tier['max_quantity'] !== null
@@ -714,8 +743,8 @@ class CartService
                         'min_quantity' => $tier['min_quantity'],
                         'max_quantity' => $tier['max_quantity'],
                         'quantity_range' => $quantityRange,
-                        'price_excl_vat' => round($tierPriceExclVat, 2),
-                        'price_incl_vat' => round($tierPriceInclVat, 2),
+                        'price_excl_vat' => $tierPriceExclVat,
+                        'price_incl_vat' => $tierPriceInclVat,
                         'is_current' => ($index + 1) === $tierIndex,
                     ];
                 }

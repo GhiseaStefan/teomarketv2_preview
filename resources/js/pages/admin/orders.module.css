@@ -8,17 +8,384 @@
 }
 
 /* ============================================
-   Header Section
+   Top Filters Row (Status Tabs + Toggle Button)
+   ============================================ */
+.topFiltersRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.searchFilterToggleButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    padding: 6px var(--spacing-sm);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    flex-shrink: 0;
+    height: 28px;
+}
+
+.searchFilterToggleButton:hover {
+    background-color: var(--color-admin-50);
+    border-color: var(--color-admin-300);
+}
+
+.searchFilterToggleButton:active {
+    background-color: var(--color-admin-100);
+}
+
+/* ============================================
+   Search Bar Section
+   ============================================ */
+.searchBarContainer {
+    margin-bottom: var(--spacing-md);
+    overflow: hidden;
+    animation: slideDownSearch 0.2s ease-out;
+}
+
+@keyframes slideDownSearch {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.searchBarForm {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    padding: 0;
+    transition: border-color 0.2s ease;
+}
+
+.searchBarForm:focus-within {
+    border-color: var(--color-admin-500);
+    box-shadow: 0 0 0 2px var(--color-admin-100);
+}
+
+.searchBarIcon {
+    position: absolute;
+    left: var(--spacing-sm);
+    color: var(--color-text-secondary);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.searchBarInput {
+    flex: 1;
+    padding: var(--spacing-xs) var(--spacing-sm) var(--spacing-xs) 32px;
+    border: none;
+    background: transparent;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+    outline: none;
+}
+
+.searchBarInput::placeholder {
+    color: var(--color-text-secondary);
+}
+
+.searchBarCancel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xs);
+    margin-right: var(--spacing-xs);
+    border: none;
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    width: 20px;
+    height: 20px;
+}
+
+.searchBarCancel:hover {
+    background-color: var(--color-admin-50);
+    color: var(--color-text-primary);
+}
+
+/* ============================================
+   Filters Row Section
+   ============================================ */
+.filtersRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    flex-wrap: wrap;
+    animation: slideDownFilters 0.2s ease-out;
+}
+
+@keyframes slideDownFilters {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.inlineFilters {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+}
+
+.filterButtonWrapper {
+    position: relative;
+}
+
+.inlineFilterButton {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.inlineFilterButton:hover {
+    background-color: var(--color-admin-50);
+    border-color: var(--color-admin-300);
+}
+
+.inlineFilterButtonActive {
+    background-color: var(--color-admin-100);
+    border-color: var(--color-admin-600);
+    color: var(--color-admin-700);
+}
+
+.filterDropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    z-index: 1000;
+    min-width: 200px;
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.filterDropdownContent {
+    display: flex;
+    flex-direction: column;
+    max-height: 300px;
+    overflow: hidden;
+}
+
+.filterDropdownSearch {
+    position: relative;
+    padding: var(--spacing-xs);
+    border-bottom: 1px solid var(--color-border);
+    flex-shrink: 0;
+}
+
+.filterDropdownSearchIcon {
+    position: absolute;
+    left: calc(var(--spacing-xs) + 8px);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-text-secondary);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.filterDropdownSearchInput {
+    width: 100%;
+    padding: var(--spacing-xs) var(--spacing-xs) var(--spacing-xs) 28px;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    font-size: var(--font-size-xs);
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.filterDropdownSearchInput:focus {
+    border-color: var(--color-admin-500);
+    box-shadow: 0 0 0 2px var(--color-admin-100);
+}
+
+.filterDropdownItems {
+    padding: var(--spacing-xs);
+    max-height: 250px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.filterDropdownItem {
+    display: block;
+    width: 100%;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: none;
+    background: transparent;
+    text-align: left;
+    color: var(--color-text-primary);
+    font-size: var(--font-size-xs);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.filterDropdownItem:hover {
+    background-color: var(--color-admin-50);
+}
+
+.filterDropdownItemActive {
+    background-color: var(--color-admin-100);
+    color: var(--color-admin-700);
+    font-weight: var(--font-weight-medium);
+}
+
+.filterDropdownNoResults {
+    padding: var(--spacing-md);
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+    font-style: italic;
+}
+
+.rangeFilterContent {
+    padding: var(--spacing-xs);
+}
+
+.rangeInputGroup {
+    margin-bottom: var(--spacing-sm);
+}
+
+.rangeInputGroup:last-of-type {
+    margin-bottom: var(--spacing-md);
+}
+
+.rangeLabel {
+    display: block;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.rangeInput {
+    width: 100%;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    font-size: var(--font-size-xs);
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    transition: border-color 0.2s ease;
+}
+
+.rangeInput::-webkit-inner-spin-button,
+.rangeInput::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.rangeInput[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.rangeInput:hover {
+    border-color: var(--color-admin-300);
+}
+
+.rangeInput:focus {
+    outline: none;
+    border-color: var(--color-admin-500);
+    box-shadow: 0 0 0 3px var(--color-admin-100);
+}
+
+.applyRangeButton {
+    width: 100%;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: 1px solid var(--color-admin-600);
+    border-radius: 4px;
+    background-color: var(--color-admin-600);
+    color: var(--color-text-inverse);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.applyRangeButton:hover {
+    background-color: var(--color-admin-700);
+    border-color: var(--color-admin-700);
+}
+
+.clearAllFiltersButton {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background-color: var(--color-background);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.clearAllFiltersButton:hover {
+    background-color: var(--color-admin-50);
+    border-color: var(--color-admin-300);
+    color: var(--color-text-primary);
+}
+
+/* ============================================
+   Header Section (Legacy - keeping for filter tabs)
    ============================================ */
 .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--spacing-sm) 0;
-    border-bottom: 1px solid var(--color-admin-200);
-    margin-bottom: var(--spacing-sm);
-    flex-wrap: wrap;
-    gap: var(--spacing-sm);
+    display: none;
 }
 
 .filterTabs {
@@ -54,59 +421,6 @@
     background-color: var(--color-admin-700);
 }
 
-.headerActions {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-}
-
-.searchForm {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-.searchIcon {
-    position: absolute;
-    left: var(--spacing-sm);
-    color: var(--color-text-secondary);
-    pointer-events: none;
-}
-
-.searchInput {
-    padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) 32px;
-    border: 1px solid var(--color-border);
-    border-radius: 6px;
-    font-size: var(--font-size-sm);
-    background-color: var(--color-background);
-    color: var(--color-text-primary);
-    min-width: 200px;
-    transition: border-color 0.2s ease;
-}
-
-.searchInput:focus {
-    outline: none;
-    border-color: var(--color-admin-500);
-    box-shadow: 0 0 0 3px var(--color-admin-100);
-}
-
-.filterButton {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: var(--spacing-sm);
-    border: 1px solid var(--color-border);
-    border-radius: 6px;
-    background-color: var(--color-background);
-    color: var(--color-text-primary);
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.filterButton:hover {
-    background-color: var(--color-admin-50);
-    border-color: var(--color-admin-300);
-}
 
 /* ============================================
    Table Container
@@ -399,24 +713,18 @@
         padding: var(--spacing-md);
     }
 
-    .header {
-        flex-direction: column;
-        align-items: stretch;
+    .topFiltersRow {
+        flex-wrap: wrap;
+        gap: var(--spacing-sm);
     }
 
     .filterTabs {
-        width: 100%;
-        justify-content: flex-start;
-    }
-
-    .headerActions {
-        width: 100%;
-        justify-content: space-between;
-    }
-
-    .searchInput {
         flex: 1;
         min-width: 0;
+    }
+
+    .searchFilterToggleButton {
+        flex-shrink: 0;
     }
 }
 

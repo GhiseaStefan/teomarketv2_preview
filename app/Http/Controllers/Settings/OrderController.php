@@ -84,10 +84,13 @@ class OrderController extends Controller
             }
         }
 
-        // Search by product name
+        // Search by product name or order number
         if (!empty($search)) {
-            $ordersQuery->whereHas('products', function ($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%');
+            $ordersQuery->where(function ($q) use ($search) {
+                $q->where('order_number', 'like', '%' . $search . '%')
+                    ->orWhereHas('products', function ($query) use ($search) {
+                        $query->where('name', 'like', '%' . $search . '%');
+                    });
             });
         }
 

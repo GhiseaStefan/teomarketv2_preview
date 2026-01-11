@@ -758,5 +758,470 @@ class OrderService
         $countryName = $country ? $country->name : "ID: {$countryId}";
         throw new \Exception("VAT rate not found for country: {$countryName}");
     }
+
+    /**
+     * Recalculate order totals from order products and shipping.
+     * This is the single source of truth for order total calculations.
+     *
+     * @param Order $order
+     * @return Order
+     */
+    public function recalculateOrderTotals(Order $order): Order
+    {
+        // Get all order products
+        $orderProducts = $order->products;
+        
+        // Calculate subtotals from products
+        $subtotalExclVat = 0.0;
+        $subtotalInclVat = 0.0;
+        $subtotalRonExclVat = 0.0;
+        $subtotalRonInclVat = 0.0;
+        $vatRates = [];
+
+        foreach ($orderProducts as $orderProduct) {
+            $subtotalExclVat = round($subtotalExclVat + (float) $orderProduct->total_currency_excl_vat, 2);
+            $subtotalInclVat = round($subtotalInclVat + (float) $orderProduct->total_currency_incl_vat, 2);
+            $subtotalRonExclVat = round($subtotalRonExclVat + (float) $orderProduct->total_ron_excl_vat, 2);
+            $subtotalRonInclVat = round($subtotalRonInclVat + (float) $orderProduct->total_ron_incl_vat, 2);
+            $vatRates[] = (float) $orderProduct->vat_percent;
+        }
+
+        // Add shipping costs
+        $shipping = $order->shipping;
+        if ($shipping) {
+            $subtotalExclVat = round($subtotalExclVat + (float) $shipping->shipping_cost_excl_vat, 2);
+            $subtotalInclVat = round($subtotalInclVat + (float) $shipping->shipping_cost_incl_vat, 2);
+            $subtotalRonExclVat = round($subtotalRonExclVat + (float) $shipping->shipping_cost_ron_excl_vat, 2);
+            $subtotalRonInclVat = round($subtotalRonInclVat + (float) $shipping->shipping_cost_ron_incl_vat, 2);
+        }
+
+        // Calculate average VAT rate
+        $averageVatRate = !empty($vatRates) ? round(array_sum($vatRates) / count($vatRates), 2) : 0.0;
+
+        // Update order totals
+        $order->total_excl_vat = $subtotalExclVat;
+        $order->total_incl_vat = $subtotalInclVat;
+        $order->total_ron_excl_vat = $subtotalRonExclVat;
+        $order->total_ron_incl_vat = $subtotalRonInclVat;
+        $order->vat_rate_applied = $averageVatRate;
+        $order->save();
+
+        return $order;
+    }
+
+    /**
+     * Add a product to an existing order.
+     *
+     * @param Order $order
+     * @param int $productId
+     * @param int $quantity
+     * @param float|null $customPriceRon Optional custom price override
+     * @param int|null $userId User ID making the change
+     * @return OrderProduct
+     * @throws \Exception
+     */
+    public function addProductToOrder(Order $order, int $productId, int $quantity, ?float $customPriceRon = null, ?int $userId = null): OrderProduct
+    {
+        if ($quantity <= 0) {
+            throw new \Exception('Quantity must be greater than 0');
+        }
+
+        // Check if order has invoice (block editing)
+        if ($order->invoice_number) {
+            throw new \Exception('Cannot modify order with existing invoice number');
+        }
+
+        $product = Product::findOrFail($productId);
+        
+        // Check stock availability
+        if ($product->stock_quantity < $quantity) {
+            throw new \Exception("Insufficient stock. Available: {$product->stock_quantity}, Requested: {$quantity}");
+        }
+
+        // Get customer group from order's customer
+        $customerGroupId = null;
+        if ($order->customer) {
+            $customerGroupId = $order->customer->customer_group_id;
+        }
+        $customerGroupId = $this->priceService->getEffectiveCustomerGroupId($customerGroupId);
+
+        // Get currency and exchange rate from order
+        $currency = Currency::where('code', $order->currency)->where('status', true)->firstOrFail();
+        $exchangeRate = (float) $order->exchange_rate;
+
+        // Get shipping country for VAT calculation
+        $shippingAddress = $order->shippingAddress;
+        $countryId = $shippingAddress?->country_id;
+        
+        // If no country ID, use default (Romania - ID 1) for VAT calculation
+        if (!$countryId) {
+            $countryId = 1; // Default to Romania
+        }
+
+        // Get VAT rate
+        $vatRate = $this->priceService->getVatRate($product, $countryId, null, null, $customerGroupId);
+
+        // Calculate price
+        if ($customPriceRon !== null) {
+            // Use custom price (admin override)
+            $unitPriceRonExclVat = $this->priceService->calculatePriceExclVat($customPriceRon, $vatRate);
+            $unitPriceRonInclVat = $customPriceRon;
+        } else {
+            // Use current product price - calculate in RON first
+            $ronCurrency = Currency::where('code', 'RON')->where('status', true)->firstOrFail();
+            $priceInfo = $this->priceService->getPriceInfo(
+                $product,
+                $ronCurrency, // Always use RON for base calculation
+                $quantity,
+                $customerGroupId,
+                $countryId,
+                null
+            );
+            $unitPriceRonExclVat = $priceInfo['unit_price_ron_excl_vat'];
+            $unitPriceRonInclVat = $priceInfo['unit_price_ron_incl_vat'];
+        }
+
+        // Calculate totals in RON
+        $totalRonExclVat = round($unitPriceRonExclVat * $quantity, 2);
+        $totalRonInclVat = round($unitPriceRonInclVat * $quantity, 2);
+
+        // Convert to order's currency using order's exchange_rate (frozen rate from order creation)
+        if ($currency->code === 'RON') {
+            $unitPriceCurrency = $unitPriceRonInclVat;
+            $unitPriceExclVatCurrency = $unitPriceRonExclVat;
+            $totalCurrencyExclVat = $totalRonExclVat;
+            $totalCurrencyInclVat = $totalRonInclVat;
+        } else {
+            // Use order's exchange_rate for conversion (not current currency rate)
+            $unitPriceCurrency = round($unitPriceRonInclVat / $exchangeRate, 2);
+            $unitPriceExclVatCurrency = round($unitPriceRonExclVat / $exchangeRate, 2);
+            $totalCurrencyExclVat = round($totalRonExclVat / $exchangeRate, 2);
+            $totalCurrencyInclVat = round($totalRonInclVat / $exchangeRate, 2);
+        }
+
+        // VAT rate already calculated above
+
+        // Create order product
+        $orderProduct = OrderProduct::create([
+            'order_id' => $order->id,
+            'product_id' => $product->id,
+            'name' => $product->name,
+            'sku' => $product->sku,
+            'ean' => $product->ean,
+            'quantity' => $quantity,
+            'vat_percent' => $vatRate,
+            'exchange_rate' => $exchangeRate,
+            'unit_price_currency' => round($unitPriceCurrency, 2),
+            'unit_price_ron' => round($unitPriceRonInclVat, 2),
+            'unit_purchase_price_ron' => round((float) $product->purchase_price_ron, 2),
+            'total_currency_excl_vat' => $totalCurrencyExclVat,
+            'total_currency_incl_vat' => $totalCurrencyInclVat,
+            'total_ron_excl_vat' => $totalRonExclVat,
+            'total_ron_incl_vat' => $totalRonInclVat,
+            'profit_ron' => round(($unitPriceRonExclVat - (float) $product->purchase_price_ron) * $quantity, 2),
+        ]);
+
+        // Update stock
+        $product->decrement('stock_quantity', $quantity);
+
+        // Log history
+        $order->logHistory(
+            'product_added',
+            null,
+            [
+                'product_id' => $product->id,
+                'product_name' => $product->name,
+                'quantity' => $quantity,
+                'unit_price_ron' => $unitPriceRonInclVat,
+                'custom_price' => $customPriceRon !== null,
+            ],
+            "Product added: {$product->name} (Qty: {$quantity})",
+            $userId
+        );
+
+        // Recalculate totals
+        $this->recalculateOrderTotals($order);
+
+        return $orderProduct;
+    }
+
+    /**
+     * Update product quantity in an order.
+     *
+     * @param Order $order
+     * @param int $orderProductId
+     * @param int $newQuantity
+     * @param int|null $userId User ID making the change
+     * @return OrderProduct
+     * @throws \Exception
+     */
+    public function updateProductQuantity(Order $order, int $orderProductId, int $newQuantity, ?int $userId = null): OrderProduct
+    {
+        if ($newQuantity <= 0) {
+            throw new \Exception('Quantity must be greater than 0');
+        }
+
+        // Check if order has invoice (block editing)
+        if ($order->invoice_number) {
+            throw new \Exception('Cannot modify order with existing invoice number');
+        }
+
+        $orderProduct = OrderProduct::where('order_id', $order->id)
+            ->where('id', $orderProductId)
+            ->firstOrFail();
+
+        $oldQuantity = $orderProduct->quantity;
+        $quantityDiff = $newQuantity - $oldQuantity;
+
+        if ($quantityDiff === 0) {
+            return $orderProduct; // No change
+        }
+
+        $product = Product::findOrFail($orderProduct->product_id);
+
+        // Handle stock changes
+        if ($quantityDiff > 0) {
+            // Increasing quantity - check stock
+            if ($product->stock_quantity < $quantityDiff) {
+                throw new \Exception("Insufficient stock. Available: {$product->stock_quantity}, Needed: {$quantityDiff}");
+            }
+            $product->decrement('stock_quantity', $quantityDiff);
+        } else {
+            // Decreasing quantity - return stock
+            $product->increment('stock_quantity', abs($quantityDiff));
+        }
+
+        // Get customer group from order's customer
+        $customerGroupId = null;
+        if ($order->customer) {
+            $customerGroupId = $order->customer->customer_group_id;
+        }
+        $customerGroupId = $this->priceService->getEffectiveCustomerGroupId($customerGroupId);
+
+        // Get currency and exchange rate from order
+        $currency = Currency::where('code', $order->currency)->where('status', true)->firstOrFail();
+        $exchangeRate = (float) $order->exchange_rate;
+        
+        // Prevent division by zero for exchange rate
+        if ($exchangeRate <= 0) {
+            $exchangeRate = 1.0;
+        }
+
+        // Get shipping country for VAT calculation
+        $shippingAddress = $order->shippingAddress;
+        $countryId = $shippingAddress?->country_id;
+        
+        // If no country ID, use default (Romania - ID 1) for VAT calculation
+        if (!$countryId) {
+            $countryId = 1; // Default to Romania
+        }
+
+        // Recalculate price for new quantity with group prices
+        // Use RON currency for calculation (we'll convert manually using order's exchange_rate)
+        $ronCurrency = Currency::where('code', 'RON')->where('status', true)->firstOrFail();
+        $priceInfo = $this->priceService->getPriceInfo(
+            $product,
+            $ronCurrency, // Always use RON for base calculation
+            $newQuantity,
+            $customerGroupId,
+            $countryId,
+            null
+        );
+
+        // Get calculated prices in RON
+        $unitPriceRonExclVat = $priceInfo['unit_price_ron_excl_vat'];
+        $unitPriceRonInclVat = $priceInfo['unit_price_ron_incl_vat'];
+        $vatPercent = $priceInfo['vat_rate'];
+
+        // Calculate totals in RON for new quantity
+        $totalRonExclVat = $priceInfo['total_price_ron_excl_vat'];
+        $totalRonInclVat = $priceInfo['total_price_ron_incl_vat'];
+
+        // Convert to order's currency using order's exchange_rate (not current rate)
+        if ($currency->code === 'RON') {
+            $unitPriceCurrency = $unitPriceRonInclVat;
+            $unitPriceExclVatCurrency = $unitPriceRonExclVat;
+            $totalCurrencyExclVat = $totalRonExclVat;
+            $totalCurrencyInclVat = $totalRonInclVat;
+        } else {
+            // Use order's exchange_rate for conversion (frozen rate from order creation)
+            $unitPriceCurrency = round($unitPriceRonInclVat / $exchangeRate, 2);
+            $unitPriceExclVatCurrency = round($unitPriceRonExclVat / $exchangeRate, 2);
+            $totalCurrencyExclVat = round($totalRonExclVat / $exchangeRate, 2);
+            $totalCurrencyInclVat = round($totalRonInclVat / $exchangeRate, 2);
+        }
+
+        // Update order product with recalculated prices
+        $orderProduct->quantity = $newQuantity;
+        $orderProduct->vat_percent = $vatPercent;
+        $orderProduct->exchange_rate = $exchangeRate;
+        $orderProduct->unit_price_currency = round($unitPriceCurrency, 2);
+        $orderProduct->unit_price_ron = round($unitPriceRonInclVat, 2);
+        $orderProduct->total_currency_excl_vat = round($totalCurrencyExclVat, 2);
+        $orderProduct->total_currency_incl_vat = round($totalCurrencyInclVat, 2);
+        $orderProduct->total_ron_excl_vat = round($totalRonExclVat, 2);
+        $orderProduct->total_ron_incl_vat = round($totalRonInclVat, 2);
+        $orderProduct->profit_ron = round(($unitPriceRonExclVat - (float) $product->purchase_price_ron) * $newQuantity, 2);
+        $orderProduct->save();
+
+        // Log history
+        $order->logHistory(
+            'quantity_updated',
+            [
+                'product_id' => $product->id,
+                'product_name' => $orderProduct->name,
+                'quantity' => $oldQuantity,
+            ],
+            [
+                'product_id' => $product->id,
+                'product_name' => $orderProduct->name,
+                'quantity' => $newQuantity,
+            ],
+            "Quantity updated: {$orderProduct->name} (from {$oldQuantity} to {$newQuantity})",
+            $userId
+        );
+
+        // Recalculate totals
+        $this->recalculateOrderTotals($order);
+
+        return $orderProduct;
+    }
+
+    /**
+     * Remove a product from an order.
+     *
+     * @param Order $order
+     * @param int $orderProductId
+     * @param int|null $userId User ID making the change
+     * @return void
+     * @throws \Exception
+     */
+    public function removeProductFromOrder(Order $order, int $orderProductId, ?int $userId = null): void
+    {
+        // Check if order has invoice (block editing)
+        if ($order->invoice_number) {
+            throw new \Exception('Cannot modify order with existing invoice number');
+        }
+
+        $orderProduct = OrderProduct::where('order_id', $order->id)
+            ->where('id', $orderProductId)
+            ->firstOrFail();
+
+        $product = Product::findOrFail($orderProduct->product_id);
+        $quantity = $orderProduct->quantity;
+        $productName = $orderProduct->name;
+
+        // Return stock
+        $product->increment('stock_quantity', $quantity);
+
+        // Log history before deletion
+        $order->logHistory(
+            'product_removed',
+            [
+                'product_id' => $product->id,
+                'product_name' => $productName,
+                'quantity' => $quantity,
+            ],
+            null,
+            "Product removed: {$productName} (Qty: {$quantity})",
+            $userId
+        );
+
+        // Delete order product
+        $orderProduct->delete();
+
+        // Recalculate totals
+        $this->recalculateOrderTotals($order);
+    }
+
+    /**
+     * Update shipping or billing address for an order.
+     *
+     * @param Order $order
+     * @param string $type 'shipping' or 'billing'
+     * @param array $addressData
+     * @param int|null $userId User ID making the change
+     * @return OrderAddress
+     * @throws \Exception
+     */
+    public function updateOrderAddress(Order $order, string $type, array $addressData, ?int $userId = null): OrderAddress
+    {
+        if (!in_array($type, ['shipping', 'billing'])) {
+            throw new \Exception('Invalid address type. Must be "shipping" or "billing"');
+        }
+
+        // Check if order has invoice (block editing)
+        if ($order->invoice_number) {
+            throw new \Exception('Cannot modify order with existing invoice number');
+        }
+
+        $orderAddress = OrderAddress::where('order_id', $order->id)
+            ->where('type', $type)
+            ->firstOrFail();
+
+        // Get old address data before update
+        $oldAddress = [
+            'first_name' => $orderAddress->first_name,
+            'last_name' => $orderAddress->last_name,
+            'company_name' => $orderAddress->company_name,
+            'fiscal_code' => $orderAddress->fiscal_code,
+            'reg_number' => $orderAddress->reg_number,
+            'phone' => $orderAddress->phone,
+            'email' => $orderAddress->email,
+            'address_line_1' => $orderAddress->address_line_1,
+            'address_line_2' => $orderAddress->address_line_2,
+            'city' => $orderAddress->city,
+            'county_name' => $orderAddress->county_name,
+            'county_code' => $orderAddress->county_code,
+            'zip_code' => $orderAddress->zip_code,
+            'country_id' => $orderAddress->country_id,
+        ];
+
+        // Update address
+        $orderAddress->fill($addressData);
+        $orderAddress->save();
+
+        // Get new address data after update
+        $newAddress = [
+            'first_name' => $orderAddress->first_name,
+            'last_name' => $orderAddress->last_name,
+            'company_name' => $orderAddress->company_name,
+            'fiscal_code' => $orderAddress->fiscal_code,
+            'reg_number' => $orderAddress->reg_number,
+            'phone' => $orderAddress->phone,
+            'email' => $orderAddress->email,
+            'address_line_1' => $orderAddress->address_line_1,
+            'address_line_2' => $orderAddress->address_line_2,
+            'city' => $orderAddress->city,
+            'county_name' => $orderAddress->county_name,
+            'county_code' => $orderAddress->county_code,
+            'zip_code' => $orderAddress->zip_code,
+            'country_id' => $orderAddress->country_id,
+        ];
+
+        // Log history
+        $order->logHistory(
+            "address_{$type}_updated",
+            $oldAddress,
+            $newAddress,
+            ucfirst($type) . " address updated",
+            $userId
+        );
+
+        // If shipping address changed, might need to recalculate shipping cost
+        if ($type === 'shipping') {
+            // Check if country changed - might affect shipping cost
+            $oldCountryId = $oldAddress['country_id'] ?? null;
+            $newCountryId = $orderAddress->country_id;
+            
+            if ($oldCountryId !== $newCountryId) {
+                // Country changed - shipping cost might need recalculation
+                // For now, we'll leave it as is, but this could trigger shipping cost recalculation
+                // TODO: Implement shipping cost recalculation if needed
+            }
+        }
+
+        return $orderAddress;
+    }
 }
 

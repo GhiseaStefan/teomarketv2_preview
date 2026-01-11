@@ -27,6 +27,8 @@ return new class extends Migration
             $table->decimal('total_ron_incl_vat', 15, 2);
             $table->foreignId('payment_method_id')->constrained('payment_methods')->onDelete('restrict');
             $table->string('status');
+            $table->boolean('is_paid')->default(false)->after('status')->comment('Indicates if the order has been paid');
+            $table->timestamp('paid_at')->nullable()->after('is_paid')->comment('Timestamp when the order was marked as paid');
             $table->timestamps();
 
             $table->unique(['invoice_series', 'invoice_number']);

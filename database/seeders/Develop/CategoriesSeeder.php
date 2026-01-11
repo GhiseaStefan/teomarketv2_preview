@@ -27,13 +27,13 @@ class CategoriesSeeder extends Seeder
     {
         $this->command->info('Seeding categories...');
         $this->seedCategories();
-        
+
         $this->command->info('Seeding category images...');
         $this->seedCategoryImages();
-        
+
         $this->command->info('Seeding category paths...');
         $this->seedCategoryPath();
-        
+
         $this->command->info('✓ Categories seeded successfully');
     }
 
@@ -117,58 +117,6 @@ class CategoriesSeeder extends Seeder
             ]
         );
         $booksId = DB::table('categories')->where('slug', 'carti')->value('id');
-
-        DB::table('categories')->updateOrInsert(
-            ['slug' => 'cosmetice-ingrijire'],
-            [
-                'parent_id' => null,
-                'name' => 'Cosmetice & Ingrijire',
-                'slug' => 'cosmetice-ingrijire',
-                'status' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]
-        );
-        $cosmeticsId = DB::table('categories')->where('slug', 'cosmetice-ingrijire')->value('id');
-
-        DB::table('categories')->updateOrInsert(
-            ['slug' => 'auto-moto'],
-            [
-                'parent_id' => null,
-                'name' => 'Auto & Moto',
-                'slug' => 'auto-moto',
-                'status' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]
-        );
-        $autoMotoId = DB::table('categories')->where('slug', 'auto-moto')->value('id');
-
-        DB::table('categories')->updateOrInsert(
-            ['slug' => 'bebeli-copii'],
-            [
-                'parent_id' => null,
-                'name' => 'Bebeli & Copii',
-                'slug' => 'bebeli-copii',
-                'status' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]
-        );
-        $babyKidsId = DB::table('categories')->where('slug', 'bebeli-copii')->value('id');
-
-        DB::table('categories')->updateOrInsert(
-            ['slug' => 'hobby-colectionar'],
-            [
-                'parent_id' => null,
-                'name' => 'Hobby & Colectionar',
-                'slug' => 'hobby-colectionar',
-                'status' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]
-        );
-        $hobbyId = DB::table('categories')->where('slug', 'hobby-colectionar')->value('id');
 
         // Electronics subcategories
         DB::table('categories')->updateOrInsert(
@@ -955,6 +903,14 @@ class CategoriesSeeder extends Seeder
     {
         // Map of category slugs to image URLs
         $categoryImages = [
+            // Root categories
+            'electronice' => 'https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=400&h=400&fit=crop',
+            'imbracaminte' => 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&h=400&fit=crop',
+            'casa-gradina' => 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=400&fit=crop',
+            'sport-fitness' => 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=400&fit=crop',
+            'jocuri-consola' => 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=400&h=400&fit=crop',
+            'carti' => 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=400&fit=crop',
+
             // Electronics subcategories
             'laptopuri' => 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=400&fit=crop',
             'telefoane' => 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=400&fit=crop',
@@ -994,6 +950,11 @@ class CategoriesSeeder extends Seeder
             'haine-copii' => 'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=400&h=400&fit=crop',
             'incaltaminte-copii' => 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop',
 
+            // Home & Garden subcategories
+            'mobilier' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=400&fit=crop',
+            'decoratiuni' => 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=400&fit=crop',
+            'bucatarie' => 'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=400&h=400&fit=crop',
+
             // Home & Garden sub-subcategories
             'scaune' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=400&fit=crop',
             'mese' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=400&fit=crop',
@@ -1002,11 +963,19 @@ class CategoriesSeeder extends Seeder
             'ustensile-bucatarie' => 'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=400&h=400&fit=crop',
             'tigari-bucatarie' => 'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=400&h=400&fit=crop',
 
+            // Sports subcategories
+            'fitness' => 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=400&fit=crop',
+            'alergare' => 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop',
+
             // Sports sub-subcategories
             'gantere' => 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=400&fit=crop',
             'benzi-rezistenta' => 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=400&fit=crop',
             'incaltaminte-alergare' => 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop',
             'echipament-alergare' => 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop',
+
+            // Games subcategories
+            'consola' => 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=400&h=400&fit=crop',
+            'jocuri-video' => 'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?w=400&h=400&fit=crop',
 
             // Games sub-subcategories
             'playstation' => 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=400&h=400&fit=crop',
@@ -1014,28 +983,15 @@ class CategoriesSeeder extends Seeder
             'jocuri-action' => 'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?w=400&h=400&fit=crop',
             'jocuri-sport' => 'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?w=400&h=400&fit=crop',
 
+            // Books subcategories
+            'fictiune' => 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=400&fit=crop',
+            'non-fictiune' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
+
             // Books sub-subcategories
             'romane' => 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=400&fit=crop',
             'povestiri' => 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=400&fit=crop',
             'biografii' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
             'istorie' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
-
-            // Home & Garden subcategories
-            'mobilier' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=400&fit=crop',
-            'decoratiuni' => 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=400&fit=crop',
-            'bucatarie' => 'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=400&h=400&fit=crop',
-
-            // Sports subcategories
-            'fitness' => 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=400&fit=crop',
-            'alergare' => 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop',
-
-            // Games subcategories
-            'consola' => 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=400&h=400&fit=crop',
-            'jocuri-video' => 'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?w=400&h=400&fit=crop',
-
-            // Books subcategories
-            'fictiune' => 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=400&fit=crop',
-            'non-fictiune' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
         ];
 
         // Update categories with images

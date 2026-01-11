@@ -6,7 +6,7 @@ import { SettingsModalProvider } from '../../contexts/SettingsModalContext';
 import { ProductCard } from '../../components/ProductCard';
 import { useTranslations } from '../../utils/translations';
 import type { SharedData, Currency, CustomerGroup } from '../../types';
-import { Heart, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import styles from './index.module.css';
 
 interface PriceTier {
@@ -61,10 +61,20 @@ function WishlistContent({ products = [] }: WishlistPageProps) {
         setSortedProducts(sorted);
     }, [products, orderBy, orderDirection]);
 
-    const handleOrderChange = (newOrderBy: 'name' | 'price_ron') => {
-        const newDirection = orderBy === newOrderBy && orderDirection === 'asc' ? 'desc' : 'asc';
-        setOrderBy(newOrderBy);
-        setOrderDirection(newDirection);
+    // Get current sort value for dropdown
+    const getCurrentSortValue = (): string => {
+        return `${orderBy}_${orderDirection}`;
+    };
+
+    // Handle sort change from dropdown
+    const handleSortChange = (value: string) => {
+        // Parse value format: "name_asc", "name_desc", "price_ron_asc", "price_ron_desc"
+        const parts = value.split('_');
+        const direction = parts[parts.length - 1] as 'asc' | 'desc'; // Last part is direction
+        const field = parts.slice(0, -1).join('_') as 'name' | 'price_ron'; // Everything before last part is field
+
+        setOrderBy(field);
+        setOrderDirection(direction);
     };
 
     return (
@@ -84,40 +94,20 @@ function WishlistContent({ products = [] }: WishlistPageProps) {
                     {/* Sort Section */}
                     {products.length > 0 && (
                         <div className={styles.sortSection}>
-                            <span className={styles.sortLabel}>{t('Sort by')}:</span>
-                            <div className={styles.sortButtons}>
-                                <button
-                                    className={`${styles.sortButton} ${orderBy === 'name' ? styles.sortButtonActive : ''}`}
-                                    onClick={() => handleOrderChange('name')}
-                                    title={t('Sort by name')}
-                                >
-                                    <span>{t('Name')}</span>
-                                    {orderBy === 'name' ? (
-                                        orderDirection === 'asc' ? (
-                                            <ArrowUp size={14} className={styles.sortArrow} />
-                                        ) : (
-                                            <ArrowDown size={14} className={styles.sortArrow} />
-                                        )
-                                    ) : (
-                                        <ArrowUpDown size={14} className={styles.sortArrowInactive} />
-                                    )}
-                                </button>
-                                <button
-                                    className={`${styles.sortButton} ${orderBy === 'price_ron' ? styles.sortButtonActive : ''}`}
-                                    onClick={() => handleOrderChange('price_ron')}
-                                    title={t('Sort by price')}
-                                >
-                                    <span>{t('Price')}</span>
-                                    {orderBy === 'price_ron' ? (
-                                        orderDirection === 'asc' ? (
-                                            <ArrowUp size={14} className={styles.sortArrow} />
-                                        ) : (
-                                            <ArrowDown size={14} className={styles.sortArrow} />
-                                        )
-                                    ) : (
-                                        <ArrowUpDown size={14} className={styles.sortArrowInactive} />
-                                    )}
-                                </button>
+                            <div className={styles.sortControls}>
+                                <div className={styles.sortControl}>
+                                    <label className={styles.sortLabel}>{t('Sort by', 'Ordoneaza')}:</label>
+                                    <select
+                                        className={styles.sortSelect}
+                                        value={getCurrentSortValue()}
+                                        onChange={(e) => handleSortChange(e.target.value)}
+                                    >
+                                        <option value="name_asc">{t('Name A-Z', 'Nume A-Z')}</option>
+                                        <option value="name_desc">{t('Name Z-A', 'Nume Z-A')}</option>
+                                        <option value="price_ron_asc">{t('Price ascending', 'Pret crescator')}</option>
+                                        <option value="price_ron_desc">{t('Price descending', 'Pret descrescator')}</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     )}

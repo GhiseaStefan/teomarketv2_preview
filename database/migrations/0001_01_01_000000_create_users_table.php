@@ -21,7 +21,7 @@ return new class extends Migration
             $table->timestamp('two_factor_confirmed_at')->nullable();
             $table->string('first_name');
             $table->string('last_name');
-            $table->string('role')->nullable();
+            $table->string('role')->default('customer');
             $table->boolean('is_active')->default(true)->comment('To block employees without deleting history');
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();

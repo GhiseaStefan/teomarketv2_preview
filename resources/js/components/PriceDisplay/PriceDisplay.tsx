@@ -3,7 +3,7 @@ import { formatPriceWithSuperscript } from '../../utils/priceFormatter';
 import styles from './PriceDisplay.module.css';
 
 interface PriceDisplayProps {
-    price: string;
+    price: string | number;
     className?: string;
 }
 

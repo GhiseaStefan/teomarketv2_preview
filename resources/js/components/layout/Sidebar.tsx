@@ -1,5 +1,5 @@
 import { useState, useEffect, useLayoutEffect, useRef } from 'react';
-import { Home, Package, User, ClipboardList, Languages, DollarSign } from 'lucide-react';
+import { Home, Package, User, ClipboardList, Languages, DollarSign, Grid3x3 } from 'lucide-react';
 import { router, usePage } from '@inertiajs/react';
 import { useTranslations } from '../../utils/translations';
 import type { SharedData, Currency } from '../../types';
@@ -35,8 +35,9 @@ export default function Sidebar({ activeItem = 'home', isOpen = false, onClose }
 
     const sidebarItems: SidebarItem[] = [
         { id: 'home', label: t('Home'), icon: <Home size={20} />, active: activeItem === 'home' },
-        { id: 'orders', label: t('Orders'), icon: <ClipboardList size={20} />, active: activeItem === 'orders' },
+        { id: 'categories', label: t('Categories'), icon: <Grid3x3 size={20} />, active: activeItem === 'categories' },
         { id: 'products', label: t('Products'), icon: <Package size={20} />, active: activeItem === 'products' },
+        { id: 'orders', label: t('Orders'), icon: <ClipboardList size={20} />, active: activeItem === 'orders' },
         { id: 'me', label: t('Me'), icon: <User size={20} />, active: activeItem === 'me' },
     ];
 
@@ -146,6 +147,8 @@ export default function Sidebar({ activeItem = 'home', isOpen = false, onClose }
         
         if (itemId === 'home') {
             router.get('/');
+        } else if (itemId === 'categories') {
+            router.get('/categories');
         } else if (itemId === 'products') {
             router.get('/products');
         } else if (itemId === 'me') {

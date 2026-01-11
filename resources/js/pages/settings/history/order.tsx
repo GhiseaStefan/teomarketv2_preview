@@ -271,9 +271,9 @@ function OrderContent({ order: pageOrder, shop_info: pageShopInfo }: OrderPagePr
                                                 </p>
 
                                                 {/* Cost livrare */}
-                                                {order.shipping && (order.shipping.shipping_cost_incl_vat !== null && order.shipping.shipping_cost_incl_vat !== undefined) && (
+                                                {order.shipping && (order.shipping.shipping_cost_excl_vat !== null && order.shipping.shipping_cost_excl_vat !== undefined) && (
                                                     <p className={styles.infoLine}>
-                                                        <strong>{t('Shipping Cost')}:</strong> <PriceDisplay price={formatPriceInOrderCurrency(order.shipping.shipping_cost_incl_vat || 0, getOrderCurrency(order.currency))} />
+                                                        <strong>{t('Shipping Cost')}:</strong> <PriceDisplay price={formatPriceInOrderCurrency(order.shipping.shipping_cost_excl_vat || 0, getOrderCurrency(order.currency))} />
                                                     </p>
                                                 )}
 
@@ -456,11 +456,11 @@ function OrderContent({ order: pageOrder, shop_info: pageShopInfo }: OrderPagePr
                                         <PriceDisplay price={formatPriceInOrderCurrency(order.total_excl_vat, getOrderCurrency(order.currency))} />
                                     </span>
                                 </div>
-                                {order.shipping && (order.shipping.shipping_cost_incl_vat !== null && order.shipping.shipping_cost_incl_vat !== undefined) && (
+                                {order.shipping && (order.shipping.shipping_cost_excl_vat !== null && order.shipping.shipping_cost_excl_vat !== undefined) && (
                                     <div className={styles.summaryRow}>
                                         <span>{t('Shipping Cost')}</span>
                                         <span>
-                                            <PriceDisplay price={formatPriceInOrderCurrency(order.shipping.shipping_cost_incl_vat || 0, getOrderCurrency(order.currency))} />
+                                            <PriceDisplay price={formatPriceInOrderCurrency(order.shipping.shipping_cost_excl_vat || 0, getOrderCurrency(order.currency))} />
                                         </span>
                                     </div>
                                 )}
@@ -481,7 +481,7 @@ function OrderContent({ order: pageOrder, shop_info: pageShopInfo }: OrderPagePr
                                 </div>
                                 <div className={`${styles.summaryRow} ${styles.summaryRowTotal}`}>
                                     <span>
-                                        {t('Total')}
+                                        {t('Total')} <span className={styles.vatRateLabel}>(cu TVA)</span>
                                     </span>
                                     <span>
                                         <PriceDisplay price={formatPriceInOrderCurrency(

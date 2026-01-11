@@ -79,7 +79,13 @@ class ProductPriceService
 
         // Auto-detect country if not provided (only for B2C)
         if ($countryId === null) {
-            $countryId = $this->countryDetectionService->getCountryId($request, $customerGroupId);
+            if ($request) {
+                $countryId = $this->countryDetectionService->getCountryId($request, $customerGroupId);
+            }
+            // Fallback to Romania (ID 1) if still null
+            if ($countryId === null) {
+                $countryId = 1; // Default to Romania
+            }
         }
 
         // Use default VAT rate if not provided

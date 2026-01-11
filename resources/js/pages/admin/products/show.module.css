@@ -11,9 +11,14 @@
    ============================================ */
 .header {
     display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
+    flex-direction: column;
+    gap: var(--spacing-sm);
     margin-bottom: var(--spacing-lg);
+}
+
+.headerTop {
+    display: flex;
+    align-items: center;
 }
 
 .backButton {
@@ -35,11 +40,47 @@
     border-color: var(--color-admin-300);
 }
 
+.breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    flex: 1;
+}
+
+.breadcrumbLink {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: none;
+    background: none;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: color 0.2s ease;
+    text-decoration: none;
+}
+
+.breadcrumbLink:hover {
+    color: var(--color-admin-600);
+    text-decoration: underline;
+}
+
+.breadcrumbSeparator {
+    color: var(--color-text-tertiary);
+    flex-shrink: 0;
+}
+
+.breadcrumbCurrent {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+}
+
 .headerTitle {
     display: flex;
     align-items: center;
     gap: var(--spacing-md);
-    flex: 1;
 }
 
 .pageTitle {
@@ -818,4 +859,183 @@
     .addGroupPriceButton {
         width: 100%;
     }
+}
+
+/* ============================================
+   Variants Manager - Compact Vertical List
+   ============================================ */
+.variantsManager {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.variantsGrid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.variantCard {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: 4px 6px;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background-color: var(--color-background);
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    height: 48px;
+    min-height: 48px;
+    max-height: 48px;
+}
+
+.variantCard:hover {
+    border-color: var(--color-admin-300);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    background-color: var(--color-admin-50);
+}
+
+.variantCardImage {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    background-color: var(--color-admin-50);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 3px;
+    border: 1px solid var(--color-border);
+}
+
+.variantImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.variantImagePlaceholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: var(--color-text-tertiary);
+    background-color: var(--color-admin-50);
+}
+
+.variantImagePlaceholder svg {
+    width: 18px;
+    height: 18px;
+}
+
+.variantCardTitle {
+    flex: 1;
+    padding: 0;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    text-align: left;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    min-height: auto;
+}
+
+/* ============================================
+   Product Attributes Manager
+   ============================================ */
+.productAttributesManager {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.productAttributesList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.productAttributeCard {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-md);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background-color: var(--color-admin-50);
+}
+
+.productAttributeLabel {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.colorSwatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+}
+
+.colorSwatch {
+    width: 40px;
+    height: 40px;
+    border: 2px solid var(--color-border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    background: none;
+}
+
+.colorSwatch:hover {
+    border-color: var(--color-admin-500);
+    transform: scale(1.05);
+}
+
+.colorSwatchSelected {
+    border-color: var(--color-admin-600);
+    border-width: 3px;
+    box-shadow: 0 0 0 2px var(--color-admin-100);
+}
+
+.checkmark {
+    color: var(--color-text-inverse);
+    font-size: 18px;
+    font-weight: var(--font-weight-bold);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.productAttributeSelect {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    font-size: var(--font-size-sm);
+    font-family: var(--font-primary);
+    color: var(--color-text-primary);
+    background-color: var(--color-background);
+    transition: border-color 0.2s ease;
+}
+
+.productAttributeSelect:focus {
+    outline: none;
+    border-color: var(--color-admin-500);
+    box-shadow: 0 0 0 3px var(--color-admin-100);
 }

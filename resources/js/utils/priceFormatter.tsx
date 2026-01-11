@@ -29,7 +29,7 @@ export function formatPriceWithCurrency(price: number, currency: Currency): stri
  * - Decimal separator (,) for decimals
  * - Decimal part (cents/bani) as superscript
  * 
- * @param priceString - The price string (e.g., "2298.99", "123.45", "100")
+ * @param priceString - The price string or number (e.g., "2298.99", "123.45", "100", 2298.99)
  * @returns React JSX element with formatted price
  * 
  * Example:
@@ -37,10 +37,13 @@ export function formatPriceWithCurrency(price: number, currency: Currency): stri
  * - "123.45" -> "123,45" with "45" as superscript  
  * - "100" -> "100" (no superscript if no decimals)
  */
-export function formatPriceWithSuperscript(priceString: string): React.ReactElement {
+export function formatPriceWithSuperscript(priceString: string | number): React.ReactElement {
+    // Convert to string if it's a number
+    const priceStr = typeof priceString === 'number' ? priceString.toString() : priceString;
+    
     // Extract currency symbols/prefix and suffix
     // Match: optional prefix (currency symbols), numeric part, optional suffix (currency code like "RON")
-    const trimmed = priceString.trim();
+    const trimmed = priceStr.trim();
     
     // Try to find numeric part with optional prefix and suffix
     const numericMatch = trimmed.match(/([\d.,]+)/);

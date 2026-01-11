@@ -100,6 +100,9 @@ export const Footer = () => {
                             <a href="/intrebari-frecvente" className={styles.footerLink}>
                                 {t('Frequently Asked Questions')}
                             </a>
+                            <a href="/returns/create" className={styles.footerLink}>
+                                {t('Create Return')}
+                            </a>
                             <a href="/contact" className={styles.footerLink}>
                                 {t('Contact')}
                             </a>

@@ -3,7 +3,7 @@
    ============================================ */
 .orderShowPage {
     padding: var(--spacing-md);
-    background-color: var(--color-background);
+    background-color: transparent;
     min-height: calc(100vh - 60px);
 }
 
@@ -13,9 +13,11 @@
 .header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: var(--spacing-md) 0;
-    border-bottom: 1px solid var(--color-admin-200);
+    align-items: flex-start;
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: var(--spacing-md);
     margin-bottom: var(--spacing-lg);
     flex-wrap: wrap;
     gap: var(--spacing-md);
@@ -23,9 +25,49 @@
 
 .headerLeft {
     display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+    flex: 1;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+    display: flex;
     align-items: center;
-    gap: var(--spacing-md);
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
     flex-wrap: wrap;
+    margin-right: auto;
+    margin-top: calc(var(--spacing-sm) * -1);
+    margin-bottom: var(--spacing-xs);
+}
+
+.breadcrumbLink {
+    color: var(--color-admin-700);
+    text-decoration: none;
+    transition: color 0.2s ease;
+    font-weight: var(--font-weight-medium);
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
+.breadcrumbLink:hover {
+    color: var(--color-admin-800);
+    text-decoration: underline;
+}
+
+.breadcrumbSeparator {
+    color: var(--color-text-tertiary);
+    flex-shrink: 0;
+    margin: 0 2px;
+}
+
+.breadcrumbCurrent {
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-medium);
+    padding: 2px 4px;
 }
 
 .backButton {
@@ -105,6 +147,7 @@
 }
 
 .exchangeRate {
+    display: inline-block;
     font-size: var(--font-size-xs);
     color: var(--color-text-secondary);
     padding: 4px 10px;
@@ -112,6 +155,12 @@
     background-color: var(--color-admin-50);
     border: 1px solid var(--color-border);
     white-space: nowrap;
+    line-height: 1.4;
+    height: 31px;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .headerActions {
@@ -119,13 +168,17 @@
     display: flex;
     gap: var(--spacing-sm);
     flex-wrap: wrap;
+    align-self: flex-end;
+    margin-top: auto;
 }
 
 .actionsDropdownButton {
     display: flex;
     align-items: center;
     gap: var(--spacing-xs);
-    padding: var(--spacing-sm) var(--spacing-md);
+    padding: 4px 10px;
+    height: 31px;
+    box-sizing: border-box;
     border: 1px solid var(--color-admin-300);
     border-radius: 6px;
     background-color: var(--color-admin-600);
@@ -413,6 +466,11 @@
     color: var(--color-text-secondary);
     font-weight: var(--font-weight-normal);
     opacity: 0.75;
+}
+
+.vatRateLabel {
+    color: var(--color-text-tertiary);
+    font-weight: var(--font-weight-normal);
 }
 
 .summaryValue {

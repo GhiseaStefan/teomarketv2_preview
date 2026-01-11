@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Currency;
 use App\Models\Product;
+use App\Enums\ProductType;
 use App\Services\ProductService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -107,6 +108,11 @@ class HomeController extends Controller
             ->where('status', true)
             ->with(['products' => function ($query) {
                 $query->where('status', true)
+                    ->where(function($q) {
+                        $q->where('type', ProductType::SIMPLE->value)
+                          ->orWhere('type', ProductType::CONFIGURABLE->value)
+                          ->orWhereNull('type'); // Handle products created before migration
+                    })
                     ->with(['images' => function ($imgQuery) {
                         $imgQuery->orderBy('sort_order')->limit(1);
                     }])
@@ -140,6 +146,9 @@ class HomeController extends Controller
                 return [
                     'id' => $formatted['id'],
                     'name' => $formatted['name'],
+                    'type' => $formatted['type'] ?? 'simple',
+                    'has_variants' => $formatted['has_variants'] ?? false,
+                    'has_variants_in_stock' => $formatted['has_variants_in_stock'] ?? null,
                     'price_raw' => $formatted['price_raw'] ?? null,
                     'vat_included' => $formatted['vat_included'] ?? true,
                     'image' => $formatted['image'],
@@ -172,6 +181,11 @@ class HomeController extends Controller
             // No limit - load all categories
             ->with(['products' => function ($query) {
                 $query->where('status', true)
+                    ->where(function($q) {
+                        $q->where('type', ProductType::SIMPLE->value)
+                          ->orWhere('type', ProductType::CONFIGURABLE->value)
+                          ->orWhereNull('type'); // Handle products created before migration
+                    })
                     ->with(['images' => function ($imgQuery) {
                         $imgQuery->orderBy('sort_order')->limit(1);
                     }])
@@ -204,6 +218,9 @@ class HomeController extends Controller
                 return [
                     'id' => $formatted['id'],
                     'name' => $formatted['name'],
+                    'type' => $formatted['type'] ?? 'simple',
+                    'has_variants' => $formatted['has_variants'] ?? false,
+                    'has_variants_in_stock' => $formatted['has_variants_in_stock'] ?? null,
                     'price_raw' => $formatted['price_raw'] ?? null,
                     'vat_included' => $formatted['vat_included'] ?? true,
                     'image' => $formatted['image'],

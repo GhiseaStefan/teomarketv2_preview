@@ -30,6 +30,11 @@
     margin: 0;
 }
 
+.navItemWrapper {
+    display: flex;
+    flex-direction: column;
+}
+
 /* ============================================
    Admin Sidebar - Navigation Link
    ============================================ */
@@ -68,6 +73,92 @@
 .navLabel {
     font-size: var(--font-size-sm);
     line-height: 1.4;
+    flex: 1;
+}
+
+.navLinkWithSubtabs {
+    cursor: pointer;
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+}
+
+.chevronIcon {
+    margin-left: auto;
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+    color: var(--color-text-primary);
+}
+
+.chevronIconExpanded {
+    transform: rotate(180deg);
+}
+
+/* ============================================
+   Subtabs
+   ============================================ */
+.subtabsList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    background-color: var(--color-admin-50);
+    border-left: 2px solid var(--color-admin-200);
+}
+
+.subtabItem {
+    margin: 0;
+}
+
+.subtabLink {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-xs) var(--spacing-md) var(--spacing-xs) var(--spacing-md);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+    transition: background-color 0.2s ease, color 0.2s ease;
+    border-left: 3px solid transparent;
+}
+
+.subtabIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--color-text-secondary);
+}
+
+.subtabLabel {
+    flex: 1;
+}
+
+.subtabLink:hover {
+    background-color: var(--color-admin-100);
+    color: var(--color-admin-700);
+}
+
+.subtabLinkActive {
+    background-color: var(--color-admin-100);
+    color: var(--color-admin-800);
+    border-left-color: var(--color-admin-600);
+    font-weight: var(--font-weight-medium);
+}
+
+.subtabLinkActive .subtabIcon {
+    color: var(--color-admin-800);
+}
+
+.subtabLink:hover .subtabIcon {
+    color: var(--color-admin-700);
+}
+
+.comingSoonBadge {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    font-weight: var(--font-weight-normal);
+    margin-left: auto;
 }
 
 /* ============================================

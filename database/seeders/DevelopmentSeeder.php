@@ -44,6 +44,10 @@ class DevelopmentSeeder extends Seeder
             Develop\ProductsSeeder::class,
             Develop\ProductImagesSeeder::class,
             Develop\ProductToCategorySeeder::class,
+            
+            // Associate products with families and attributes (must run after products are created)
+            // This associates the develop products with families and attributes
+            Develop\ProductAttributeValuesSeeder::class,
 
             // Customers (must be seeded before orders, carts, wishlists, reviews)
             Develop\CustomersSeeder::class,

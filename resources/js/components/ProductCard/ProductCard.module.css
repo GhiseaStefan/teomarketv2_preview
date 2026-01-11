@@ -241,21 +241,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    padding: 8px 12px;
+    width: 36px;
+    height: 36px;
+    padding: 0;
     background-color: var(--color-green-600);
     color: var(--color-text-inverse);
     border: none;
     border-radius: 8px;
-    font-size: 12px;
-    font-weight: var(--font-weight-semibold);
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 2px 6px rgba(22, 163, 74, 0.25);
-    white-space: nowrap;
     flex-shrink: 0;
-    min-width: fit-content;
-    height: 36px;
 }
 
 .addToCartButtonFixed:hover:not(:disabled) {
@@ -277,13 +273,72 @@
 
 .addToCartButtonFixed svg {
     flex-shrink: 0;
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
 }
 
-.addToCartButtonFixed span {
-    font-size: 12px;
-    line-height: 1;
+.addToCartButtonFixed .loadingSpinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: var(--color-text-inverse);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+.viewOptionsButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    background-color: var(--color-green-600);
+    color: var(--color-text-inverse);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 6px rgba(22, 163, 74, 0.25);
+    flex-shrink: 0;
+}
+
+.viewOptionsButton:hover:not(:disabled) {
+    background-color: var(--color-green-700);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.35);
+}
+
+.viewOptionsButton:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(22, 163, 74, 0.25);
+}
+
+.viewOptionsButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: var(--color-text-tertiary);
+}
+
+.viewOptionsButton svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.loadingSpinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: var(--color-text-inverse);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 
@@ -402,8 +457,13 @@
     justify-content: space-between;
     gap: var(--spacing-sm);
     padding: var(--spacing-xs) var(--spacing-md) var(--spacing-md);
-    border-top: 1px solid var(--color-border-light);
-    margin-top: auto;
+}
+
+.actionButtons {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    flex-shrink: 0;
 }
 
 .productCardB2C .productFooter {
@@ -526,19 +586,26 @@
         padding: var(--spacing-xs) var(--spacing-sm);
     }
 
-    .addToCartButtonFixed {
-        padding: 6px 10px;
-        font-size: 11px;
+    .actionButtons {
+        gap: var(--spacing-xs);
+    }
+
+    .actionButtons {
+        gap: var(--spacing-xs);
+    }
+
+    .addToCartButtonFixed,
+    .viewOptionsButton {
+        width: 32px;
         height: 32px;
     }
 
-    .addToCartButtonFixed svg {
-        width: 14px;
-        height: 14px;
-    }
-
-    .addToCartButtonFixed span {
-        font-size: 11px;
+    .addToCartButtonFixed svg,
+    .addToCartButtonFixed .loadingSpinner,
+    .viewOptionsButton svg,
+    .viewOptionsButton .loadingSpinner {
+        width: 16px;
+        height: 16px;
     }
 }
 
@@ -579,20 +646,22 @@
         padding: var(--spacing-xs);
     }
 
-    .addToCartButtonFixed {
-        padding: 6px 8px;
-        font-size: 10px;
+    .actionButtons {
+        gap: var(--spacing-xs);
+    }
+
+    .addToCartButtonFixed,
+    .viewOptionsButton {
+        width: 30px;
         height: 30px;
-        width: 100%;
     }
 
-    .addToCartButtonFixed svg {
-        width: 12px;
-        height: 12px;
-    }
-
-    .addToCartButtonFixed span {
-        font-size: 10px;
+    .addToCartButtonFixed svg,
+    .addToCartButtonFixed .loadingSpinner,
+    .viewOptionsButton svg,
+    .viewOptionsButton .loadingSpinner {
+        width: 14px;
+        height: 14px;
     }
 }
 

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Link, usePage, router } from '@inertiajs/react';
-import { ShoppingCart, Heart } from 'lucide-react';
+import { ShoppingCart, Heart, Eye } from 'lucide-react';
 import { useTranslations } from '../../utils/translations';
 import { useToast } from '../../contexts/ToastContext';
 import type { CustomerGroup, Currency, SharedData } from '../../types';
 import { PriceDisplay } from '../PriceDisplay/PriceDisplay';
 import { formatPriceWithCurrency } from '../../utils/priceFormatter';
+import { SlideOver } from '../ui/SlideOver';
+import { ProductQuickView } from '../ProductQuickView/ProductQuickView';
 import styles from './ProductCard.module.css';
 
 export interface PriceTier {
@@ -20,6 +22,9 @@ export interface ProductCardProps {
     id: number;
     name: string;
     image: string | null;
+    type?: 'simple' | 'configurable' | 'variant';
+    has_variants?: boolean;
+    has_variants_in_stock?: boolean | null;
     stock_quantity?: number;
     sku?: string;
     short_description?: string;
@@ -33,13 +38,12 @@ export const ProductCard = ({
     id,
     name,
     image,
+    type,
+    has_variants_in_stock,
     stock_quantity,
     sku,
-    short_description,
     price_tiers = [],
     customerGroup: propCustomerGroup,
-    price_raw,
-    vat_included = true,
 }: ProductCardProps) => {
     const { props } = usePage<SharedData>();
     const { t } = useTranslations();
@@ -49,20 +53,37 @@ export const ProductCard = ({
     const currencies = (props.currencies as Currency[] | undefined) || [];
     const currentCurrency = (props.currentCurrency as Currency | undefined) || currencies[0];
     const productUrl = `/products/${id}`;
-    const isInStock = stock_quantity === undefined || stock_quantity > 0;
-    const [isHovered, setIsHovered] = useState(false);
+    const isConfigurable = type === 'configurable';
+    const isInStock = isConfigurable
+        ? (typeof has_variants_in_stock === 'boolean'
+            ? has_variants_in_stock
+            : (stock_quantity === undefined || stock_quantity > 0))
+        : (stock_quantity === undefined || stock_quantity > 0);
     const [isAddingToCart, setIsAddingToCart] = useState(false);
     const [isTogglingWishlist, setIsTogglingWishlist] = useState(false);
+    const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
+    const [isQuickViewLoading, setIsQuickViewLoading] = useState(false);
+    type QuickViewData = {
+        product: Record<string, unknown>;
+        variants?: Array<Record<string, unknown>>;
+        availableAttributes?: Array<Record<string, unknown>>;
+    };
+    const [quickViewData, setQuickViewData] = useState<QuickViewData | null>(null);
     const user = props.auth?.user;
     const isAuthenticated = !!user;
-    const wishlistItems = (props.wishlistItems as any[]) || [];
+    type WishlistItem = { product_id?: number; id?: number };
+    const wishlistItems = (props.wishlistItems as WishlistItem[] | undefined) || [];
 
     // Check if product is in wishlist from props (reacts to changes automatically)
-    const isInWishlist = wishlistItems.some((item: any) => (item.product_id || item.id) === id);
+    // For configurable products, always check the configurable product ID (parent), not variants
+    const wishlistProductId = id;
+    const isInWishlist = wishlistItems.some((item) => (item.product_id || item.id) === wishlistProductId);
 
     // Show SKU and stock for all users
     const isB2CDefault = !customerGroup || customerGroup.code === 'B2C';
     const showTechnicalInfo = true;
+    // Show stock for simple products (if in stock) or configurable products (total variants stock)
+    const showStockQuantity = showTechnicalInfo && stock_quantity !== undefined && stock_quantity > 0;
 
     const formatQuantityRange = (minQuantity: number, nextMinQuantity?: number): string => {
         if (nextMinQuantity) {
@@ -119,7 +140,17 @@ export const ProductCard = ({
                         errorMessage = Array.isArray(firstError) ? firstError[0] : firstError;
                     }
 
-                    showToast(errorMessage, 'error');
+                    // If error mentions configurable product, redirect to product page
+                    const errorLower = errorMessage.toLowerCase();
+                    if (errorLower.includes('configurable') || errorLower.includes('variant')) {
+                        showToast(errorMessage, 'error');
+                        // Redirect to product page after a short delay
+                        setTimeout(() => {
+                            router.visit(productUrl);
+                        }, 1500);
+                    } else {
+                        showToast(errorMessage, 'error');
+                    }
                 },
                 onFinish: () => {
                     setIsAddingToCart(false);
@@ -129,6 +160,41 @@ export const ProductCard = ({
             console.error('Error adding to cart:', error);
             showToast(t('Error processing request. Please try again.'), 'error');
             setIsAddingToCart(false);
+        }
+    };
+
+    const handleViewOptions = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!isInStock || isQuickViewLoading) {
+            return;
+        }
+
+        setIsQuickViewOpen(true);
+        setIsQuickViewLoading(true);
+        setQuickViewData(null);
+
+        try {
+            const response = await fetch(`/products/${id}/quick-view`, {
+                headers: {
+                    Accept: 'application/json',
+                },
+                credentials: 'same-origin',
+            });
+
+            if (!response.ok) {
+                throw new Error(`Quick view failed with status ${response.status}`);
+            }
+
+            const data = await response.json();
+            setQuickViewData(data);
+        } catch (error) {
+            console.error('Error loading quick view:', error);
+            showToast(t('Error processing request. Please try again.'), 'error');
+            setIsQuickViewOpen(false);
+        } finally {
+            setIsQuickViewLoading(false);
         }
     };
 
@@ -195,98 +261,154 @@ export const ProductCard = ({
     };
 
     return (
-        <div
-            className={`${styles.productCard} ${isB2CDefault ? styles.productCardB2C : ''}`}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-        >
-            <Link href={productUrl} className={styles.productLink}>
-                <div className={styles.productImageWrapper}>
-                    {image ? (
-                        <img
-                            src={image}
-                            alt={name}
-                            className={styles.productImage}
-                        />
-                    ) : (
-                        <div className={styles.productImagePlaceholder}>
-                            {t('No image')}
-                        </div>
-                    )}
-                    {!isInStock && (
-                        <div className={styles.outOfStockBadge}>
-                            {t('Out of stock')}
-                        </div>
-                    )}
-                    <button
-                        className={`${styles.wishlistButton} ${isInWishlist ? styles.wishlistButtonActive : ''}`}
-                        onClick={handleToggleWishlist}
-                        disabled={isTogglingWishlist}
-                        title={isInWishlist ? t('Remove from wishlist') : t('Add to wishlist')}
-                    >
-                        <Heart
-                            size={20}
-                            fill={isInWishlist ? '#ef4444' : 'none'}
-                            stroke={isInWishlist ? '#ef4444' : '#000000'}
-                        />
-                    </button>
-                </div>
-                <div className={styles.productInfo}>
-                    <h3 className={styles.productTitle}>{name}</h3>
+        <>
+            <div
+                className={`${styles.productCard} ${isB2CDefault ? styles.productCardB2C : ''}`}
+            >
+                <Link href={productUrl} className={styles.productLink}>
+                    <div className={styles.productImageWrapper}>
+                        {image ? (
+                            <img
+                                src={image}
+                                alt={name}
+                                className={styles.productImage}
+                            />
+                        ) : (
+                            <div className={styles.productImagePlaceholder}>
+                                {t('No image')}
+                            </div>
+                        )}
+                        {!isInStock && (
+                            <div className={styles.outOfStockBadge}>
+                                {t('Out of stock')}
+                            </div>
+                        )}
+                        <button
+                            className={`${styles.wishlistButton} ${isInWishlist ? styles.wishlistButtonActive : ''}`}
+                            onClick={handleToggleWishlist}
+                            disabled={isTogglingWishlist}
+                            title={isInWishlist ? t('Remove from wishlist') : t('Add to wishlist')}
+                        >
+                            <Heart
+                                size={20}
+                                fill={isInWishlist ? '#ef4444' : 'none'}
+                                stroke={isInWishlist ? '#ef4444' : '#000000'}
+                            />
+                        </button>
+                    </div>
+                    <div className={styles.productInfo}>
+                        <h3 className={styles.productTitle}>{name}</h3>
 
-                    {/* Price Tiers Table */}
-                    {price_tiers && price_tiers.length > 0 && (
-                        <div className={styles.priceTiersContainer}>
-                            <div className={styles.priceTiersTable}>
-                                <div className={styles.priceTiersHeader}>
-                                    <div className={styles.priceTierHeader}>{t('Quantity')}</div>
-                                    <div className={`${styles.priceTierHeader} ${styles.priceTierHeaderRight}`}>{t('Price')}</div>
-                                </div>
-                                <div className={styles.priceTiersBody}>
-                                    {price_tiers.map((tier, index) => {
-                                        const nextTier = price_tiers[index + 1];
-                                        const quantityRange = formatQuantityRange(tier.min_quantity, nextTier?.min_quantity);
-                                        const displayPrice = getDisplayTierPrice(tier);
+                        {/* Price Tiers Table */}
+                        {price_tiers && price_tiers.length > 0 && (
+                            <div className={styles.priceTiersContainer}>
+                                <div className={styles.priceTiersTable}>
+                                    <div className={styles.priceTiersHeader}>
+                                        <div className={styles.priceTierHeader}>{t('Quantity')}</div>
+                                        <div className={`${styles.priceTierHeader} ${styles.priceTierHeaderRight}`}>{t('Price')}</div>
+                                    </div>
+                                    <div className={styles.priceTiersBody}>
+                                        {price_tiers.map((tier, index) => {
+                                            const nextTier = price_tiers[index + 1];
+                                            const quantityRange = formatQuantityRange(tier.min_quantity, nextTier?.min_quantity);
+                                            const displayPrice = getDisplayTierPrice(tier);
 
-                                        return (
-                                            <div key={tier.min_quantity} className={styles.priceTierRow}>
-                                                <div className={styles.priceTierQuantity}>{quantityRange}</div>
-                                                <div className={styles.priceTierPrice}>
-                                                    <PriceDisplay price={displayPrice} />
+                                            return (
+                                                <div key={tier.min_quantity} className={styles.priceTierRow}>
+                                                    <div className={styles.priceTierQuantity}>{quantityRange}</div>
+                                                    <div className={styles.priceTierPrice}>
+                                                        <PriceDisplay price={displayPrice} />
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        );
-                                    })}
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
+                </Link>
+                <div className={styles.productFooter}>
+                    <div className={styles.productTechnicalInfo}>
+                        {showTechnicalInfo && sku && (
+                            <div className={styles.productSku}>
+                                SKU: {sku}
+                            </div>
+                        )}
+                        {showStockQuantity && (
+                            <div className={styles.productStock}>
+                                {t('Stock')}: {stock_quantity}
+                            </div>
+                        )}
+                    </div>
+                    <div className={styles.actionButtons}>
+                        {isConfigurable ? (
+                            <button
+                                className={styles.viewOptionsButton}
+                                onClick={handleViewOptions}
+                                disabled={!isInStock || isQuickViewLoading}
+                                title={t('Vezi opțiuni')}
+                                aria-label={t('Vezi opțiuni')}
+                            >
+                                {isQuickViewLoading ? (
+                                    <div className={styles.loadingSpinner} />
+                                ) : (
+                                    <Eye size={18} />
+                                )}
+                            </button>
+                        ) : (
+                            <>
+                                <button
+                                    className={styles.viewOptionsButton}
+                                    onClick={handleViewOptions}
+                                    disabled={!isInStock || isQuickViewLoading}
+                                    title={t('Quick View', 'Vizualizare rapida')}
+                                    aria-label={t('Quick View', 'Vizualizare rapida')}
+                                >
+                                    {isQuickViewLoading ? (
+                                        <div className={styles.loadingSpinner} />
+                                    ) : (
+                                        <Eye size={18} />
+                                    )}
+                                </button>
+                                <button
+                                    className={styles.addToCartButtonFixed}
+                                    onClick={handleAddToCart}
+                                    disabled={!isInStock || isAddingToCart}
+                                    title={isAddingToCart ? t('Adding...') : t('Add to Cart')}
+                                    aria-label={isAddingToCart ? t('Adding...') : t('Add to Cart')}
+                                >
+                                    {isAddingToCart ? (
+                                        <div className={styles.loadingSpinner} />
+                                    ) : (
+                                        <ShoppingCart size={18} />
+                                    )}
+                                </button>
+                            </>
+                        )}
+                    </div>
                 </div>
-            </Link>
-            <div className={styles.productFooter}>
-                <div className={styles.productTechnicalInfo}>
-                    {showTechnicalInfo && sku && (
-                        <div className={styles.productSku}>
-                            SKU: {sku}
-                        </div>
-                    )}
-                    {showTechnicalInfo && stock_quantity !== undefined && isInStock && (
-                        <div className={styles.productStock}>
-                            {t('Stock')}: {stock_quantity}
-                        </div>
-                    )}
-                </div>
-                <button
-                    className={styles.addToCartButtonFixed}
-                    onClick={handleAddToCart}
-                    disabled={!isInStock || isAddingToCart}
-                    title={t('Add to Cart')}
-                >
-                    <ShoppingCart size={16} />
-                    <span>{isAddingToCart ? t('Adding...') : t('Add to Cart')}</span>
-                </button>
             </div>
-        </div>
+
+            <SlideOver
+                isOpen={isQuickViewOpen}
+                onClose={() => setIsQuickViewOpen(false)}
+                title={name}
+            >
+                {isQuickViewLoading && (
+                    <div style={{ padding: 16 }}>
+                        {t('Loading...')}
+                    </div>
+                )}
+                {!isQuickViewLoading && quickViewData?.product && (
+                    <ProductQuickView
+                        product={quickViewData.product}
+                        variants={quickViewData.variants || []}
+                        availableAttributes={quickViewData.availableAttributes || []}
+                    />
+                )}
+            </SlideOver>
+        </>
     );
 };
 

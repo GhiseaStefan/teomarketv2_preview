@@ -32,70 +32,70 @@
 
 /* Sort Section */
 .sortSection {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
     padding: var(--spacing-md);
-    background: var(--color-background-secondary);
+    background: #ffffff;
     border-radius: 8px;
     border: 1px solid var(--color-border);
     margin-bottom: var(--spacing-xl);
 }
 
+.sortControls {
+    display: flex;
+    gap: var(--spacing-lg);
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.sortControl {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
 .sortLabel {
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
-    color: var(--color-text-secondary);
+    color: var(--color-text-primary);
     white-space: nowrap;
 }
 
-.sortButtons {
-    display: flex;
-    gap: var(--spacing-xs);
-    flex-wrap: wrap;
-}
-
-.sortButton {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
+.sortSelect {
     padding: var(--spacing-xs) var(--spacing-md);
+    padding-right: 32px; /* Space for custom arrow */
     background: var(--color-background);
     border: 1px solid var(--color-border);
     border-radius: 6px;
-    color: var(--color-text-primary);
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
     cursor: pointer;
     transition: all 0.2s ease;
     font-family: var(--font-primary);
+    appearance: none; /* Hide default arrow */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E"); /* Custom arrow */
+    background-repeat: no-repeat;
+    background-position: right var(--spacing-sm) center;
+    background-size: 12px;
+    min-width: 160px;
 }
 
-.sortButton:hover {
-    background: var(--color-background-secondary);
+.sortSelect:hover {
     border-color: var(--color-green-300);
-    color: var(--color-text-primary);
+    background-color: var(--color-background-secondary);
 }
 
-.sortButtonActive {
-    background: var(--color-green-50);
+.sortSelect:focus {
+    outline: none;
     border-color: var(--color-green-600);
-    color: var(--color-green-700);
+    box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.1);
 }
 
-.sortButtonActive:hover {
-    background: var(--color-green-100);
-    border-color: var(--color-green-700);
-}
-
-.sortArrow {
-    color: var(--color-green-600);
-    flex-shrink: 0;
-}
-
-.sortArrowInactive {
-    color: var(--color-text-tertiary);
-    flex-shrink: 0;
+.sortSelect option {
+    padding: var(--spacing-xs);
+    background: var(--color-background);
+    color: var(--color-text-primary);
 }
 
 @media (max-width: 768px) {
@@ -110,19 +110,26 @@
     }
 
     .sortSection {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: var(--spacing-sm);
         padding: var(--spacing-sm);
     }
 
-    .sortButtons {
+    .sortControls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--spacing-sm);
         width: 100%;
     }
 
-    .sortButton {
-        flex: 1;
-        justify-content: center;
+    .sortControl {
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-xs);
+    }
+
+    .sortSelect {
+        width: 100%;
+        min-width: auto;
     }
 }
 

@@ -33,6 +33,16 @@ export default function Navbar({ utilityLinks, onMenuClick }: NavbarProps) {
     const [isUserAccountHovered, setIsUserAccountHovered] = useState(false);
     const [removingItems, setRemovingItems] = useState<Set<string>>(new Set());
     const [removingWishlistItems, setRemovingWishlistItems] = useState<Set<number>>(new Set());
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState<any[]>([]);
+    const [searchTotal, setSearchTotal] = useState(0);
+    const [isSearchFocused, setIsSearchFocused] = useState(false);
+    const [isSearchDropdownOpen, setIsSearchDropdownOpen] = useState(false);
+    const [isSearching, setIsSearching] = useState(false);
+    const lastSearchedQueryRef = useRef<string>('');
+    const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const searchDropdownRef = useRef<HTMLDivElement>(null);
+    const blurTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const cartHoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const wishlistHoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const userAccountHoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -238,6 +248,168 @@ export default function Navbar({ utilityLinks, onMenuClick }: NavbarProps) {
         return 'U';
     };
 
+    // Handle product search autocomplete
+    const fetchSearchResults = async (query: string) => {
+        if (!query.trim()) {
+            setSearchResults([]);
+            setSearchTotal(0);
+            return;
+        }
+
+        setIsSearching(true);
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            const response = await fetch(`/products/autocomplete?q=${encodeURIComponent(query)}`, {
+                method: 'GET',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'same-origin',
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Search results:', data); // Debug log
+                console.log('Products count:', data.products?.length || 0);
+                console.log('Total:', data.total || 0);
+                
+                const products = Array.isArray(data.products) ? data.products : [];
+                setSearchResults(products);
+                setSearchTotal(data.total || 0);
+                lastSearchedQueryRef.current = query; // Remember the last searched query
+            } else {
+                console.error('Search response not ok:', response.status, response.statusText);
+                try {
+                    const errorData = await response.json();
+                    console.error('Error data:', errorData);
+                } catch (e) {
+                    const errorText = await response.text();
+                    console.error('Error text:', errorText);
+                }
+                setSearchResults([]);
+                setSearchTotal(0);
+            }
+        } catch (error) {
+            console.error('Error fetching search results:', error);
+            setSearchResults([]);
+            setSearchTotal(0);
+        } finally {
+            setIsSearching(false);
+        }
+    };
+
+    // Debounced search
+    useEffect(() => {
+        if (searchTimeoutRef.current) {
+            clearTimeout(searchTimeoutRef.current);
+        }
+
+        const trimmedQuery = searchQuery.trim();
+        
+        if (trimmedQuery && (isSearchFocused || isSearchDropdownOpen)) {
+            // Only search if query changed or if we don't have results for this query
+            if (trimmedQuery !== lastSearchedQueryRef.current || searchResults.length === 0) {
+                searchTimeoutRef.current = setTimeout(() => {
+                    fetchSearchResults(trimmedQuery);
+                }, 500); // 500ms debounce - wait for user to stop typing
+            }
+        } else if (!trimmedQuery) {
+            setSearchResults([]);
+            setSearchTotal(0);
+            lastSearchedQueryRef.current = '';
+        }
+
+        return () => {
+            if (searchTimeoutRef.current) {
+                clearTimeout(searchTimeoutRef.current);
+            }
+        };
+    }, [searchQuery, isSearchFocused, isSearchDropdownOpen]);
+
+    // Handle product search submit
+    const handleSearch = (e?: React.FormEvent) => {
+        if (e) {
+            e.preventDefault();
+        }
+        const trimmedQuery = searchQuery.trim();
+        if (trimmedQuery) {
+            router.get('/products', {
+                search: trimmedQuery,
+            });
+        } else {
+            // If search is empty, just go to products page
+            router.get('/products');
+        }
+        setIsSearchFocused(false);
+        setIsSearchDropdownOpen(false);
+        setSearchResults([]);
+    };
+
+    // Handle click on search result
+    const handleSearchResultClick = (productId: number) => {
+        router.get(`/products/${productId}`);
+        setIsSearchFocused(false);
+        setIsSearchDropdownOpen(false);
+        setSearchResults([]);
+        setSearchQuery('');
+    };
+
+    // Handle "View more" button
+    const handleViewMore = () => {
+        handleSearch();
+    };
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (searchDropdownRef.current && !searchDropdownRef.current.contains(event.target as Node)) {
+                setIsSearchFocused(false);
+                setIsSearchDropdownOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
+    // Handle search input focus
+    const handleSearchFocus = () => {
+        if (blurTimeoutRef.current) {
+            clearTimeout(blurTimeoutRef.current);
+            blurTimeoutRef.current = null;
+        }
+        setIsSearchFocused(true);
+        if (searchQuery.trim()) {
+            setIsSearchDropdownOpen(true);
+        }
+    };
+
+    // Handle search input blur with delay to allow clicks
+    const handleSearchBlur = () => {
+        blurTimeoutRef.current = setTimeout(() => {
+            setIsSearchFocused(false);
+        }, 150);
+    };
+
+    // Handle mouse enter on dropdown
+    const handleDropdownMouseEnter = () => {
+        if (blurTimeoutRef.current) {
+            clearTimeout(blurTimeoutRef.current);
+            blurTimeoutRef.current = null;
+        }
+        setIsSearchDropdownOpen(true);
+        setIsSearchFocused(true);
+    };
+
+    // Handle mouse leave on dropdown
+    const handleDropdownMouseLeave = () => {
+        // Don't close immediately, let blur handle it
+    };
+
 
     return (
         <>
@@ -254,18 +426,96 @@ export default function Navbar({ utilityLinks, onMenuClick }: NavbarProps) {
                         </button>
                     )}
                     <div className={styles.navbarRight}>
-                        <div className={styles.navbarSearch}>
-                            <div className={styles.searchBarInline}>
+                        <div className={styles.navbarSearch} ref={searchDropdownRef}>
+                            <form onSubmit={handleSearch} className={styles.searchBarInline}>
                                 <Input
                                     type="text"
                                     placeholder={t('Trend New Arrivals')}
                                     variant="search"
                                     className={styles.searchInput}
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onFocus={handleSearchFocus}
+                                    onBlur={handleSearchBlur}
                                 />
-                                <Button variant="searchInline" className={styles.searchButtonInline}>
+                                <Button 
+                                    type="submit"
+                                    variant="searchInline" 
+                                    className={styles.searchButtonInline}
+                                >
                                     <Search size={18} />
                                 </Button>
-                            </div>
+                            </form>
+                            {(isSearchFocused || isSearchDropdownOpen) && searchQuery.trim() && (
+                                <div 
+                                    className={styles.searchDropdown}
+                                    onMouseEnter={handleDropdownMouseEnter}
+                                    onMouseLeave={handleDropdownMouseLeave}
+                                >
+                                    {isSearching ? (
+                                        <div className={styles.searchDropdownLoading}>
+                                            <p>{t('Searching...')}</p>
+                                        </div>
+                                    ) : searchResults.length > 0 ? (
+                                        <>
+                                            <div className={styles.searchDropdownResults}>
+                                                {searchResults.map((product: any) => (
+                                                    <div
+                                                        key={product.id}
+                                                        className={styles.searchDropdownItem}
+                                                        onClick={() => handleSearchResultClick(product.id)}
+                                                    >
+                                                        <div className={styles.searchDropdownItemImage}>
+                                                            {product.image ? (
+                                                                <img
+                                                                    src={product.image}
+                                                                    alt={product.name}
+                                                                    className={styles.searchDropdownItemImageImg}
+                                                                />
+                                                            ) : (
+                                                                <div className={styles.searchDropdownItemImagePlaceholder}>
+                                                                    {t('No image')}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        <div className={styles.searchDropdownItemDetails}>
+                                                            <p className={styles.searchDropdownItemName} title={product.name}>
+                                                                {product.name}
+                                                            </p>
+                                                            <div className={styles.searchDropdownItemPrice}>
+                                                                {currentCurrency?.symbol_left && (
+                                                                    <span>{currentCurrency.symbol_left}</span>
+                                                                )}
+                                                                <PriceDisplay price={product.price_raw} />
+                                                                {currentCurrency?.symbol_right && (
+                                                                    <span>{currentCurrency.symbol_right}</span>
+                                                                )}
+                                                                {!currentCurrency?.symbol_left && !currentCurrency?.symbol_right && currentCurrency?.code && (
+                                                                    <span> {currentCurrency.code}</span>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            {searchTotal > searchResults.length && (
+                                                <div className={styles.searchDropdownFooter}>
+                                                    <button
+                                                        className={styles.searchDropdownViewMore}
+                                                        onClick={handleViewMore}
+                                                    >
+                                                        {t('View more results')} ({searchTotal})
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <div className={styles.searchDropdownLoading}>
+                                            <p>{t('No results found')}</p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
                         <div
                             className={styles.userAccount}

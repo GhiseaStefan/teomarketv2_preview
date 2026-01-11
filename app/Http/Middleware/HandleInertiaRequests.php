@@ -6,6 +6,7 @@ use App\Models\Currency;
 use App\Models\CustomerGroup;
 use App\Models\Wishlist;
 use App\Models\Product;
+use App\Enums\ProductType;
 use App\Services\CartService;
 use App\Services\ProductPriceService;
 use Illuminate\Foundation\Inspiring;
@@ -219,7 +220,9 @@ class HandleInertiaRequests extends Middleware
             ->with(['product' => function ($query) {
                 $query->with(['images' => function ($imgQuery) {
                     $imgQuery->orderBy('sort_order')->limit(1);
-                }, 'productGroupPrices']);
+                }, 'productGroupPrices', 'variants' => function ($q) {
+                    $q->where('status', true)->with('productGroupPrices');
+                }]);
             }])
             ->latest()
             ->get(); // Get all items for profile page, limit in frontend for dropdown
@@ -241,9 +244,42 @@ class HandleInertiaRequests extends Middleware
             // Use quantity 1 for wishlist display (similar to homepage)
             $quantity = 1;
 
+            // For configurable products, calculate minimum price from variants
+            $displayProduct = $product;
+            $minPriceFromVariants = null;
+
+            $typeValue = $product->type instanceof ProductType
+                ? $product->type->value
+                : ($product->type ?? ProductType::SIMPLE->value);
+
+            if ($typeValue === ProductType::CONFIGURABLE->value) {
+                // Load variants if not already loaded
+                if (!$product->relationLoaded('variants')) {
+                    $product->load(['variants' => function ($q) {
+                        $q->where('status', true)->with('productGroupPrices');
+                    }]);
+                }
+
+                $variants = $product->variants()->where('status', true)->get();
+
+                if ($variants->isNotEmpty()) {
+                    // Find minimum price among all variants
+                    foreach ($variants as $variant) {
+                        $variantPriceInfo = $priceService->getPriceInfo($variant, $currentCurrencyModel, $quantity, $customerGroupId, null, $request);
+                        $variantPrice = $variantPriceInfo['unit_price_ron_incl_vat'];
+
+                        if ($minPriceFromVariants === null || $variantPrice < $minPriceFromVariants) {
+                            $minPriceFromVariants = $variantPrice;
+                            // Use this variant for price calculation
+                            $displayProduct = $variant;
+                        }
+                    }
+                }
+            }
+
             // Get complete price information using centralized price service (same as cart)
             $priceInfo = $priceService->getPriceInfo(
-                $product,
+                $displayProduct,
                 $currentCurrencyModel,
                 $quantity,
                 $customerGroupId,
@@ -251,11 +287,19 @@ class HandleInertiaRequests extends Middleware
                 $request
             );
 
+            // If configurable product, calculate and use minimum price from variants
+            $minPriceDisplay = null;
+            if ($typeValue === ProductType::CONFIGURABLE->value && $minPriceFromVariants !== null) {
+                // Convert minimum price to display currency
+                $minPriceDisplay = $currentCurrencyModel->convertFromRon($minPriceFromVariants);
+                $priceInfo['unit_price_display'] = $minPriceDisplay;
+            }
+
             // Use display price already calculated by backend for customer group
             $unitPrice = $priceInfo['unit_price_display'];
 
             // Get price tiers using centralized price service (already includes display prices)
-            $priceTiers = $priceService->getPriceTiers($product, $currentCurrencyModel, $customerGroupId, $request);
+            $priceTiers = $priceService->getPriceTiers($displayProduct, $currentCurrencyModel, $customerGroupId, $request);
             $formattedTiers = [];
             if (!empty($priceTiers)) {
                 foreach ($priceTiers as $tier) {
@@ -266,6 +310,26 @@ class HandleInertiaRequests extends Middleware
                         'price_raw' => $tier['price_raw'], // For backward compatibility
                         'price_display' => $tier['price_display'], // Display price already calculated for customer group
                     ];
+                }
+            }
+
+            // If configurable product, update price tiers to use minimum price as base
+            if ($typeValue === ProductType::CONFIGURABLE->value && $minPriceDisplay !== null) {
+                if (empty($formattedTiers)) {
+                    // If no tiers, create a simple tier with min price
+                    $formattedTiers = [[
+                        'min_quantity' => 1,
+                        'max_quantity' => null,
+                        'quantity_range' => '1+',
+                        'price_raw' => $minPriceDisplay,
+                        'price_display' => $minPriceDisplay,
+                    ]];
+                } else {
+                    // Adjust first tier price to minimum
+                    if (isset($formattedTiers[0])) {
+                        $formattedTiers[0]['price_raw'] = $minPriceDisplay;
+                        $formattedTiers[0]['price_display'] = $minPriceDisplay;
+                    }
                 }
             }
 

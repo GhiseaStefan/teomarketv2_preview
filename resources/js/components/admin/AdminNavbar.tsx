@@ -1,4 +1,4 @@
-import { Search, LogOut, Languages, Save, X } from 'lucide-react';
+import { Search, LogOut, Languages, Save, X, Store } from 'lucide-react';
 import { usePage } from '@inertiajs/react';
 import { router } from '@inertiajs/react';
 import { useState, useRef, useEffect } from 'react';
@@ -14,7 +14,7 @@ export default function AdminNavbar() {
     const { hasUnsavedChanges, onSave, onDiscard } = useEdit();
     const user = props.auth?.user;
     const currentLocale = (props.locale as string | undefined) || 'ro';
-    
+
     const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
     const languageDropdownRef = useRef<HTMLDivElement>(null);
     const [showButtons, setShowButtons] = useState(false);
@@ -87,6 +87,14 @@ export default function AdminNavbar() {
         }
     };
 
+    const handleLogoClick = () => {
+        router.get('/admin');
+    };
+
+    const handleShopClick = () => {
+        router.get('/');
+    };
+
     if (!user) {
         return null;
     }
@@ -96,7 +104,13 @@ export default function AdminNavbar() {
             <div className={styles.navbarContent}>
                 {/* Logo Section */}
                 <div className={styles.logoSection}>
-                    <img src="/logo-admin.png" alt="Teomarket Admin" className={styles.logo} />
+                    <img
+                        src="/logo-admin.png"
+                        alt="Teomarket Admin"
+                        className={styles.logo}
+                        onClick={handleLogoClick}
+                        style={{ cursor: 'pointer' }}
+                    />
                 </div>
 
                 {/* Search Section */}
@@ -105,7 +119,7 @@ export default function AdminNavbar() {
                         <Search size={20} className={styles.searchIcon} />
                         <input
                             type="text"
-                            placeholder={t('Search', 'Cauta')}
+                            placeholder={t('Search', 'Cauta') + ' (soon)'}
                             className={styles.searchInput}
                         />
                     </div>
@@ -136,6 +150,16 @@ export default function AdminNavbar() {
 
                 {/* Right Section - Language & User */}
                 <div className={styles.rightSection}>
+                    {/* Shop Button */}
+                    <button
+                        className={styles.shopButton}
+                        onClick={handleShopClick}
+                        title={t('Go to Shop', 'Mergi la Magazin')}
+                    >
+                        <Store size={16} />
+                        <span>{t('Shop', 'Magazin')}</span>
+                    </button>
+
                     {/* Language Selector */}
                     <div className={styles.languageSelectorWrapper} ref={languageDropdownRef}>
                         <button
@@ -169,7 +193,7 @@ export default function AdminNavbar() {
                                 </span>
                             </button>
                             <div className={styles.dropdownMenu}>
-                                <button 
+                                <button
                                     className={styles.dropdownItem}
                                     onClick={handleLogout}
                                 >

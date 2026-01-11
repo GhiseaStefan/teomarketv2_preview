@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { router } from '@inertiajs/react';
-import { Search, MoreVertical, UserX, UserCheck } from 'lucide-react';
+import { Search, MoreVertical, UserX, UserCheck, Menu, X } from 'lucide-react';
 import { AdminLayout } from '../../components/admin';
 import { useTranslations } from '../../utils/translations';
 import { formatPrice } from '../../utils/formatPrice';
@@ -35,6 +35,7 @@ export default function AdminCustomers({ customers, pagination, filters: initial
     const [searchQuery, setSearchQuery] = useState(initialFilters.search || '');
     const [selectedCustomers, setSelectedCustomers] = useState<Set<number>>(new Set());
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [showSearchAndFilters, setShowSearchAndFilters] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -55,7 +56,20 @@ export default function AdminCustomers({ customers, pagination, filters: initial
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
-        router.get('/admin/customers', { search: searchQuery }, {
+        router.get('/admin/customers', { 
+            search: searchQuery,
+            page: 1,
+        }, {
+            preserveState: true,
+            preserveScroll: true,
+        });
+    };
+
+    const clearSearch = () => {
+        setSearchQuery('');
+        router.get('/admin/customers', {
+            search: '',
+        }, {
             preserveState: true,
             preserveScroll: true,
         });
@@ -120,55 +134,81 @@ export default function AdminCustomers({ customers, pagination, filters: initial
     return (
         <AdminLayout activeSidebarItem="customers">
             <div className={styles.customersPage}>
-                {/* Search Bar */}
-                <div className={styles.searchSection}>
-                    <form onSubmit={handleSearch} className={styles.searchForm}>
-                        <Search size={18} className={styles.searchIcon} />
-                        <input
-                            type="text"
-                            placeholder={t('Search', 'Cauta')}
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className={styles.searchInput}
-                        />
-                    </form>
-                    <div className={styles.actionsContainer} ref={dropdownRef}>
-                        {selectedCustomers.size > 0 && (
-                            <span className={styles.selectedCount}>
-                                {selectedCustomers.size} {t('selected', 'selectate')}
-                            </span>
-                        )}
+                {/* Top Filters Row with Actions and Toggle Button */}
+                <div className={styles.topFiltersRow}>
+                    <div className={styles.topActionsContainer}>
+                        <div className={styles.actionsContainer} ref={dropdownRef}>
+                            {selectedCustomers.size > 0 && (
+                                <span className={styles.selectedCount}>
+                                    {selectedCustomers.size} {t('selected', 'selectate')}
+                                </span>
+                            )}
+                            <button
+                                className={styles.actionsButton}
+                                onClick={() => setDropdownOpen(!dropdownOpen)}
+                                disabled={selectedCustomers.size === 0}
+                            >
+                                <MoreVertical size={18} />
+                            </button>
+                            {dropdownOpen && (
+                                <div className={styles.dropdownMenu}>
+                                    {hasInactiveSelected && (
+                                        <button
+                                            className={styles.dropdownItem}
+                                            onClick={handleActivateSelected}
+                                        >
+                                            <UserCheck size={16} />
+                                            <span>{t('Activate selected', 'Activeaza selectate')}</span>
+                                        </button>
+                                    )}
+                                    {hasActiveSelected && (
+                                        <button
+                                            className={styles.dropdownItem}
+                                            onClick={handleDeactivateSelected}
+                                        >
+                                            <UserX size={16} />
+                                            <span>{t('Deactivate selected', 'Dezactiveaza selectate')}</span>
+                                        </button>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                        
                         <button
-                            className={styles.actionsButton}
-                            onClick={() => setDropdownOpen(!dropdownOpen)}
-                            disabled={selectedCustomers.size === 0}
+                            type="button"
+                            className={styles.searchFilterToggleButton}
+                            onClick={() => setShowSearchAndFilters(!showSearchAndFilters)}
                         >
-                            <MoreVertical size={18} />
+                            <Search size={18} />
+                            <Menu size={18} />
                         </button>
-                        {dropdownOpen && (
-                            <div className={styles.dropdownMenu}>
-                                {hasInactiveSelected && (
-                                    <button
-                                        className={styles.dropdownItem}
-                                        onClick={handleActivateSelected}
-                                    >
-                                        <UserCheck size={16} />
-                                        <span>{t('Activate selected', 'Activeaza selectate')}</span>
-                                    </button>
-                                )}
-                                {hasActiveSelected && (
-                                    <button
-                                        className={styles.dropdownItem}
-                                        onClick={handleDeactivateSelected}
-                                    >
-                                        <UserX size={16} />
-                                        <span>{t('Deactivate selected', 'Dezactiveaza selectate')}</span>
-                                    </button>
-                                )}
-                            </div>
-                        )}
                     </div>
                 </div>
+
+                {/* Search Bar - Only shown when toggle is active */}
+                {showSearchAndFilters && (
+                    <div className={styles.searchBarContainer}>
+                        <form onSubmit={handleSearch} className={styles.searchBarForm}>
+                            <Search size={16} className={styles.searchBarIcon} />
+                            <input
+                                type="text"
+                                placeholder={t('Search customers', 'Cautare clienti')}
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className={styles.searchBarInput}
+                            />
+                            {searchQuery && (
+                                <button
+                                    type="button"
+                                    onClick={clearSearch}
+                                    className={styles.searchBarCancel}
+                                >
+                                    <X size={14} />
+                                </button>
+                            )}
+                        </form>
+                    </div>
+                )}
 
                 {/* Table */}
                 <div className={styles.tableContainer}>
