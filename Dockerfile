@@ -63,7 +63,7 @@ EXPOSE 80
 # 2. Populăm baza de date (seeding)
 # 3. Creăm link-ul către storage (pentru imagini)
 # 4. Pornim Nginx și PHP-FPM
-CMD php artisan migrate --force --seed && \
+CMD php artisan migrate:fresh --force --seed && \
     php artisan storage:link && \
     service nginx start && \
     php-fpm
